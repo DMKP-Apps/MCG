@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class PowerControl : MonoBehaviour {
 	
-	public CannonController CannonController;
+	//public CannonController CannonController;
 	void Start(){
 		//CannonController = GameObject.Find("MeatCannon").GetComponent<CannonController>();
 	}
@@ -77,21 +77,28 @@ public class PowerControl : MonoBehaviour {
         }
     }
 
+	public void ResetMeter()
+	{
+		state = MeterState.Paused;
+
+		transform.rotation = Quaternion.Euler (0, 0, 155);
+	}
+
     public void ToggleMeter()
     {
 		
-		CannonController.Execute ();
+		//CannonController.Execute ();
 
-		if (CannonController.State == CannonController.CannonState.Ready) {
-			StartMeter ();
-		} else {
-			StopMeter ();
-			if (CannonController.State == CannonController.CannonState.Set) {
-				CannonController.PowerRate = PowerRating;
-			} else {
-				transform.rotation = Quaternion.Euler (0, 0, 155);
-			}
-		}
+		//if (CannonController.State == CannonController.CannonState.Ready) {
+		//	StartMeter ();
+		//} else {
+		//	StopMeter ();
+		//	if (CannonController.State == CannonController.CannonState.Set) {
+		//		CannonController.PowerRate = PowerRating;
+		//	} else {
+		//		transform.rotation = Quaternion.Euler (0, 0, 155);
+		//	}
+		//}
 
         /*if (state == MeterState.Paused)
         {

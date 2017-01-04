@@ -7,19 +7,17 @@ public class CameraController : MonoBehaviour {
 
 	public Vector3 PositionOffset = new Vector3 (0.0f, 0.0f, 0.0f);
 	public Vector3 Position = new Vector3(0.0f,0.0f,0.0f);
-	public Vector3 RotationOffset;
 	public Vector3 Rotation;
 	private float previousXRotation = 0.0f;
 	public GameObject Cannon;
 	public GameObject LookAtTarget;
 
+	public CannonFireController fireController;
+	private GameController GameController;
+
 	public float MoveSpeed = 1.0f;
 	public float DirectionModifier = 1.0f;
 	public bool EnableRotation = true;
-	//public GameObject Bullet;
-
-	//public GameObject ShotCamera1;
-	//public GameObject ShotCamera2;
 
 	public enum CameraMode
 	{
@@ -31,90 +29,56 @@ public class CameraController : MonoBehaviour {
 
 	void Start () 
 	{
-		//ShotCamera1.SetActive (false);
-		//ShotCamera2.SetActive (false);
-
+		
 		PositionOffset = transform.localPosition;
-		RotationOffset = transform.localEulerAngles;
+		Mode = CameraMode.FollowCannon;
 
-		SetMode (CameraMode.FollowCannon);
+		GameController = GameObject.Find ("GameController").GetComponent<GameController> ();
 	}
 
 	public bool RunActionCamera = true;
+	public float followSpeed = 1f;
 
 	void Update() {
 
 		Rotation = Cannon.transform.rotation.eulerAngles;
 		Position = Cannon.transform.position;
 
-	}
-
-	void LateUpdate () 
-	{
-		switch (Mode) {
-
-		case CameraMode.FollowCannon:
-
-			FollowCannon ();
-			transform.LookAt (LookAtTarget.transform);
-			break;
-
-		case CameraMode.FollowBullet:
-
-			/*if (Bullet != null && Bullet.activeInHierarchy) {
-				transform.LookAt (Bullet.transform);
-			}
-
-			if (RunActionCamera && System.DateTime.Now.Subtract (startTime).TotalMilliseconds >= 5000 &&
-				!ShotCamera1.activeInHierarchy && !ShotCamera2.activeInHierarchy) {
-
-				//var rand = Random.Range (0, 10);
-				//if (rand % 2 == 0) {
-					//ShotCamera1.SetActive (true);
-				//} else {
-					ShotCamera2.SetActive (true);
-				//}
-
-			}
-			else if (!RunActionCamera && (ShotCamera1.activeInHierarchy || !ShotCamera2.activeInHierarchy)) {
-
-
-				ShotCamera1.SetActive (false);
-				ShotCamera2.SetActive (false);
-
-
-			}*/
-			break;
-
+		var bullet = fireController.GetBullet ();
+		if (bullet == null && Mode == CameraMode.FollowBullet) {
+			Mode = CameraMode.FollowCannon;
+			transform.localPosition = PositionOffset;
 		}
 
 	}
 
-	private System.DateTime startTime = System.DateTime.Now;
-
-	public void SetMode(CameraMode mode)
+	void LateUpdate () 
 	{
-		Mode = mode;
-		switch (Mode) {
+		var bullet = fireController.GetBullet ();
 
-		case CameraMode.FollowCannon:
-			transform.localPosition = PositionOffset;
-			transform.localEulerAngles = RotationOffset;
-			//ShotCamera1.SetActive (false);
-			//ShotCamera2.SetActive (false);
-			//ShotCamera2.GetComponent<CameraFollow> ().Reset ();
 
-			break;
+		if (bullet == null) {
+			FollowCannon ();
+			transform.LookAt (LookAtTarget.transform);
+			//PositionOffset = transform.localPosition;
 
-		case CameraMode.FollowBullet:
-			startTime = System.DateTime.Now;
-			RunActionCamera = true;
-			//ShotCamera1.GetComponent<CameraLookAt> ().target = Bullet;
-			//ShotCamera2.GetComponent<CameraFollow> ().target = Bullet;
-			break;
+		} else {
+			Mode = CameraMode.FollowBullet;
+			if (bullet.activeInHierarchy) {
+				transform.localPosition = (bullet.transform.localPosition + PositionOffset) * followSpeed;
+				transform.LookAt (bullet.transform);
+			} else {
+				//transform.localPosition = (GameController.GetLastHazardContactPoint() + PositionOffset * 1.2f);
+				transform.LookAt (GameController.GetLastHazardContactPoint());
+			}
 
-		} 
+		
+		}
+
+
+
 	}
+
 
 	public void FollowCannon()
 	{
@@ -122,19 +86,6 @@ public class CameraController : MonoBehaviour {
 		double destY = System.Math.Floor (transform.rotation.eulerAngles.y);
 
 		bool keepRotating = CheckKeepRotating(sourceY, destY, MoveSpeed);
-
-		var currentXRotation = float.Parse(System.Math.Floor (Rotation.x).ToString());
-		if (currentXRotation > 180) {
-			currentXRotation -= 360;
-		}
-		if (previousXRotation == 0) {
-			previousXRotation = currentXRotation;
-		}
-		else if (currentXRotation != previousXRotation) {
-			var move = (currentXRotation - previousXRotation) * Time.deltaTime * 3f * -1;
-			previousXRotation = currentXRotation;
-
-		}
 
 		if (keepRotating && EnableRotation) {
 			transform.RotateAround (Position, Vector3.up, MoveSpeed * Time.deltaTime * DirectionModifier);
@@ -153,8 +104,6 @@ public class CameraController : MonoBehaviour {
 		if (destY > 180) {
 			destY -= 360;
 		}
-
-		var moveY = 0;
 
 		if (destY - sourceY < -180) {
 			

@@ -4,8 +4,7 @@ using UnityEngine;
 
 public class CannonController : MonoBehaviour {
 
-	public GameObject CannonWheelR;
-	public GameObject CannonWheelL;
+
 	public GameObject bulletPrefab;
 	public GameObject BulletPosition;
 	public GameObject FirePrefab;
@@ -45,11 +44,7 @@ public class CannonController : MonoBehaviour {
 	
 	void Update () {
 
-		if (inputController.InputPosition.x != 0) {
-			CannonWheelR.transform.Rotate(new Vector3(0, 0,inputController.InputPosition.x * -1));
-			CannonWheelL.transform.Rotate(new Vector3(0, 0,inputController.InputPosition.x));
-			
-		}
+
 		//GameController.GetCameraController ().Position = Cannon.transform.position;
 		//GameController.GetCameraController ().Rotation = Cannon.transform.rotation.eulerAngles;
 

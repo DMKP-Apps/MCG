@@ -9,6 +9,8 @@ public class ActivateWithGameObject : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		ControlObject.gameObject.SetActive (WatchObject.activeInHierarchy);
+		if (ControlObject != null && WatchObject != null) {
+			ControlObject.gameObject.SetActive (WatchObject.activeInHierarchy);
+		}
 	}
 }

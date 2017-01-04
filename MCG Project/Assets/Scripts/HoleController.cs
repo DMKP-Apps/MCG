@@ -9,6 +9,16 @@ public class HoleController : MonoBehaviour {
 	private Transform teePosition = null;
 	private Transform holePosition = null;
 
+	public GameObject StartCamera;
+	public GameObject EndCamera;
+	public CameraPathAnimator EndCameraAnimator;
+
+	public GameController GameController;
+
+	void Start() {
+		GameController = GameObject.Find ("GameController").GetComponent<GameController> ();
+	}
+
 	public Transform tee {
 		get { 
 			if (teePosition == null) {
@@ -21,6 +31,13 @@ public class HoleController : MonoBehaviour {
 			}
 			return teePosition;
 		}
+	}
+
+	public void HoleCompleted()
+	{
+		EndCamera.SetActive (true);
+		EndCameraAnimator.startPercent = 0;
+		EndCameraAnimator.Play ();
 	}
 
 	public Transform hole {
@@ -37,4 +54,37 @@ public class HoleController : MonoBehaviour {
 		}
 	}
 
+	public void DeactivateHoleCameras() {
+	
+		if (StartCamera != null && StartCamera.activeInHierarchy) {
+			DeactivateStartCamera ();
+		}
+		if (EndCamera != null && EndCamera.activeInHierarchy) {
+			DeactivateEndCamera ();
+		}
+
+	
+	}
+
+	public void DeactivateStartCamera()
+	{
+		if (StartCamera != null) {
+			StartCamera.SetActive (false);
+		}
+	}
+
+	public void DeactivateEndCamera()
+	{
+		if (EndCamera != null) {
+			EndCamera.SetActive (false);
+			GameController.NextHole ();
+			EndCameraAnimator.Stop ();
+		}
+	}
+
+
+	public bool IsHoleCameraActive()
+	{
+		return StartCamera.activeInHierarchy || EndCamera.activeInHierarchy;
+	}
 }

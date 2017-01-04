@@ -19,3 +19,5 @@
 /Volumes/Music/Projects/Source/MCG/MCG Project/Temp/bin/Debug/Unity.CecilTools.dll
 /Volumes/Music/Projects/Source/MCG/MCG Project/Temp/bin/Debug/Mono.Cecil.Pdb.dll
 /Volumes/Music/Projects/Source/MCG/MCG Project/Temp/bin/Debug/Mono.Cecil.Mdb.dll
+/Volumes/Music/Projects/Source/MCG/MCG Project/Temp/bin/Debug/Assembly-CSharp-firstpass.dll
+/Volumes/Music/Projects/Source/MCG/MCG Project/Temp/bin/Debug/Assembly-CSharp-firstpass.dll.mdb

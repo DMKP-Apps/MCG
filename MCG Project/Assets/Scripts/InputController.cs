@@ -5,9 +5,12 @@ using UnityEngine;
 
 public class InputController : MonoBehaviour {
 
+	private GameController GameController;
+
 	private void Start()
 	{
 		m_OriginalRotation = transform.localRotation;
+		GameController = GameObject.Find ("GameController").GetComponent<GameController> ();
 	}
 
 	public Vector3 rotationRange = new Vector3(0, 0, 70);
@@ -20,12 +23,16 @@ public class InputController : MonoBehaviour {
 	private Quaternion m_OriginalRotation;
 
 	public Vector2 InputPosition = new Vector3(0, 0);
-	private string previousPosition = string.Empty;
+	//private string previousPosition = string.Empty;
 
 	// Update is called once per frame
 	void Update () {
 		InputPosition = new Vector2(0, 0);
 		Input.touches.ToList ().ForEach (touch => {
+			if(touch.phase == TouchPhase.Began) {
+				GameController.TouchDetected();
+
+			}
 			if(touch.phase == TouchPhase.Moved) {
 				// Construct a ray from the current touch coordinates
 
@@ -51,18 +58,18 @@ public class InputController : MonoBehaviour {
 
 
 
-							var currentRotation = string.Format("{0},{1},{2}", 
-								transform.localRotation.x.ToString("0000.0000"),
-								transform.localRotation.y.ToString("0000.0000"),
-								transform.localRotation.z.ToString("0000.0000"));
+							//var currentRotation = string.Format("{0},{1},{2}", 
+							//	transform.localRotation.x.ToString("0000.0000"),
+							//	transform.localRotation.y.ToString("0000.0000"),
+							//	transform.localRotation.z.ToString("0000.0000"));
 
 
 
 							//if(previousPosition != currentRotation)
 							//{
-								previousPosition = currentRotation;
-								InputPosition.x = touch.deltaPosition.x;
-								InputPosition.y = touch.deltaPosition.y;
+								//previousPosition = currentRotation;
+								//InputPosition.x = touch.deltaPosition.x;
+								//InputPosition.y = touch.deltaPosition.y;
 
 							//}
 
