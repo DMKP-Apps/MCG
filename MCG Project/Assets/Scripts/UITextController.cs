@@ -12,6 +12,7 @@ public class UITextController : MonoBehaviour {
 	public Text HoleCompleteScore;
 
 	public GameObject alertWaterHazard;
+	public GameObject alertOutOfBounds;
 	
 	public void SetHole(int value) {
 
@@ -48,6 +49,13 @@ public class UITextController : MonoBehaviour {
 	public void ShowWaterHazard()
 	{
 		var activateForTime = alertWaterHazard.GetComponent<ActiveForTime> ();
+		activateForTime.Show ();
+
+	}
+
+	public void ShowOutOfBounds()
+	{
+		var activateForTime = alertOutOfBounds.GetComponent<ActiveForTime> ();
 		activateForTime.Show ();
 
 	}

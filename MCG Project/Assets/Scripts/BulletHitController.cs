@@ -14,18 +14,22 @@ public class BulletHitController : MonoBehaviour {
 	private Vector3 lastPosition;
 	private Vector3 lastRotation;
 
+	private System.DateTime time = System.DateTime.Now;
+
 	void LateUpdate()
 	{
-		var destroyObject = false;
-		if (!DetectMovement (lastPosition, transform.position) && !DetectMovement (lastRotation, transform.rotation.eulerAngles)) {
-			destroyObject = true;
+		if (System.DateTime.Now.Subtract (time).TotalMilliseconds > 750) {
+			time = System.DateTime.Now;
+			var destroyObject = false;
+			if (!DetectMovement (lastPosition, transform.position) && !DetectMovement (lastRotation, transform.rotation.eulerAngles)) {
+				destroyObject = true;
+			}
+			lastPosition = transform.position;
+			lastRotation = transform.rotation.eulerAngles;
+			if (destroyObject) {
+				Destroy (this.gameObject);
+			}
 		}
-		lastPosition = transform.position;
-		lastRotation = transform.rotation.eulerAngles;
-		if (destroyObject) {
-			Destroy (this.gameObject);
-		}
-
 	}
 
 	private bool DetectMovement(Vector3 previous, Vector3 current) {

@@ -88,16 +88,26 @@ public class GameController : MonoBehaviour {
 		ControlsContainer.SetActive (setActive);
 	}
 
+	private void MoveToPosition(Vector3 position) {
+	
+		player.transform.position = position; 
+
+		var holeController = hole.GetComponent<HoleController> ();
+		player.transform.forward = holeController.hole.position;
+		player.transform.LookAt (holeController.hole.position);
+
+		var playerCannon = player.GetComponent<CannonFireController> ();
+		playerCannon.AimCannon (holeController.hole.position);
+	
+	}
+
 	public void StrokeComplete(Vector3 lastPosition)
 	{
 		if (isHoleComplete || isHazardPoint) {
 			return;
 		}
-		player.transform.position = lastPosition; 
-
-		var holeController = hole.GetComponent<HoleController> ();
-		player.transform.forward = holeController.hole.position;
-		player.transform.LookAt (holeController.hole.position);
+		// move player into the next position
+		MoveToPosition(lastPosition);
 
 		var playerController = player.GetComponent<CannonPlayerState> ();
 		playerController.Stroke++;
@@ -117,11 +127,9 @@ public class GameController : MonoBehaviour {
 		// get the closet respawn point for the current water hazard
 		var respawnPosition = water.transform.FindChild("Respawn");
 		if (respawnPosition != null) {
-			player.transform.position = respawnPosition.transform.position; 
 
-			var holeController = hole.GetComponent<HoleController> ();
-			player.transform.forward = holeController.hole.position;
-			player.transform.LookAt (holeController.hole.position);
+			// move player into the next position
+			MoveToPosition(respawnPosition.transform.position);
 		}
 
 		var playerController = player.GetComponent<CannonPlayerState> ();
@@ -132,9 +140,25 @@ public class GameController : MonoBehaviour {
 
 	}
 
+	public void OutOfBounds(Vector3 contactPoint)
+	{
+		lastContactPoint = contactPoint;
+		isHazardPoint = true;
+
+		var playerController = player.GetComponent<CannonPlayerState> ();
+		playerController.Stroke += 2;
+		textController.SetStroke (playerController.Stroke);
+
+		textController.ShowOutOfBounds ();
+
+	}
+
 
 	public void HoleOver()
 	{
+		if (isHoleComplete) {
+			return;
+		}
 		isHoleComplete = true;
 		isHazardPoint = false;
 		var holeController = hole.GetComponent<HoleController> ();
@@ -155,7 +179,7 @@ public class GameController : MonoBehaviour {
 		}
 		else if (score < par) {
 			score = (par - score) * -1;
-			if (score < -3) {
+			if (!scoring.ContainsKey(score)) {
 				scoreValue = string.Format ("{0} ({1})", "Under", score);
 			} else {
 				scoreValue = string.Format("{0} ({1})", scoring[score], score);
@@ -164,7 +188,7 @@ public class GameController : MonoBehaviour {
 		}
 		else {
 			score = (score - par);
-			if (score > 3) {
+			if (!scoring.ContainsKey(score)) {
 				scoreValue = string.Format ("{0} (+{1})", "Over", score);
 			} else {
 				scoreValue = string.Format("{0} (+{1})", scoring[score], score);
@@ -187,6 +211,11 @@ public class GameController : MonoBehaviour {
 			CurrentHole = 1;
 		}
 
+		// destroy the previous hole if exists
+		if(hole != null) {
+			Destroy (hole);
+		}
+
 		hole = (GameObject)Instantiate (holePrefabs [CurrentHole - 1]);
 		var holeController = hole.GetComponent<HoleController> ();
 
@@ -197,8 +226,11 @@ public class GameController : MonoBehaviour {
 		textController.SetPlayer (1);
 		textController.SetHole (CurrentHole);
 
-		player.transform.position = holeController.tee.position; 
-		player.transform.rotation = holeController.tee.rotation;
+		//player.transform.position = holeController.tee.position; 
+		//player.transform.rotation = holeController.tee.rotation;
+
+		// move player into the next position
+		MoveToPosition(holeController.tee.position);
 
 	}
 

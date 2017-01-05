@@ -11,6 +11,8 @@ public class CameraController : MonoBehaviour {
 	private float previousXRotation = 0.0f;
 	public GameObject Cannon;
 	public GameObject LookAtTarget;
+	public GameObject CameraShot1;
+	public GameObject CameraPosition;
 
 	public CannonFireController fireController;
 	private GameController GameController;
@@ -47,7 +49,18 @@ public class CameraController : MonoBehaviour {
 		var bullet = fireController.GetBullet ();
 		if (bullet == null && Mode == CameraMode.FollowBullet) {
 			Mode = CameraMode.FollowCannon;
-			transform.localPosition = PositionOffset;
+			//transform.localPosition = PositionOffset;
+			CameraShot1.SetActive (false);
+			var followCamera = CameraShot1.GetComponent<CameraFollow> ();
+			followCamera.Reset ();
+		}
+		else if (bullet != null && Mode == CameraMode.FollowCannon) {
+			var followCamera = CameraShot1.GetComponent<CameraFollow> ();
+			followCamera.target = bullet;
+			//followCamera.PositionOffset = CameraShot1.transform.localPosition - bullet.transform.localPosition;
+			followCamera.PositionOffset = CameraShot1.transform.position - bullet.transform.position;
+
+			CameraShot1.SetActive (true);
 		}
 
 	}
@@ -58,15 +71,20 @@ public class CameraController : MonoBehaviour {
 
 
 		if (bullet == null) {
-			FollowCannon ();
+			//FollowCannon ();
+			var step = 2.5f * Time.deltaTime;
+			var followPosition = CameraPosition.transform.position;
+			followPosition.y = transform.position.y;
+			transform.position = Vector3.MoveTowards (transform.position, followPosition, step);
+
 			transform.LookAt (LookAtTarget.transform);
 			//PositionOffset = transform.localPosition;
 
 		} else {
 			Mode = CameraMode.FollowBullet;
 			if (bullet.activeInHierarchy) {
-				transform.localPosition = (bullet.transform.localPosition + PositionOffset) * followSpeed;
-				transform.LookAt (bullet.transform);
+				//transform.localPosition = (bullet.transform.localPosition + PositionOffset) * followSpeed;
+				//transform.LookAt (bullet.transform);
 			} else {
 				//transform.localPosition = (GameController.GetLastHazardContactPoint() + PositionOffset * 1.2f);
 				transform.LookAt (GameController.GetLastHazardContactPoint());

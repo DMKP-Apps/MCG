@@ -8,6 +8,7 @@ public class CannonFireController : MonoBehaviour {
 	public GameObject BulletPosition;
 	public GameObject CannonBurstPrefab;
 	public GameController GameController;
+	public GameObject CannonBulletParent;
 
 	private bool hasFired = false;
 
@@ -39,12 +40,20 @@ public class CannonFireController : MonoBehaviour {
 
 	}
 
+	public void AimCannon(Vector3 position) {
+	
+		CannonBulletParent.transform.forward = position;
+		CannonBulletParent.transform.LookAt (position);
+	
+	}
+
+
 	public void Fire(GameObject bulletPrefab, float powerRate) {
 	
 		bullet = (GameObject)Instantiate(
 			bulletPrefab, BulletPosition.transform.position, BulletPosition.transform.rotation);//new Vector3(transform.position.x, transform.position.y, transform.position.z + 10),
 
-		bullet.transform.parent = this.transform;
+		bullet.transform.parent = CannonBulletParent.transform;
 		//bullet.transform.localRotation = bulletPrefab.transform.localRotation;
 		//bullet.GetComponent<Rigidbody>().rotation = bulletPrefab.transform.localRotation;
 		var burst = (GameObject)Instantiate(
@@ -61,7 +70,7 @@ public class CannonFireController : MonoBehaviour {
 		bullet.GetComponent<Rigidbody>().AddTorque(transform.up * torque * turn);
 		bullet.GetComponent<Rigidbody>().AddTorque(transform.right * torque * turn);
 
-		Destroy(bullet, 10.0f);
+		Destroy(bullet, 30.0f);
 		Destroy(burst, 5.0f);
 
 		hasFired = true;

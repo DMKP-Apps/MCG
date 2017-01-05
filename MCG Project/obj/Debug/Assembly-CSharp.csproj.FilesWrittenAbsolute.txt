@@ -21,3 +21,5 @@
 /Volumes/Music/Projects/Source/MCG/MCG Project/Temp/bin/Debug/Mono.Cecil.Mdb.dll
 /Volumes/Music/Projects/Source/MCG/MCG Project/Temp/bin/Debug/Assembly-CSharp-firstpass.dll
 /Volumes/Music/Projects/Source/MCG/MCG Project/Temp/bin/Debug/Assembly-CSharp-firstpass.dll.mdb
+/Volumes/Music/Projects/Source/MCG/MCG Project/Temp/bin/Debug/UnityEngine.Advertisements.dll
+/Volumes/Music/Projects/Source/MCG/MCG Project/Temp/bin/Debug/UnityEngine.Purchasing.dll

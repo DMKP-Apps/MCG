@@ -23,7 +23,7 @@ public class InputController : MonoBehaviour {
 	private Quaternion m_OriginalRotation;
 
 	public Vector2 InputPosition = new Vector3(0, 0);
-	//private string previousPosition = string.Empty;
+	private string previousPosition = string.Empty;
 
 	// Update is called once per frame
 	void Update () {
@@ -58,20 +58,20 @@ public class InputController : MonoBehaviour {
 
 
 
-							//var currentRotation = string.Format("{0},{1},{2}", 
-							//	transform.localRotation.x.ToString("0000.0000"),
-							//	transform.localRotation.y.ToString("0000.0000"),
-							//	transform.localRotation.z.ToString("0000.0000"));
+							var currentRotation = string.Format("{0},{1},{2}", 
+								transform.localRotation.x.ToString("0000.0000"),
+								transform.localRotation.y.ToString("0000.0000"),
+								transform.localRotation.z.ToString("0000.0000"));
 
 
 
-							//if(previousPosition != currentRotation)
-							//{
-								//previousPosition = currentRotation;
-								//InputPosition.x = touch.deltaPosition.x;
-								//InputPosition.y = touch.deltaPosition.y;
+							if(previousPosition != currentRotation)
+							{
+								previousPosition = currentRotation;
+								InputPosition.x = touch.deltaPosition.x;
+								InputPosition.y = touch.deltaPosition.y;
 
-							//}
+							}
 
 
 
