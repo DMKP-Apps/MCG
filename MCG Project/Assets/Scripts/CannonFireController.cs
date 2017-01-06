@@ -69,8 +69,8 @@ public class CannonFireController : MonoBehaviour {
 		var turn = Random.Range (-20.0f, 20.0f);
 
 		bullet.GetComponent<Rigidbody>().AddForce(bullet.transform.forward * bulletData.Power * powerRate, ForceMode.Impulse);
-		bullet.GetComponent<Rigidbody>().AddTorque(transform.up * torque * turn);
-		bullet.GetComponent<Rigidbody>().AddTorque(transform.right * torque * turn);
+		bullet.GetComponent<Rigidbody>().AddTorque(transform.up * torque);
+		bullet.GetComponent<Rigidbody>().AddTorque(transform.right * turn);
 
 		Destroy(bullet, 30.0f);
 		Destroy(burst, 5.0f);

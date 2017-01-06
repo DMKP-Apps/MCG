@@ -36,6 +36,7 @@ public class CameraController : MonoBehaviour {
 		Mode = CameraMode.FollowCannon;
 
 		GameController = GameObject.Find ("GameController").GetComponent<GameController> ();
+		GameController.RegisterCameraController (this);
 	}
 
 	public bool RunActionCamera = true;
@@ -52,6 +53,7 @@ public class CameraController : MonoBehaviour {
 			//transform.localPosition = PositionOffset;
 			CameraShot1.SetActive (false);
 			var followCamera = CameraShot1.GetComponent<CameraFollow> ();
+			followCamera.alernateTarget = Cannon;
 			followCamera.Reset ();
 		}
 		else if (bullet != null && Mode == CameraMode.FollowCannon) {

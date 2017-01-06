@@ -76,6 +76,10 @@ public class InputController : MonoBehaviour {
 					}
 
 				}
+				else 
+				{
+					
+				}
 
 
 						//}

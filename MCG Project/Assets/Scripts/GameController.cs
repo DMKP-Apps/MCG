@@ -26,6 +26,13 @@ public class GameController : MonoBehaviour {
 
 	public float powerRate = 0f;
 
+	private CameraController cameraController;
+
+	public void RegisterCameraController(CameraController camera)
+	{
+		cameraController = camera;
+	}
+
 
 	void Start() {
 	
@@ -75,6 +82,10 @@ public class GameController : MonoBehaviour {
 				holeController.DeactivateHoleCameras ();
 			}
 
+			if (IsShooting () && cameraController != null) {
+				// route camera back to cannon.
+				cameraController.CameraShot1.GetComponent<CameraFollow>().FollowAlternate();
+			}
 		}
 
 
