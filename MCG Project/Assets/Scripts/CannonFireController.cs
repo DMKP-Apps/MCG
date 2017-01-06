@@ -49,7 +49,9 @@ public class CannonFireController : MonoBehaviour {
 
 
 	public void Fire(GameObject bulletPrefab, float powerRate) {
-	
+		
+		GameController.powerRate = powerRate;
+
 		bullet = (GameObject)Instantiate(
 			bulletPrefab, BulletPosition.transform.position, BulletPosition.transform.rotation);//new Vector3(transform.position.x, transform.position.y, transform.position.z + 10),
 

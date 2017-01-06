@@ -51,29 +51,31 @@ public class InputController : MonoBehaviour {
 							//transform.position = Vector3.MoveTowards(transform.position, 
 							//	new Vector3(touch.deltaPosition.x,0.0f,touch.deltaPosition.y), step);
 							//transform.Rotate(touch.deltaPosition.y,0.0f,0.0f);
-							transform.localRotation = SmoothRotator.Rotate( transform.localRotation, ref m_OriginalRotation,
+				if(!GameController.IsShooting())
+				{
+					transform.localRotation = SmoothRotator.Rotate( transform.localRotation, ref m_OriginalRotation,
 								ref m_TargetAngles, ref m_FollowAngles,
 								ref m_FollowVelocity, rotationRange, rotationSpeed,
 								dampingTime,touch.deltaPosition.x, touch.deltaPosition.y);
 
 
 
-							var currentRotation = string.Format("{0},{1},{2}", 
-								transform.localRotation.x.ToString("0000.0000"),
-								transform.localRotation.y.ToString("0000.0000"),
-								transform.localRotation.z.ToString("0000.0000"));
+					var currentRotation = string.Format("{0},{1},{2}", 
+						transform.localRotation.x.ToString("0000.0000"),
+						transform.localRotation.y.ToString("0000.0000"),
+						transform.localRotation.z.ToString("0000.0000"));
 
 
 
-							if(previousPosition != currentRotation)
-							{
-								previousPosition = currentRotation;
-								InputPosition.x = touch.deltaPosition.x;
-								InputPosition.y = touch.deltaPosition.y;
+					if(previousPosition != currentRotation)
+					{
+						previousPosition = currentRotation;
+						InputPosition.x = touch.deltaPosition.x;
+						InputPosition.y = touch.deltaPosition.y;
 
-							}
+					}
 
-
+				}
 
 
 						//}

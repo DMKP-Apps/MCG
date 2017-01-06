@@ -57,6 +57,7 @@ public class CameraController : MonoBehaviour {
 		else if (bullet != null && Mode == CameraMode.FollowCannon) {
 			var followCamera = CameraShot1.GetComponent<CameraFollow> ();
 			followCamera.target = bullet;
+			followCamera.powerRate = GameController.powerRate;
 			//followCamera.PositionOffset = CameraShot1.transform.localPosition - bullet.transform.localPosition;
 			followCamera.PositionOffset = CameraShot1.transform.position - bullet.transform.position;
 

@@ -24,6 +24,8 @@ public class GameController : MonoBehaviour {
 
 	private Dictionary<int, string> scoring = new Dictionary<int, string>();
 
+	public float powerRate = 0f;
+
 
 	void Start() {
 	
@@ -57,6 +59,12 @@ public class GameController : MonoBehaviour {
 			
 		}
 	
+	}
+
+	public bool IsShooting()
+	{
+		var fireController = player.GetComponent<CannonFireController> ();
+		return fireController.GetBullet ();
 	}
 
 	public void TouchDetected() {
