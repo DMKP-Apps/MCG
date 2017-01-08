@@ -53,7 +53,7 @@ public class CanvasController : MonoBehaviour {
 			offset = new Vector2 (70f, 70f);
 		}
 		else {
-			Panel.transform.localScale = new Vector3 (2f, 2f, 2f);
+			Gauge.transform.localScale = new Vector3 (2f, 2f, 2f);
 		}
 
 		Gauge.transform.localPosition = new Vector3 ((size.x / 2f) - (offset.x  * multiplier), (size.y / 2f * -1) + (offset.y * multiplier) , 0f);

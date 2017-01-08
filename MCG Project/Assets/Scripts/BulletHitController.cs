@@ -81,7 +81,7 @@ public class BulletHitController : MonoBehaviour {
 				//GameController.WaterHazard (contact.otherCollider.gameObject, contact.point);
 				//this.gameObject.SetActive (false);
 				if (dirtSplash != null) {
-					var ps = (GameObject)Instantiate (dirtSplash, new Vector3 (contact.point.x, contact.point.y, contact.point.z), Quaternion.Euler (-90, 0, 0));
+					var ps = (GameObject)Instantiate (dirtSplash, new Vector3 (contact.point.x, contact.point.y, contact.point.z), Quaternion.Euler (0, 0, 0));
 					Destroy (ps, 1f);
 				}
 
