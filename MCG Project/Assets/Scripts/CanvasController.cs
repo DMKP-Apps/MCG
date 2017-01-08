@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class CanvasController : MonoBehaviour {
 
@@ -9,6 +10,7 @@ public class CanvasController : MonoBehaviour {
 	GameObject Panel;
 	GameObject PanelWind;
 	GameObject BulletSelect;
+
 
 	GameObject ControlsContainer;
 
@@ -30,6 +32,9 @@ public class CanvasController : MonoBehaviour {
 		//	multiplier = Gauge.transform.localScale.x / 3f + 1f;
 		//	Gauge.transform.localScale = new Vector3(3f, 3f, 3f);
 		//}
+
+
+
 		if (size != currentSize) {
 			size = currentSize;
 			ScaleGuage (rect.rect);
@@ -47,13 +52,18 @@ public class CanvasController : MonoBehaviour {
 	{
 		var multiplier = 1f;
 		Vector2 offset = new Vector2 (50f, 44f);
-		if (rect.width >= 1280 || rect.height >= 1280) {
+		if (rect.width >= 1440 || rect.height >= 1440) {
+			multiplier = 2f / 5f + 1f;
+			Gauge.transform.localScale = new Vector3(5f, 5f, 5f);
+			offset = new Vector2 (90f, 90f);
+		}
+		else if (rect.width >= 1280 || rect.height >= 1280) {
 			multiplier = 2f / 4f + 1f;
 			Gauge.transform.localScale = new Vector3(4f, 4f, 4f);
 			offset = new Vector2 (70f, 70f);
 		}
 		else {
-			Panel.transform.localScale = new Vector3 (2f, 2f, 2f);
+			Gauge.transform.localScale = new Vector3 (2f, 2f, 2f);
 		}
 
 		Gauge.transform.localPosition = new Vector3 ((size.x / 2f) - (offset.x  * multiplier), (size.y / 2f * -1) + (offset.y * multiplier) , 0f);
@@ -75,13 +85,20 @@ public class CanvasController : MonoBehaviour {
 
 	private void ScaleBulletSelect(Rect rect)
 	{
+		Vector2 offset = new Vector2 (65f, 45f);
 		var multiplier = 1f;
-		if (rect.width >= 1280 || rect.height >= 1280) {
+		if (rect.width >= 1440 || rect.height >= 1440) {
+			multiplier = 1f / 3f + 1f;
+			BulletSelect.transform.localScale = new Vector3(3f, 3f, 3f);
+			offset = new Vector2 (80f, 70f);
+		}
+		else if (rect.width >= 1280 || rect.height >= 1280) {
 			multiplier = 1 / 2f + 1f;
 			BulletSelect.transform.localScale = new Vector3 (2f, 2f, 2f);
-		} else {
+		} 
+		else {
 			BulletSelect.transform.localScale = new Vector3 (1f, 1f, 1f);
 		}
-		BulletSelect.transform.localPosition = new Vector3 ((size.x / 2f * -1) + (65 * multiplier), (size.y / 2f * -1) + (45 * multiplier), 0f);
+		BulletSelect.transform.localPosition = new Vector3 ((size.x / 2f * -1) + (offset.x * multiplier), (size.y / 2f * -1) + (offset.y * multiplier), 0f);
 	}
 }
