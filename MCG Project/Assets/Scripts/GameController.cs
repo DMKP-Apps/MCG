@@ -226,7 +226,7 @@ public class GameController : MonoBehaviour {
 		isHazardPoint = false;
 
 		CurrentHole++;
-		if (CurrentHole + 1 > holePrefabs.Count) {
+		if (CurrentHole > holePrefabs.Count) {
 			CurrentHole = 1;
 		}
 
