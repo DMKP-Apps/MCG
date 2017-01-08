@@ -48,14 +48,14 @@ public class CameraFollow : MonoBehaviour {
 			startTime = System.DateTime.Now;
 		}
 		if (System.DateTime.Now.Subtract (startTime).TotalMilliseconds < 250) {
-			//PositionOffset.y += 1f * Time.deltaTime;
+			PositionOffset.y += 1f * Time.deltaTime;
 			speed = 5f;
 		}
 		if (System.DateTime.Now.Subtract (startTime).TotalMilliseconds < 500) {
 			speed = 15f * powerRate;
-			//PositionOffset.y += 2f * Time.deltaTime;
+			PositionOffset.y += 2f * Time.deltaTime;
 		} else if (System.DateTime.Now.Subtract (startTime).TotalMilliseconds < 750) {
-			//PositionOffset.y += 2f * Time.deltaTime;
+			PositionOffset.y += 2f * Time.deltaTime;
 			speed = 30f * powerRate;
 		} else if (System.DateTime.Now.Subtract (startTime).TotalMilliseconds < 1000) {
 
