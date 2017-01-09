@@ -1,0 +1,44 @@
+﻿<Properties StartupItem="Assembly-CSharp.csproj">
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="Unity.Instance.Unity Editor" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/CannonFireController.cs">
+    <Files>
+      <File FileName="Assets/Scripts/CanvasController.cs" Line="79" Column="23" />
+      <File FileName="Assets/Scripts/GameController.cs" Line="42" Column="40" />
+      <File FileName="Assets/Scripts/CameraFollow.cs" Line="29" Column="12" />
+      <File FileName="Assets/Scripts/CannonFireController.cs" Line="78" Column="3" />
+      <File FileName="Assets/Scripts/UITextController.cs" Line="54" Column="3" />
+      <File FileName="Assets/Controls/PowerMeter/Scripts/GuageController.cs" Line="1" Column="1" />
+      <File FileName="Assets/Controls/PowerMeter/Scripts/PowerControl.cs" Line="80" Column="6" />
+    </Files>
+    <Pads>
+      <Pad Id="ProjectPad">
+        <State name="__root__">
+          <Node name="MCG Project" expanded="True">
+            <Node name="Assembly-CSharp" expanded="True">
+              <Node name="Controls" expanded="True">
+                <Node name="PowerMeter" expanded="True">
+                  <Node name="Scripts" expanded="True" />
+                </Node>
+              </Node>
+              <Node name="Scripts" expanded="True">
+                <Node name="CannonFireController.cs" selected="True" />
+              </Node>
+            </Node>
+            <Node name="Assembly-CSharp-Editor" expanded="True" />
+            <Node name="Assembly-CSharp-Editor-firstpass" expanded="True" />
+            <Node name="Assembly-CSharp-firstpass" expanded="True" />
+          </Node>
+        </State>
+      </Pad>
+      <Pad Id="MonoDevelop.NUnit.TestPad">
+        <State name="__root__">
+          <Node name="MCG Project" expanded="True" selected="True" />
+        </State>
+      </Pad>
+    </Pads>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore />
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+</Properties>

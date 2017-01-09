@@ -33,6 +33,17 @@ public class GameController : MonoBehaviour {
 		cameraController = camera;
 	}
 
+	public void Log(string output) {
+
+		textController.Log (output);
+
+	}
+
+	public void Log(string output, params object[] args) {
+
+		textController.Log(output, args);
+
+	}
 
 	void Start() {
 	
