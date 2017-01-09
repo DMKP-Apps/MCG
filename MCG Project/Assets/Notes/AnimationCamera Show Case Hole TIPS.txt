@@ -1,0 +1,36 @@
+### NOTES on Animation Camera
+
+THE “Tee” designates the direction / rotation the first cannon shot is facing.
+
+For example, Y “rotation" of 180
+
+The Final Path Point LOCATION of the camera should follow this formula:
+
+The location of the TEE
+
+(i.e. -42, 0, 185) 
+
+Plus the OFFSET of the “Cannon > Cannon > Camera Position”
+
+(i.e. 0, 8.5, -11)
+
+important ---> PLUS 0.1 Y
+
+Resulting in 
+
+(i.e. -42, 8.6, absolute value 196)
+
+for some stepping reason, setting Y to 8.5 gives one last jitter and setting to 8.6 is completely seamless
+
+
+The Final Path Point ROTATION of the camera should follow this formula:
+
+The Shot camera is calculated by looking at the “Cannon > Cannon > Firing Position” so the rotation of the angle is calculated at runtime...Run the preview in Unity, a Cannon(Clone) > Main Camera rotation is created to read the values (i.e. X 22.825 -  Y -1.235  -  Z 0)
+
+Set the rotation to X of the Cloned Camera, and Y is the rotation of the TEE minus the rotation of the cloned camera.
+
+For example 180 rotated tee minus 1.235 runtime camera = Animation camera rotation Y of 178.765
+
+Set Z to .00001
+
+(i.e. Angle X 22.825, Y 178.765, Z 0.00001)
