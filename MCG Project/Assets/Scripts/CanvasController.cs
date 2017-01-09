@@ -10,6 +10,7 @@ public class CanvasController : MonoBehaviour {
 	GameObject Panel;
 	GameObject PanelWind;
 	GameObject BulletSelect;
+	GameObject OutputPanel;
 
 
 	GameObject ControlsContainer;
@@ -21,6 +22,7 @@ public class CanvasController : MonoBehaviour {
 		Panel = transform.FindChild("Controls").FindChild ("Panel").gameObject;
 		PanelWind = transform.FindChild("Controls").FindChild ("PanelWind").gameObject;
 		BulletSelect = transform.FindChild("Controls").FindChild ("BulletSelect").gameObject;
+		OutputPanel = transform.FindChild("Controls").FindChild ("Output").gameObject;
 	}
 	
 	// Update is called once per frame
@@ -40,6 +42,7 @@ public class CanvasController : MonoBehaviour {
 			ScaleGuage (rect.rect);
 			ScalePanel (rect.rect);
 			ScaleBulletSelect (rect.rect);
+			ScaleOutput (rect.rect);
 			//Gauge.transform.localPosition = new Vector3 ((size.x / 2f) - (50f  * multiplier), (size.y / 2f * -1) + (44f * multiplier) , 0f);
 			//Panel.transform.localPosition = new Vector3 ((size.x / 2f * -1) + 98f, (size.y / 2f) - 76f, 0f);
 			//PanelWind.transform.localPosition = new Vector3 (110f, (size.y / 2f * -1) + 30f, 0f);
@@ -69,6 +72,13 @@ public class CanvasController : MonoBehaviour {
 		Gauge.transform.localPosition = new Vector3 ((size.x / 2f) - (offset.x  * multiplier), (size.y / 2f * -1) + (offset.y * multiplier) , 0f);
 
 
+	}
+
+	private void ScaleOutput(Rect rect)
+	{
+		var multiplier = 1f;
+
+		OutputPanel.transform.localPosition = new Vector3 (0f, (size.y / 2f) - (78f * multiplier), 0f);
 	}
 
 	private void ScalePanel(Rect rect)

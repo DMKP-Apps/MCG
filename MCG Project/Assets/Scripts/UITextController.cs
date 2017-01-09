@@ -10,6 +10,7 @@ public class UITextController : MonoBehaviour {
 	public Text Stroke;
 	public Text Player;
 	public Text HoleCompleteScore;
+	public Text OutputLog;
 
 	public GameObject alertWaterHazard;
 	public GameObject alertOutOfBounds;
@@ -37,6 +38,18 @@ public class UITextController : MonoBehaviour {
 	public void SetPlayer(int value, int score) {
 
 		Player.text = string.Format ("Player {0} ({1})", value, score);
+
+	}
+
+	public void Log(string output) {
+
+		OutputLog.text = output;
+
+	}
+
+	public void Log(string output, params object[] args) {
+
+		OutputLog.text = string.Format(output, args);
 
 	}
 
