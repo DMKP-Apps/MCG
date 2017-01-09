@@ -4,9 +4,9 @@ using UnityEngine;
 
 public class PowerControl : MonoBehaviour {
 	
-	//public CannonController CannonController;
-	void Start(){
-		//CannonController = GameObject.Find("MeatCannon").GetComponent<CannonController>();
+	private GameController GameController;
+	void Start() {
+		GameController = GameObject.Find ("GameController").GetComponent<GameController> ();
 	}
 
     enum MeterState
@@ -75,6 +75,8 @@ public class PowerControl : MonoBehaviour {
         if (PowerRating < 0) {
             PowerRating *= -1;
         }
+
+		GameController.Log ("Power Rate: {0}", PowerRating);
     }
 
 	public void ResetMeter()
