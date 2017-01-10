@@ -2,18 +2,83 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using System.Linq;
 
 public class GameController : MonoBehaviour {
 	public GameObject playerPrefab;
 	public List<GameObject> holePrefabs = new List<GameObject> ();
 	public int CurrentHole = 1;
 	public List<GameObject> bulletPrefabs = new List<GameObject> ();
-	public int CurrentBullet = 1;
+	//public int CurrentBullet = 1;
 
-	private bool isHoleComplete = false;
-	private bool isHazardPoint = false;
+	//private bool isHoleComplete = false;
+	//private bool isHazardPoint = false;
 
-	private GameObject player;
+	//var playerController = player.GetComponent<CannonPlayerState> ();
+	//playerController.isHoleComplete = false;
+	//playerController.isHarzard = false;
+
+	private List<GameObject> players;
+	private GameObject player 
+	{ 
+		get 
+		{ 
+			if (players == null || players.Count < 1) {
+				return null;
+			} else {
+				return players [currentPlayer];
+			}
+			 
+		} 
+	}
+	private bool isHoleComplete 
+	{ 
+		get 
+		{ 
+			if (player == null) {
+				return false;
+			} else {
+				var playerController = player.GetComponent<CannonPlayerState> ();
+				return playerController.isHoleComplete;
+			}
+
+		} 
+	}
+
+	private bool isHazardPoint 
+	{ 
+		get 
+		{ 
+			if (player == null) {
+				return false;
+			} else {
+				var playerController = player.GetComponent<CannonPlayerState> ();
+				return playerController.isHarzard;
+			}
+
+		} 
+	}
+
+	public int CurrentBullet 
+	{ 
+		get 
+		{ 
+			if (player == null) {
+				return 1;
+			} else {
+				var playerController = player.GetComponent<CannonPlayerState> ();
+				return playerController.currentBullet;
+			}
+
+		} 
+		set { 
+			var playerController = player.GetComponent<CannonPlayerState> ();
+			playerController.currentBullet = value;
+		}
+	}
+
+	public int NumberOfPlayers = 1;
+	private int currentPlayer = 0;
 	private GameObject hole;
 
 	public UITextController textController;
@@ -55,7 +120,7 @@ public class GameController : MonoBehaviour {
 		scoring.Add (2, "Double Bogey");
 		scoring.Add (3, "Triple Bogey");
 
-		if (holePrefabs.Count > CurrentHole - 1) {
+		/*if (holePrefabs.Count > CurrentHole - 1) {
 		
 			hole = (GameObject)Instantiate (holePrefabs [CurrentHole - 1]);
 
@@ -75,8 +140,10 @@ public class GameController : MonoBehaviour {
 			var watchActivate = HoleCompleteAlert.GetComponent<ActivateWithGameObject> ();
 			watchActivate.WatchObject = holeController.EndCamera;
 			
-		}
+		}*/
 	
+		BeginHole ();
+
 	}
 
 	public bool IsShooting()
@@ -118,30 +185,73 @@ public class GameController : MonoBehaviour {
 		ControlsContainer.SetActive (setActive);
 	}
 
+
+
+	private void MoveToNextPlayer() {
+		if (currentPlayer > -1) {
+			player.SetActive (false);
+		}
+		currentPlayer++;
+		if (currentPlayer >= players.Count) {
+			currentPlayer = 0;
+		}
+		var holeController = hole.GetComponent<HoleController> ();
+		var playerList = players.Select (p => new { 
+			PlayerState = p.GetComponent<CannonPlayerState> (),
+			Position = p.transform.position,
+			DistanceFromHole = Vector3.Distance(p.transform.position, holeController.hole.position)
+		}).ToList();
+
+		if (!playerList.Any (p => p.PlayerState.Stroke < 2) && playerList.Any (p => !p.PlayerState.isHoleComplete)) {
+			// every player has shot once... determine the next shooter based on distance from tee.
+			var tmpplayer = playerList.Where (p => !p.PlayerState.isHoleComplete).OrderByDescending (p => p.DistanceFromHole)
+				.FirstOrDefault ();
+			if (tmpplayer != null) {
+				currentPlayer = playerList.FindIndex (p => p.PlayerState.playerNumber == tmpplayer.PlayerState.playerNumber);
+			}
+		}
+
+		player.SetActive (true);
+
+		var playerController = player.GetComponent<CannonPlayerState> ();
+		playerController.isHoleComplete = false;
+		playerController.isHarzard = false;
+
+		textController.SetStroke (playerController.Stroke);
+		textController.SetPlayer (playerController.playerNumber, playerController.TotalScore);
+
+	}
+
 	private void MoveToPosition(Vector3 position) {
 	
 		player.transform.position = position; 
-
 		var holeController = hole.GetComponent<HoleController> ();
+		var playerCannon = player.GetComponent<CannonFireController> ();
+
 		player.transform.forward = holeController.hole.position;
 		player.transform.LookAt (holeController.hole.position);
-
-		var playerCannon = player.GetComponent<CannonFireController> ();
+		//player.transform.localRotation = Quaternion.Euler(new Vector3(0f,player.transform.localRotation.y, 0f));
+		//player.transform.rotation = Quaternion.Euler(new Vector3(0f,player.transform.rotation.y, 0f));
 		playerCannon.AimCannon (holeController.hole.position);
-	
+		
+
 	}
 
 	public void StrokeComplete(Vector3 lastPosition)
 	{
 		if (isHoleComplete || isHazardPoint) {
+			MoveToNextPlayer ();
 			return;
 		}
+
 		// move player into the next position
 		MoveToPosition(lastPosition);
 
 		var playerController = player.GetComponent<CannonPlayerState> ();
 		playerController.Stroke++;
-		textController.SetStroke (playerController.Stroke);
+		//textController.SetStroke (playerController.Stroke);
+
+		MoveToNextPlayer ();
 
 	}
 
@@ -152,8 +262,12 @@ public class GameController : MonoBehaviour {
 
 	public void WaterHazard(GameObject water, Vector3 contactPoint)
 	{
+		var playerController = player.GetComponent<CannonPlayerState> ();
+		playerController.Stroke += 2;
+		playerController.isHarzard = true;
+
 		lastContactPoint = contactPoint;
-		isHazardPoint = true;
+		//isHazardPoint = true;
 		// get the closet respawn point for the current water hazard
 		var respawnPosition = water.transform.FindChild("Respawn");
 		if (respawnPosition != null) {
@@ -162,22 +276,23 @@ public class GameController : MonoBehaviour {
 			MoveToPosition(respawnPosition.transform.position);
 		}
 
-		var playerController = player.GetComponent<CannonPlayerState> ();
-		playerController.Stroke += 2;
-		textController.SetStroke (playerController.Stroke);
-
 		textController.ShowWaterHazard ();
+
 
 	}
 
 	public void OutOfBounds(Vector3 contactPoint)
 	{
-		lastContactPoint = contactPoint;
-		isHazardPoint = true;
-
 		var playerController = player.GetComponent<CannonPlayerState> ();
 		playerController.Stroke += 2;
-		textController.SetStroke (playerController.Stroke);
+		playerController.isHarzard = true;
+		
+		lastContactPoint = contactPoint;
+		//isHazardPoint = true;
+
+		//var playerController = player.GetComponent<CannonPlayerState> ();
+		//playerController.Stroke += 2;
+		//textController.SetStroke (playerController.Stroke);
 
 		textController.ShowOutOfBounds ();
 
@@ -189,18 +304,21 @@ public class GameController : MonoBehaviour {
 		if (isHoleComplete) {
 			return;
 		}
-		isHoleComplete = true;
-		isHazardPoint = false;
-		var holeController = hole.GetComponent<HoleController> ();
-		holeController.HoleCompleted ();
-
+		//isHoleComplete = true;
+		//isHazardPoint = false;
 		var playerController = player.GetComponent<CannonPlayerState> ();
+		playerController.isHoleComplete = true;
+
+		var holeController = hole.GetComponent<HoleController> ();
+
+
+		//var playerController = player.GetComponent<CannonPlayerState> ();
 
 		var score = playerController.Stroke;
 		var par = holeController.Par;
 
-		playerController.Stroke = 1;
-		textController.SetStroke (playerController.Stroke);
+		//playerController.Stroke = 1;
+		//textController.SetStroke (playerController.Stroke);
 
 		var scoreValue = string.Empty;
 		if (score == par) {
@@ -227,19 +345,67 @@ public class GameController : MonoBehaviour {
 
 		playerController.TotalScore += score;
 
-		textController.SetHoleCompleteScore (1, scoreValue);
-		textController.SetPlayer (1, playerController.TotalScore);
+		holeController.allPlayersComplete = !players.Select (p => p.GetComponent<CannonPlayerState> ()).Any (p => !p.isHoleComplete);
+		holeController.HoleCompleted ();
+
+		textController.SetHoleCompleteScore (playerController.playerNumber, scoreValue);
+		//textController.SetPlayer (1, playerController.TotalScore);
 	}
 
 	public void NextHole()
 	{
-		isHoleComplete = false;
-		isHazardPoint = false;
+		var holeController = hole.GetComponent<HoleController> ();
+
+		//var allPlayersComplete = !players.Select (p => p.GetComponent<CannonPlayerState> ()).Any (p => !p.isHoleComplete);
+		if (!holeController.allPlayersComplete) {
+			return;
+		}
 
 		CurrentHole++;
 		if (CurrentHole > holePrefabs.Count) {
 			CurrentHole = 1;
 		}
+
+
+
+		//player.transform.position = holeController.tee.position; 
+		//player.transform.rotation = holeController.tee.rotation;
+
+		// move player into the next position
+		//MoveToPosition(holeController.tee.position);
+
+
+
+		/*var playerController = player.GetComponent<CannonPlayerState> ();
+		var totalScore = playerController.TotalScore;
+
+		Destroy (player);
+
+		player = (GameObject)Instantiate (playerPrefab, holeController.tee.position, holeController.tee.rotation);
+
+	 	playerController = player.GetComponent<CannonPlayerState> ();
+		playerController.Stroke = 1;
+		playerController.TotalScore = totalScore;
+		textController.SetStroke (playerController.Stroke);
+		textController.SetPar (holeController.Par);
+		textController.SetPlayer (1, totalScore);
+		textController.SetHole (CurrentHole);
+		*/
+		BeginHole ();
+
+	}
+
+	class playerState {
+		public int TotalScore;
+		public int StrokeCount;
+		public int PlayerNumber;
+		public int CurrentBullet;
+	}
+
+	private void BeginHole() {
+		
+		//isHoleComplete = false;
+		//isHazardPoint = false;
 
 		// destroy the previous hole if exists
 		if(hole != null) {
@@ -248,20 +414,81 @@ public class GameController : MonoBehaviour {
 
 		hole = (GameObject)Instantiate (holePrefabs [CurrentHole - 1]);
 		var holeController = hole.GetComponent<HoleController> ();
-
+		holeController.allPlayersComplete = false;
 		var watchActivate = HoleCompleteAlert.GetComponent<ActivateWithGameObject> ();
 		watchActivate.WatchObject = holeController.EndCamera;
 
 		textController.SetPar (holeController.Par);
-		textController.SetPlayer (1);
 		textController.SetHole (CurrentHole);
 
-		//player.transform.position = holeController.tee.position; 
-		//player.transform.rotation = holeController.tee.rotation;
+		if (players == null) {
+			players = new List<GameObject> ();
+		}
+		List<playerState> playerScores = new List<playerState> ();
+		if (players.Count > 0) {
+			players.ForEach (p => { 
 
-		// move player into the next position
-		MoveToPosition(holeController.tee.position);
+				var playerController = p.GetComponent<CannonPlayerState> ();
+				playerState state = new playerState() {
+					TotalScore = playerController.TotalScore,
+					StrokeCount = playerController.Stroke,
+					PlayerNumber = playerController.playerNumber,
+					CurrentBullet = playerController.currentBullet
+				};
+				playerScores.Add(state);
+				Destroy (p); 
+			});
+		}
+		players = new List<GameObject> ();
 
+		if (NumberOfPlayers < 1) {
+			NumberOfPlayers = 1;
+		}
+		if (NumberOfPlayers > 4) {
+			NumberOfPlayers = 4;
+		}
+
+		currentPlayer = 0;
+		if (playerScores.Count > 0) {
+
+			playerScores.OrderBy (x => x.StrokeCount).ToList ().ForEach (p => {
+				var player = (GameObject)Instantiate (playerPrefab, holeController.tee.position, holeController.tee.rotation);
+
+				var pController = player.GetComponent<CannonPlayerState> ();
+				pController.Stroke = 1;
+				pController.TotalScore = p.TotalScore;
+				pController.playerNumber = p.PlayerNumber;
+				pController.isHoleComplete = false;
+				pController.isHarzard = false;
+				pController.currentBullet = p.CurrentBullet;
+
+				// set the current object to in-active
+				player.SetActive(false);
+				// add the game object to the list
+				players.Add(player);
+
+			});
+
+		} else {
+			// create the player and de-activate them within the scene
+			for(int i = 0; i < NumberOfPlayers; i++) {
+				var player = (GameObject)Instantiate (playerPrefab, holeController.tee.position, holeController.tee.rotation);
+
+				var pController = player.GetComponent<CannonPlayerState> ();
+				pController.Stroke = 1;
+				pController.TotalScore = 0;
+				pController.playerNumber = i + 1;
+				pController.isHoleComplete = false;
+				pController.isHarzard = false;
+				// set the current object to in-active
+				player.SetActive(false);
+				// add the game object to the list
+				players.Add(player);
+			}
+		}
+		//textController.SetPlayer (1);
+		currentPlayer = -1;
+		MoveToNextPlayer ();
 	}
 
 	public GameObject GetCurrentCannonPlayer()
@@ -272,8 +499,8 @@ public class GameController : MonoBehaviour {
 
 	public GameObject GetCurrentBullet()
 	{
-		isHazardPoint = false;
-		isHoleComplete = false;
+		//isHazardPoint = false;
+		//isHoleComplete = false;
 		if (bulletPrefabs != null && bulletPrefabs.Count >= CurrentBullet) {
 			var bullet = bulletPrefabs [CurrentBullet - 1];
 
@@ -282,6 +509,27 @@ public class GameController : MonoBehaviour {
 			return null;
 
 
+	}
+
+	public void OnAddPlayer() {
+		NumberOfPlayers++;
+		if (players != null) {
+			players.ForEach (p => { 
+				Destroy (p); 
+			});
+		}
+		players = new List<GameObject> ();
+		BeginHole ();
+	}
+	public void OnMinusPlayer() {
+		NumberOfPlayers--;
+		if (players != null) {
+			players.ForEach (p => { 
+				Destroy (p); 
+			});
+		}
+		players = new List<GameObject> ();
+		BeginHole ();
 	}
 
 }
