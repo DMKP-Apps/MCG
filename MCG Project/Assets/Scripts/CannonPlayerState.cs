@@ -8,7 +8,10 @@ public class CannonPlayerState : MonoBehaviour {
 
 	public int Stroke = 1;
 	public int TotalScore = 0;
-
+	public int playerNumber = 0;
+	public bool isHoleComplete = false;
+	public bool isHarzard = false;
+	public int currentBullet = 1;
 	private GameObject CannonBarrow;
 
 	void Start()
