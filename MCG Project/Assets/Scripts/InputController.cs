@@ -17,13 +17,19 @@ public class InputController : MonoBehaviour {
 	public float rotationSpeed = 10;
 	public float dampingTime = 0.2f;
 
-	private Vector3 m_TargetAngles;
-	private Vector3 m_FollowAngles;
-	private Vector3 m_FollowVelocity;
+	private Vector3 m_TargetAngles = new Vector3();
+	private Vector3 m_FollowAngles = new Vector3();
+	private Vector3 m_FollowVelocity = new Vector3();
 	private Quaternion m_OriginalRotation;
 
 	public Vector2 InputPosition = new Vector3(0, 0);
 	private string previousPosition = string.Empty;
+
+	public void Reset() {
+		m_TargetAngles = new Vector3();
+		m_FollowAngles = new Vector3();
+		m_FollowVelocity = new Vector3();
+	}
 
 	// Update is called once per frame
 	void Update () {
@@ -38,8 +44,21 @@ public class InputController : MonoBehaviour {
 
 				//var ray = Camera.main.ScreenPointToRay (touch.position);
 				//Debug.Log(string.Format("x: {0}, y: {1}", ray.direction.x, ray.direction.y));
-				//var hits = Physics.RaycastAll(ray);
+				//var hits = Physics2D.RaycastAll(new Vector2(ray.origin.x, ray.origin.y),new Vector2(ray.direction.x, ray.direction.y));
 				//Debug.Log(string.Format("hits: {0}", hits.Length));
+				//hits.ToList().Where(hit => hit.collider != null).ToList()
+				//	.ForEach(hit => {
+				//		Debug.Log(hit.collider.gameObject.name);
+
+				//	});
+
+				/*Vector2 v2 = new Vector2(Camera.main.ScreenToWorldPoint(touch.position).x, Camera.main.ScreenToWorldPoint(touch.position).y);
+				Collider2D c2d = Physics2D.OverlapPoint(v2);
+
+				if(c2d != null)
+				{
+					Debug.Log(c2d.gameObject.name);
+				}*/
 
 				//hits.ToList().Where(hit => hit.collider != null).ToList()
 				//	.ForEach(hit => {
@@ -58,7 +77,7 @@ public class InputController : MonoBehaviour {
 								ref m_FollowVelocity, rotationRange, rotationSpeed,
 								dampingTime,touch.deltaPosition.x, touch.deltaPosition.y);
 
-
+					//m_OriginalRotation = transform.localRotation;
 
 					var currentRotation = string.Format("{0},{1},{2}", 
 						transform.localRotation.x.ToString("0000.0000"),
@@ -76,10 +95,7 @@ public class InputController : MonoBehaviour {
 					}
 
 				}
-				else 
-				{
-					
-				}
+
 
 
 						//}

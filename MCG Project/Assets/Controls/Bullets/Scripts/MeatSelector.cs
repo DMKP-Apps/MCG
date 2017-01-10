@@ -17,6 +17,15 @@ public class MeatSelector : MonoBehaviour {
 		GameController = GameObject.Find ("GameController").GetComponent<GameController> ();
 	}
 
+	public void LateUpdate()
+	{
+		if(GameController.CurrentBullet != currentIndex + 1) {
+			currentIndex = GameController.CurrentBullet - 1;
+			Image.sprite = Images [currentIndex];
+		}
+
+	}
+
 	public void OnNextMeatButton() {
 
 		currentIndex++;
