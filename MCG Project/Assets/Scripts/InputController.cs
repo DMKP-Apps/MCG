@@ -77,9 +77,11 @@ public class InputController : MonoBehaviour {
 								ref m_FollowVelocity, rotationRange, rotationSpeed,
 								dampingTime,touch.deltaPosition.x, touch.deltaPosition.y);
 
-					//m_OriginalRotation = transform.localRotation;
+                    NetworkClientManager.SendGameObjectData(transform.gameObject, GameController.GetHoleId());
 
-					var currentRotation = string.Format("{0},{1},{2}", 
+                    //m_OriginalRotation = transform.localRotation;
+
+                    var currentRotation = string.Format("{0},{1},{2}", 
 						transform.localRotation.x.ToString("0000.0000"),
 						transform.localRotation.y.ToString("0000.0000"),
 						transform.localRotation.z.ToString("0000.0000"));

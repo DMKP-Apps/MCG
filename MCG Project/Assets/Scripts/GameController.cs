@@ -107,7 +107,7 @@ public class GameController : MonoBehaviour {
 	public void Log(string output, params object[] args) {
 
 		textController.Log(output, args);
-
+        
 	}
 
 	void Start() {
@@ -120,7 +120,7 @@ public class GameController : MonoBehaviour {
 		scoring.Add (2, "Double Bogey");
 		scoring.Add (3, "Triple Bogey");
 
-		/*if (holePrefabs.Count > CurrentHole - 1) {
+        /*if (holePrefabs.Count > CurrentHole - 1) {
 		
 			hole = (GameObject)Instantiate (holePrefabs [CurrentHole - 1]);
 
@@ -141,8 +141,20 @@ public class GameController : MonoBehaviour {
 			watchActivate.WatchObject = holeController.EndCamera;
 			
 		}*/
-	
-		BeginHole ();
+
+        switch (GameSettings.playerMode) {
+            case PlayerMode.Single:
+                NumberOfPlayers = 1;
+                break;
+            case PlayerMode.LocalMultiplayer:
+                NumberOfPlayers = GameSettings.LocalMultiplayerCount < 2 ? 2 : GameSettings.LocalMultiplayerCount;
+                break;
+            case PlayerMode.ServerMultiplayer:
+                NumberOfPlayers = 1;
+                break;
+        }
+
+        BeginHole ();
 
 	}
 
@@ -152,7 +164,12 @@ public class GameController : MonoBehaviour {
 		return fireController.GetBullet ();
 	}
 
-	public void TouchDetected() {
+    public string GetHoleId()
+    {
+        return hole == null ? null : hole.gameObject.name;
+    }
+
+    public void TouchDetected() {
 
 		if(hole != null) {
 			var holeController = hole.GetComponent<HoleController> ();
@@ -233,9 +250,11 @@ public class GameController : MonoBehaviour {
 		//player.transform.localRotation = Quaternion.Euler(new Vector3(0f,player.transform.localRotation.y, 0f));
 		//player.transform.rotation = Quaternion.Euler(new Vector3(0f,player.transform.rotation.y, 0f));
 		playerCannon.AimCannon (holeController.hole.position);
-		
 
-	}
+        NetworkClientManager.SendGameObjectData(player, GetHoleId());
+
+
+    }
 
 	public void StrokeComplete(Vector3 lastPosition)
 	{
@@ -453,8 +472,9 @@ public class GameController : MonoBehaviour {
 
 			playerScores.OrderBy (x => x.StrokeCount).ToList ().ForEach (p => {
 				var player = (GameObject)Instantiate (playerPrefab, holeController.tee.position, holeController.tee.rotation);
+                
 
-				var pController = player.GetComponent<CannonPlayerState> ();
+                var pController = player.GetComponent<CannonPlayerState> ();
 				pController.Stroke = 1;
 				pController.TotalScore = p.TotalScore;
 				pController.playerNumber = p.PlayerNumber;
@@ -464,8 +484,10 @@ public class GameController : MonoBehaviour {
 
 				// set the current object to in-active
 				player.SetActive(false);
-				// add the game object to the list
-				players.Add(player);
+                // add the game object to the list
+                player.name = string.Format("CannonPlayer{0}", p.PlayerNumber);
+                NetworkClientManager.SendGameObjectData(player, GetHoleId());
+                players.Add(player);
 
 			});
 
@@ -473,8 +495,8 @@ public class GameController : MonoBehaviour {
 			// create the player and de-activate them within the scene
 			for(int i = 0; i < NumberOfPlayers; i++) {
 				var player = (GameObject)Instantiate (playerPrefab, holeController.tee.position, holeController.tee.rotation);
-
-				var pController = player.GetComponent<CannonPlayerState> ();
+                
+                var pController = player.GetComponent<CannonPlayerState> ();
 				pController.Stroke = 1;
 				pController.TotalScore = 0;
 				pController.playerNumber = i + 1;
@@ -482,8 +504,10 @@ public class GameController : MonoBehaviour {
 				pController.isHarzard = false;
 				// set the current object to in-active
 				player.SetActive(false);
-				// add the game object to the list
-				players.Add(player);
+                // add the game object to the list
+                player.name = string.Format("CannonPlayer{0}", i + 1);
+                NetworkClientManager.SendGameObjectData(player, GetHoleId());
+                players.Add(player);
 			}
 		}
 		//textController.SetPlayer (1);
