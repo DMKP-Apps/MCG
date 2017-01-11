@@ -9,11 +9,14 @@ public class HoleController : MonoBehaviour {
 	private Transform teePosition = null;
 	private Transform holePosition = null;
 
+	public bool allPlayersComplete = false;	
 	public GameObject StartCamera;
 	public GameObject EndCamera;
 	public CameraPathAnimator EndCameraAnimator;
-
 	public GameController GameController;
+
+	public int showPlayerHoleCompleteFor = 5000; 
+	private System.DateTime startTime = System.DateTime.MaxValue;
 
 	void Start() {
 		GameController = GameObject.Find ("GameController").GetComponent<GameController> ();
@@ -38,6 +41,21 @@ public class HoleController : MonoBehaviour {
 		EndCamera.SetActive (true);
 		EndCameraAnimator.startPercent = 0;
 		EndCameraAnimator.Play ();
+		if (!allPlayersComplete) {
+			startTime = System.DateTime.Now;
+		} else {
+			startTime = System.DateTime.MaxValue;
+		}
+
+	}
+
+	public void Update() {
+		if (startTime != System.DateTime.MaxValue && EndCamera.activeInHierarchy) {
+			if (System.DateTime.Now.Subtract (startTime).TotalMilliseconds > showPlayerHoleCompleteFor) {
+				startTime = System.DateTime.MaxValue;
+				DeactivateEndCamera ();
+			}
+		}
 	}
 
 	public Transform hole {

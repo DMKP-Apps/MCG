@@ -60,6 +60,7 @@
      <None Include="Assets\Packages\Animated Flags\Animated Flags.txt" />
      <None Include="Assets\Standard Assets\ParticleSystems\Shaders\PriorityParticleAlpha.shader" />
      <None Include="Assets\Standard Assets\ParticleSystems\ParticleSystemsGuidelines.txt" />
+     <None Include="Assets\Notes\AnimationCamera Show Case Hole TIPS.txt" />
      <None Include="Assets\Standard Assets\CrossPlatformInput\CrossPlatformInputGuidelines.txt" />
      <None Include="Assets\Standard Assets\ParticleSystems\Shaders\PriorityParticleAddSoft.shader" />
      <None Include="Assets\Packages\Animated Flags\Shaders\Mobile-Alpha-BumpSpec-1DirectionalLight-NoCull.shader" />

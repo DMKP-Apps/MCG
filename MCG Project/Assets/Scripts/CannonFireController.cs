@@ -42,11 +42,12 @@ public class CannonFireController : MonoBehaviour {
 
 	public void AimCannon(Vector3 position) {
 	
-		CannonBulletParent.transform.forward = position;
-		CannonBulletParent.transform.LookAt (position);
+		//CannonBulletParent.transform.forward = position;
+		CannonBulletParent.transform.localRotation = Quaternion.Euler (new Vector3 (0, 0, 0));
+		CannonBulletParent.GetComponent<InputController> ().Reset ();
+		//CannonBulletParent.transform.LookAt (position);
 	
 	}
-
 
 	public void Fire(GameObject bulletPrefab, float powerRate) {
 		
@@ -60,14 +61,12 @@ public class CannonFireController : MonoBehaviour {
 		//bullet.GetComponent<Rigidbody>().rotation = bulletPrefab.transform.localRotation;
 		var burst = (GameObject)Instantiate(
 			CannonBurstPrefab, BulletPosition.transform.position, BulletPosition.transform.rotation);//new Vector3(transform.position.x, transform.position.y, transform.position.z + 10),
-
-
-
+		
 		var bulletData = bullet.GetComponent<BulletData> ();
 
 		var torque = Random.Range (-20.0f, 20.0f);
 		var turn = Random.Range (-20.0f, 20.0f);
-
+	
 		bullet.GetComponent<Rigidbody>().velocity = bullet.transform.forward * (bulletData.Power * powerRate);
 		//bullet.GetComponent<Rigidbody>().AddForce(bullet.transform.forward * bulletData.Power * powerRate, ForceMode.Impulse);
 		bullet.GetComponent<Rigidbody>().AddTorque(transform.up * torque);
