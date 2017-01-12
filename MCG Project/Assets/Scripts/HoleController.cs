@@ -41,7 +41,9 @@ public class HoleController : MonoBehaviour {
 		EndCamera.SetActive (true);
 		EndCameraAnimator.startPercent = 0;
 		EndCameraAnimator.Play ();
-		if (!allPlayersComplete) {
+
+
+		if (!allPlayersComplete || GameSettings.playerMode == PlayerMode.ServerMultiplayer) {
 			startTime = System.DateTime.Now;
 		} else {
 			startTime = System.DateTime.MaxValue;

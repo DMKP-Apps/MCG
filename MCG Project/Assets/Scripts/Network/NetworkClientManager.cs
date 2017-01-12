@@ -14,7 +14,7 @@ public class NetworkClientController : MonoBehaviour
 
 public static class NetworkClientManager
 {
-    public static string ServerUrl = "http://localhost:8321";//"http://mcg.moebull.com/";
+    public static string ServerUrl = "http://mcg.moebull.com/";//"http://localhost:8321";
     public static NetworkPlayerInfo player = null;
     public static bool IsOnline { get; private set; }
 
@@ -49,70 +49,36 @@ public static class NetworkClientManager
         }
     }
 
-    public static void SendGameObjectData(GameObject gameObject, string holeId) {
-        if (!IsOnline)
-        {
-            return;
-        }
+    public static void SendGameObjectData(NetworkObjectData objectData, MonoBehaviour gameObject = null, Action<string> onComplete = null, Action<string> onError = null) {
 
-        NetworkObjectData objData = GetDataObject(gameObject, holeId);
-        //var thread = new System.Threading.Thread(new System.Threading.ParameterizedThreadStart((args) => {
-            var data = OnPostRequest<string>("/Message/Request/SaveObjectData", objData);
-            if (!data.Status)
-            {
-                Debug.Log(data.Message);
-            }
-        //}));
-        //thread.Start(objData);
+        objectData.sessionId = _sessionId.ToString();
+        objectData.objectId = player.UID;
+        objectData.accName = player.AccountName;
+
+        if (gameObject != null)
+        {
+            gameObject.StartCoroutine(OnPostRequest("/Message/Request/SaveObjectData", objectData, null, null));
+        }
+        else
+        {
+            var data = OnPostRequest<string>("/Message/Request/SaveObjectData", objectData);
+        }
+    }
+
+    public static void GetGameObjectData(string objectId, MonoBehaviour gameObject, Action<NetworkObjectData> onComplete, Action<string> onError = null)
+    {
+
+        if (gameObject != null)
+        {
+            gameObject.StartCoroutine(OnGetRequest(string.Format("/Message/Request/GetById?id={0}", objectId), (data) => {
+                var objectData = JsonUtility.FromJson<NetworkObjectData>(data);
+                onComplete(objectData);
+            }, onError));
+        }
         
-                
     }
 
-    public static void SendGameActionData(GameObject gameObject, string holeId, float torque, float turn, float power)
-    {
-        if (!IsOnline)
-        {
-            return;
-        }
 
-        NetworkActionShotData objData = GetDataObject<NetworkActionShotData>(gameObject, holeId);
-        objData.torque = torque;
-        objData.turn = turn;
-        objData.power = power;
-
-        //var thread = new System.Threading.Thread(new System.Threading.ParameterizedThreadStart((args) => {
-            var data = OnPostRequest<string>("/Message/Request/SaveActionData", objData);
-            if (!data.Status)
-            {
-                Debug.Log(data.Message);
-            }
-        //}));
-        //thread.Start(objData);
-    }
-
-    private static NetworkObjectData GetDataObject(GameObject gameObject, string holeId)
-    {
-        return GetDataObject<NetworkObjectData>(gameObject, holeId);
-    }
-    private static TDataObject GetDataObject<TDataObject>(GameObject gameObject, string holeId)
-        where TDataObject : NetworkObjectData, new()
-    {
-        return new TDataObject()
-        {
-            holeId = holeId,
-            objectId = player.UID,
-            objectName = gameObject.name,
-            position_x = gameObject.transform.position.x,
-            position_y = gameObject.transform.position.y,
-            position_z = gameObject.transform.position.z,
-            rotation_x = gameObject.transform.rotation.eulerAngles.x,
-            rotation_y = gameObject.transform.rotation.eulerAngles.y,
-            rotation_z = gameObject.transform.rotation.eulerAngles.z,
-            sessionId = _sessionId.ToString()
-        };
-    }
-
-    
     public static string Ping()
     {
         var data = OnGetRequest<string>("/Message/Request/Ping");
@@ -122,6 +88,29 @@ public static class NetworkClientManager
         }
         else {
             return data.Message;
+        }
+    }
+
+    [Serializable]
+    public class GetAvailablePlayersResult
+    {
+        public NetworkObjectData[] Items;
+    }
+
+    public static List<string> GetAvailablePlayers()
+    {
+        var data = OnGetRequest<GetAvailablePlayersResult>("/Message/Request/GetAll");
+        if (data.Status && data.Data != null && data.Data.Items != null)
+        {
+            var result = data.Data.Items.Select(x => x.objectId).ToList();
+            if (!result.Contains(player.UID)) {
+                result.Add(player.UID);
+            }
+
+            return result;
+        }
+        else {
+            return new List<string>() { player.UID };
         }
     }
 
@@ -173,6 +162,31 @@ public static class NetworkClientManager
         }
     }
 
+    static IEnumerator OnGetRequest(string methodUrl, Action<string> onComplete, Action<string> onError)
+    {
+        using (UnityWebRequest www = UnityWebRequest.Get(string.Format("{0}/{1}", ServerUrl.TrimEnd('/'), methodUrl.TrimStart('/'))))
+        {
+            yield return www.Send();
+
+            if (www.isError)
+            {
+                if (onError != null)
+                {
+                    onError(www.error);
+                }
+            }
+            else {
+                if (onComplete != null)
+                {
+                    // Show results as text
+                    onComplete(www.downloadHandler.text);
+                }
+
+            }
+        }
+    }
+
+
     static ResponseData<string> OnPostRequest(string methodUrl, object data)
     {
         return OnPostRequest<string>(methodUrl, data);
@@ -197,7 +211,7 @@ public static class NetworkClientManager
             while (!response.isDone && DateTime.Now.Subtract(startTime).TotalMilliseconds < timeoutMilliseconds) {
                 Debug.Log(string.Format("Progress: {0}", response.progress));
             }
-
+            
             if (!response.isDone)
             {
                 return new ResponseData<TData>()
@@ -226,6 +240,41 @@ public static class NetworkClientManager
             }
         }
     }
+
+    static IEnumerator OnPostRequest(string methodUrl, object data, Action<string> onComplete, Action<string> onError)
+    {
+        //byte[] bytes = System.Text.Encoding.UTF8.GetBytes();
+        string jsonData = JsonUtility.ToJson(data);
+        using (UnityWebRequest www = new UnityWebRequest(string.Format("{0}/{1}", ServerUrl.TrimEnd('/'), methodUrl.TrimStart('/')), UnityWebRequest.kHttpVerbPOST))
+        {
+            www.SetRequestHeader("Content-Type", "application/json");
+            UploadHandlerRaw uH = new UploadHandlerRaw(System.Text.Encoding.UTF8.GetBytes(jsonData));
+            uH.contentType = "application/json";
+            www.uploadHandler = uH;
+
+            DownloadHandler dH = new DownloadHandlerBuffer();
+            www.downloadHandler = dH;
+
+            yield return www.Send();
+
+            if (www.isError)
+            {
+                if (onError != null)
+                {
+                    onError(www.error);
+                }
+            }
+            else {
+                if (onComplete != null)
+                {
+                    // Show results as text
+                    onComplete(www.downloadHandler.text);
+                }
+                    
+            }
+        }
+    }
+
 }
 
 

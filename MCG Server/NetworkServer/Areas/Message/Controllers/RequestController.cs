@@ -14,17 +14,17 @@ namespace NetworkServer.Areas.Message.Controllers
     
     public class RequestController : Controller
     {
-        public IMessageRepository Repository { get; set; }
+        public IGameObjectDataRepository Repository { get; set; }
 
         public RequestController()
         {
-            this.Repository = DependencyResolver.Current.GetService<IMessageRepository>();
+            this.Repository = DependencyResolver.Current.GetService<IGameObjectDataRepository>();
         }
 
         [HttpGet]
         public async Task<ActionResult> Ping()
         {
-            var messages = await Task.Run<IEnumerable<MessageItem>>(() => Repository.GetAll());
+            var messages = await Task.Run<IEnumerable<NetworkObjectData>>(() => Repository.GetAll());
             var data = await Task.Run<string>(() => string.Format("Successfully ping at {0} - {1} Requests in queue", System.DateTime.Now, messages.Count()));
             return Json(data, JsonRequestBehavior.AllowGet);
         }
@@ -32,32 +32,25 @@ namespace NetworkServer.Areas.Message.Controllers
         [HttpGet]
         public async Task<ActionResult> GetAll()
         {
-            var data = await Task.Run<IEnumerable<MessageItem>>(() => Repository.GetAll());
-            return Json(data, JsonRequestBehavior.AllowGet);
+            var data = await Task.Run<IEnumerable<NetworkObjectData>>(() => Repository.GetAll());
+            return Json(new { Items = data }, JsonRequestBehavior.AllowGet);
         }
 
         [HttpGet]
         public async Task<ActionResult> GetById(string id)
         {
-            var data = await Task.Run<MessageItem>(() => Repository.Find(id));
+            var data = await Task.Run<NetworkObjectData>(() => Repository.Find(id));
             return Json(data, JsonRequestBehavior.AllowGet);
             
         }
 
-        [HttpPost]
-        public async Task<ActionResult> Create(MessageItem model)
-        {
-            var data = await Task.Run<MessageItem>(() => Repository.Add(model));
-            return Json(data, JsonRequestBehavior.AllowGet);
-
-        }
-
+        
         [HttpPost]
         public async Task<ActionResult> SaveObjectData(NetworkObjectData model)
         {
             //var data = await Task.Run<MessageItem>(() => Repository.Add(model));
             var data = await Task.Run<string>(() => {
-                SaveNetworkObjectData(model);
+                Repository.Add(model);
                 return "Success";
             });
             return Json(data, JsonRequestBehavior.AllowGet);
@@ -66,39 +59,39 @@ namespace NetworkServer.Areas.Message.Controllers
 
         
 
-        [HttpPost]
-        public async Task<ActionResult> SaveActionData(NetworkActionShotData model)
-        {
-            //var data = await Task.Run<MessageItem>(() => Repository.Add(model));
-            var data = await Task.Run<string>(() => {
-                SaveNetworkObjectData(model);
-                return "Success";
-            });
-            return Json(data, JsonRequestBehavior.AllowGet);
+        //[HttpPost]
+        //public async Task<ActionResult> SaveActionData(NetworkActionShotData model)
+        //{
+        //    //var data = await Task.Run<MessageItem>(() => Repository.Add(model));
+        //    var data = await Task.Run<string>(() => {
+        //        SaveNetworkObjectData(model);
+        //        return "Success";
+        //    });
+        //    return Json(data, JsonRequestBehavior.AllowGet);
 
-        }
+        //}
 
-        private void SaveNetworkObjectData(NetworkObjectData model)
-        {
-            using (MCGDbContext context = new MCGDbContext())
-            {
-                Guid sessionId = Guid.Empty;
-                if (!Guid.TryParse(model.sessionId, out sessionId)) {
-                    sessionId = Guid.Empty;
-                }
-                GameObjectData entity = new GameObjectData()
-                {
-                    objectId = model.objectId,
-                    objectName = model.objectName,
-                    SessionId = sessionId,
-                    holeId = model.holeId,
-                    type = model.GetType().Name,
-                    data = Newtonsoft.Json.JsonConvert.SerializeObject(model)
-                };
-                context.GameObjectData.Add(entity);
-                context.SaveChanges();
-            }
-        }
+        //private void SaveNetworkObjectData(NetworkObjectData model)
+        //{
+        //    using (MCGDbContext context = new MCGDbContext())
+        //    {
+        //        Guid sessionId = Guid.Empty;
+        //        if (!Guid.TryParse(model.sessionId, out sessionId)) {
+        //            sessionId = Guid.Empty;
+        //        }
+        //        GameObjectData entity = new GameObjectData()
+        //        {
+        //            objectId = model.objectId,
+        //            objectName = model.objectName,
+        //            SessionId = sessionId,
+        //            holeId = model.holeId,
+        //            type = model.GetType().Name,
+        //            data = Newtonsoft.Json.JsonConvert.SerializeObject(model)
+        //        };
+        //        context.GameObjectData.Add(entity);
+        //        context.SaveChanges();
+        //    }
+        //}
 
 
         [HttpPost]

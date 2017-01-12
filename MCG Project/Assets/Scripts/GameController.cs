@@ -110,6 +110,8 @@ public class GameController : MonoBehaviour {
         
 	}
 
+
+    private List<string> playerKeys = new List<string>();
 	void Start() {
 	
 		scoring.Add (-3, "Albatross");
@@ -150,7 +152,9 @@ public class GameController : MonoBehaviour {
                 NumberOfPlayers = GameSettings.LocalMultiplayerCount < 2 ? 2 : GameSettings.LocalMultiplayerCount;
                 break;
             case PlayerMode.ServerMultiplayer:
-                NumberOfPlayers = 1;
+                playerKeys = NetworkClientManager.GetAvailablePlayers();
+                NumberOfPlayers = playerKeys.Count;
+                //if(pla)
                 break;
         }
 
@@ -160,6 +164,9 @@ public class GameController : MonoBehaviour {
 
 	public bool IsShooting()
 	{
+        if (player == null) {
+            return false;
+        }
 		var fireController = player.GetComponent<CannonFireController> ();
 		return fireController.GetBullet ();
 	}
@@ -250,9 +257,6 @@ public class GameController : MonoBehaviour {
 		//player.transform.localRotation = Quaternion.Euler(new Vector3(0f,player.transform.localRotation.y, 0f));
 		//player.transform.rotation = Quaternion.Euler(new Vector3(0f,player.transform.rotation.y, 0f));
 		playerCannon.AimCannon (holeController.hole.position);
-
-        NetworkClientManager.SendGameObjectData(player, GetHoleId());
-
 
     }
 
@@ -419,6 +423,7 @@ public class GameController : MonoBehaviour {
 		public int StrokeCount;
 		public int PlayerNumber;
 		public int CurrentBullet;
+        public string playerKey;
 	}
 
 	private void BeginHole() {
@@ -452,7 +457,8 @@ public class GameController : MonoBehaviour {
 					TotalScore = playerController.TotalScore,
 					StrokeCount = playerController.Stroke,
 					PlayerNumber = playerController.playerNumber,
-					CurrentBullet = playerController.currentBullet
+					CurrentBullet = playerController.currentBullet,
+                    playerKey = playerController.playerKey
 				};
 				playerScores.Add(state);
 				Destroy (p); 
@@ -475,18 +481,23 @@ public class GameController : MonoBehaviour {
                 
 
                 var pController = player.GetComponent<CannonPlayerState> ();
-				pController.Stroke = 1;
+
+                if (GameSettings.playerMode == PlayerMode.ServerMultiplayer && !string.IsNullOrEmpty(p.playerKey))
+                {
+                    pController.SetPlayerInfo(p.playerKey);
+                }
+
+
+                pController.Stroke = 1;
 				pController.TotalScore = p.TotalScore;
 				pController.playerNumber = p.PlayerNumber;
 				pController.isHoleComplete = false;
 				pController.isHarzard = false;
 				pController.currentBullet = p.CurrentBullet;
-
 				// set the current object to in-active
 				player.SetActive(false);
                 // add the game object to the list
                 player.name = string.Format("CannonPlayer{0}", p.PlayerNumber);
-                NetworkClientManager.SendGameObjectData(player, GetHoleId());
                 players.Add(player);
 
 			});
@@ -497,6 +508,12 @@ public class GameController : MonoBehaviour {
 				var player = (GameObject)Instantiate (playerPrefab, holeController.tee.position, holeController.tee.rotation);
                 
                 var pController = player.GetComponent<CannonPlayerState> ();
+
+                if (GameSettings.playerMode == PlayerMode.ServerMultiplayer && playerKeys.Count >= NumberOfPlayers)
+                {
+                    pController.SetPlayerInfo(playerKeys[i]);
+                }
+
 				pController.Stroke = 1;
 				pController.TotalScore = 0;
 				pController.playerNumber = i + 1;
@@ -506,11 +523,10 @@ public class GameController : MonoBehaviour {
 				player.SetActive(false);
                 // add the game object to the list
                 player.name = string.Format("CannonPlayer{0}", i + 1);
-                NetworkClientManager.SendGameObjectData(player, GetHoleId());
                 players.Add(player);
 			}
 		}
-		//textController.SetPlayer (1);
+		
 		currentPlayer = -1;
 		MoveToNextPlayer ();
 	}
@@ -523,16 +539,12 @@ public class GameController : MonoBehaviour {
 
 	public GameObject GetCurrentBullet()
 	{
-		//isHazardPoint = false;
-		//isHoleComplete = false;
-		if (bulletPrefabs != null && bulletPrefabs.Count >= CurrentBullet) {
+        if (bulletPrefabs != null && bulletPrefabs.Count >= CurrentBullet) {
 			var bullet = bulletPrefabs [CurrentBullet - 1];
 
 			return bullet;
 		} else
 			return null;
-
-
 	}
 
 	public void OnAddPlayer() {

@@ -5,32 +5,45 @@ using System.Web;
 
 namespace NetworkServer.Areas.Message.Models
 {
-    //public class TestObject
-    //{
-
-    //}
+    
     public class NetworkObjectData
     {
+        public NetworkObjectData()
+        {
+            timeStamp = DateTime.Now.ToUniversalTime();
+            fire = false;
+        }
+        public string Key { get { return objectId; } }
         public DateTime timeStamp { get; set; }
         public string objectId { get; set; }
+        public string accName { get; set; }
         public string sessionId { get; set; }
         public string objectName { get; set; }
         public string holeId { get; set; }
 
-        public float position_x { get; set; }
-        public float position_y { get; set; }
-        public float position_z { get; set; }
+        public float root_position_x { get; set; }
+        public float root_position_y { get; set; }
+        public float root_position_z { get; set; }
 
-        public float rotation_x { get; set; }
-        public float rotation_y { get; set; }
-        public float rotation_z { get; set; }
+        public float root_rotation_x { get; set; }
+        public float root_rotation_y { get; set; }
+        public float root_rotation_z { get; set; }
+
+        public float cannon_position_x { get; set; }
+        public float cannon_position_y { get; set; }
+        public float cannon_position_z { get; set; }
+
+        public float cannon_rotation_x { get; set; }
+        public float cannon_rotation_y { get; set; }
+        public float cannon_rotation_z { get; set; }
+
+        public bool fire { get; set; }
+        public float fire_torque { get; set; }
+        public float fire_turn { get; set; }
+        public float fire_power { get; set; }
+        public int currentBullet { get; set; }
     }
 
    
-    public class NetworkActionShotData : NetworkObjectData
-    {
-        public float torque { get; set; }
-        public float turn { get; set; }
-        public float power { get; set; }
-    }
+    
 }
