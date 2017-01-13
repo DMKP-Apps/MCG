@@ -38,10 +38,6 @@ public class InputController : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 
-        if (!AllowInput) {
-            return;
-        }
-
 		InputPosition = new Vector2(0, 0);
         bool hasTouch = false;
 		Input.touches.ToList ().ForEach (touch => {
@@ -50,7 +46,12 @@ public class InputController : MonoBehaviour {
                 hasTouch = true;
 
             }
+
 			if(touch.phase == TouchPhase.Moved) {
+				if (!AllowInput) {
+					return;
+				}
+
                 hasTouch = true;
                 // Construct a ray from the current touch coordinates
 
@@ -123,6 +124,10 @@ public class InputController : MonoBehaviour {
                 GameController.TouchDetected();
                 isMoving = !isMoving;
             };
+
+			if (!AllowInput) {
+				return;
+			}
 
             if (isMoving)
             {

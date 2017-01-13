@@ -4,6 +4,24 @@ using System.Linq;
 using System.Text;
 
 [Serializable]
+public class NetworkPlayerData
+{
+	public NetworkPlayerData() {
+		timeStamp = DateTime.Now.ToUniversalTime();
+	}
+
+	public DateTime timeStamp;
+	public string objectId;
+	public string accName;
+	public string sessionId;
+	public string objectName;
+	public bool Ready;
+
+
+}
+
+
+[Serializable]
 public class NetworkObjectData
 {
     public NetworkObjectData() {

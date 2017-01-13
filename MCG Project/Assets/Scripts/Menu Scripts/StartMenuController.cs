@@ -7,6 +7,7 @@ public class StartMenuController : MonoBehaviour {
 
 
     public string gameScene = "Course";
+	public string multiplayerScene = "MultiPlayerSetup";
     
     
     public void OnLoadGameSceneClick(string mode) {
@@ -15,12 +16,14 @@ public class StartMenuController : MonoBehaviour {
         if (GameSettings.playerMode == PlayerMode.ServerMultiplayer)
         {
             NetworkClientManager.Login();
+			SceneManager.LoadScene(multiplayerScene, LoadSceneMode.Single);
         }
         else {
             NetworkClientManager.Logoff();
+			SceneManager.LoadScene(gameScene, LoadSceneMode.Single);
         }
 
 
-        SceneManager.LoadScene(gameScene, LoadSceneMode.Single);
+        
     }
 }

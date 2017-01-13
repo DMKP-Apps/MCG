@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using System.Linq;
+using UnityEngine.SceneManagement;
 
 public class GameController : MonoBehaviour {
 	public GameObject playerPrefab;
@@ -17,6 +18,19 @@ public class GameController : MonoBehaviour {
 	//var playerController = player.GetComponent<CannonPlayerState> ();
 	//playerController.isHoleComplete = false;
 	//playerController.isHarzard = false;
+
+	void OnApplicationFocus( bool hasFocus )
+	{
+		if (!hasFocus && NetworkClientManager.IsOnline) {
+			this.EndGame ();
+		}
+	}
+
+	public void EndGame() {
+		NetworkClientManager.Logoff ();
+		SceneManager.LoadScene("StartMenu", LoadSceneMode.Single);
+
+	}
 
 	private List<GameObject> players;
 	private GameObject player 
@@ -111,7 +125,6 @@ public class GameController : MonoBehaviour {
 	}
 
 
-    private List<string> playerKeys = new List<string>();
 	void Start() {
 	
 		scoring.Add (-3, "Albatross");
@@ -152,9 +165,8 @@ public class GameController : MonoBehaviour {
                 NumberOfPlayers = GameSettings.LocalMultiplayerCount < 2 ? 2 : GameSettings.LocalMultiplayerCount;
                 break;
             case PlayerMode.ServerMultiplayer:
-                playerKeys = NetworkClientManager.GetAvailablePlayers();
-                NumberOfPlayers = playerKeys.Count;
-                //if(pla)
+				NumberOfPlayers = GameSettings.NetworkPlayers.Count;
+                
                 break;
         }
 
@@ -303,6 +315,8 @@ public class GameController : MonoBehaviour {
 
 
 	}
+
+
 
 	public void OutOfBounds(Vector3 contactPoint)
 	{
@@ -509,9 +523,9 @@ public class GameController : MonoBehaviour {
                 
                 var pController = player.GetComponent<CannonPlayerState> ();
 
-                if (GameSettings.playerMode == PlayerMode.ServerMultiplayer && playerKeys.Count >= NumberOfPlayers)
+				if (GameSettings.playerMode == PlayerMode.ServerMultiplayer && GameSettings.NetworkPlayers.Count >= NumberOfPlayers)
                 {
-                    pController.SetPlayerInfo(playerKeys[i]);
+					pController.SetPlayerInfo(GameSettings.NetworkPlayers[i].objectId);
                 }
 
 				pController.Stroke = 1;

@@ -16,17 +16,28 @@ public static class NetworkClientManager
 {
     public static string ServerUrl = "http://mcg.moebull.com/";//"http://localhost:8321";
     public static NetworkPlayerInfo player = null;
-    public static bool IsOnline { get; private set; }
-
-    private static Guid _sessionId = Guid.NewGuid();
+	public static bool IsOnline { get { return GameSettings.playerMode == PlayerMode.ServerMultiplayer; } 
+		private set { GameSettings.playerMode = value ? PlayerMode.ServerMultiplayer : PlayerMode.Single; } }
 
     public static void Logoff() {
+		if (player == null) {
+			return;
+		}
         IsOnline = false;
+		GameSettings.NetworkPlayers = null;
+		var data = OnGetRequest<bool>(string.Format("/Message/Request/Logout?id={0}", player.UID));
+		if (data.Status)
+		{
+			IsOnline = true;
+		}
+		else {
+			IsOnline = false;
+		}
     }
 
     public static void Login()
     {
-        _sessionId = Guid.NewGuid();
+        GameSettings.NetworkPlayers = null;
         IsOnline = false;
 
         player = new NetworkPlayerInfo();
@@ -51,7 +62,7 @@ public static class NetworkClientManager
 
     public static void SendGameObjectData(NetworkObjectData objectData, MonoBehaviour gameObject = null, Action<string> onComplete = null, Action<string> onError = null) {
 
-        objectData.sessionId = _sessionId.ToString();
+		objectData.sessionId = GameSettings.SessionId;
         objectData.objectId = player.UID;
         objectData.accName = player.AccountName;
 
@@ -64,6 +75,41 @@ public static class NetworkClientManager
             var data = OnPostRequest<string>("/Message/Request/SaveObjectData", objectData);
         }
     }
+
+	[Serializable]
+	public class GetAvailablePlayersResult
+	{
+		public NetworkPlayerData[] Items;
+	}
+
+	public static void GetNetworkPlayers(MonoBehaviour gameObject, Action onComplete, Action<string> onError = null)
+	{
+
+		if (gameObject != null)
+		{
+			gameObject.StartCoroutine(OnGetRequest(string.Format("/Message/Request/GetNetworkPlayers?id={0}", player.UID), (data) => {
+				data = string.Format("{{ \"Items\": {0} }}", data);
+				var objectData = JsonUtility.FromJson<GetAvailablePlayersResult>(data);
+				GameSettings.NetworkPlayers = objectData.Items.ToList();
+				onComplete();
+			}, onError));
+		}
+
+	}
+
+	public static void NetworkPlayerReady(MonoBehaviour gameObject, Action onComplete, Action<string> onError = null)
+	{
+
+		if (gameObject != null)
+		{
+			gameObject.StartCoroutine(OnGetRequest(string.Format("/Message/Request/NetworkPlayerReady?id={0}", player.UID), (data) => {
+				var objectData = data;
+				GameSettings.SessionId = objectData;
+				onComplete();
+			}, onError));
+		}
+
+	}
 
     public static void GetGameObjectData(string objectId, MonoBehaviour gameObject, Action<NetworkObjectData> onComplete, Action<string> onError = null)
     {
@@ -90,29 +136,7 @@ public static class NetworkClientManager
             return data.Message;
         }
     }
-
-    [Serializable]
-    public class GetAvailablePlayersResult
-    {
-        public NetworkObjectData[] Items;
-    }
-
-    public static List<string> GetAvailablePlayers()
-    {
-        var data = OnGetRequest<GetAvailablePlayersResult>("/Message/Request/GetAll");
-        if (data.Status && data.Data != null && data.Data.Items != null)
-        {
-            var result = data.Data.Items.Select(x => x.objectId).ToList();
-            if (!result.Contains(player.UID)) {
-                result.Add(player.UID);
-            }
-
-            return result;
-        }
-        else {
-            return new List<string>() { player.UID };
-        }
-    }
+		 
 
     private static int timeoutMilliseconds = 20000;
 
@@ -156,7 +180,9 @@ public static class NetworkClientManager
                 {
                     Status = true,
                     Message = "Request completed successfully",
-                    Data = typeof(TData) == typeof(string) ? (TData)(www.downloadHandler.text as object) : JsonUtility.FromJson<TData>(www.downloadHandler.text)
+					Data = typeof(TData) == typeof(bool) ? (TData)(bool.Parse(www.downloadHandler.text.ToLower()) as object) : 
+						typeof(TData) == typeof(string) ? (TData)(www.downloadHandler.text as object) : 
+						JsonUtility.FromJson<TData>(www.downloadHandler.text)
                 };
             }
         }
@@ -235,7 +261,9 @@ public static class NetworkClientManager
                 {
                     Status = true,
                     Message = "Request completed successfully",
-                    Data = typeof(TData) == typeof(string) ? (TData)(www.downloadHandler.text as object) : JsonUtility.FromJson<TData>(www.downloadHandler.text)
+					Data = typeof(TData) == typeof(bool) ? (TData)(www.downloadHandler.text as object) : 
+						typeof(TData) == typeof(string) ? (TData)(www.downloadHandler.text as object) : 
+						JsonUtility.FromJson<TData>(www.downloadHandler.text)
                 };
             }
         }

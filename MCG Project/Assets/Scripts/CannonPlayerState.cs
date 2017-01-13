@@ -90,7 +90,7 @@ public class CannonPlayerState : MonoBehaviour {
     public void SendNetworkObjectData(bool fired = false, float power = 0f, float torque = 0f, float turn = 0f) {
         if (!NetworkClientManager.IsOnline)
         {
-            //return;
+            return;
         }
                 
         NetworkObjectData data = new NetworkObjectData()
@@ -126,6 +126,12 @@ public class CannonPlayerState : MonoBehaviour {
 
     public void OnUpdateRemoteData(NetworkObjectData objectData)
     {
+		if (objectData == null) {
+			//GameController.EndGame ();
+			return;
+		
+		}
+
         if (objectData.Compare(_previousObjectData))
         {
             return;
@@ -155,8 +161,8 @@ public class CannonPlayerState : MonoBehaviour {
     void Update () {
         if (!NetworkClientManager.IsOnline)
         {
-           // return;
-        }
+           return;
+        }	
 
         if (!this.gameObject.activeInHierarchy) {
             return;
