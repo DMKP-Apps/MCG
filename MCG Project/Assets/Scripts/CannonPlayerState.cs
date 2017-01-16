@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 public class CannonPlayerState : MonoBehaviour {
 
@@ -15,9 +16,9 @@ public class CannonPlayerState : MonoBehaviour {
 	public int currentBullet = 1;
 	private GameObject CannonBarrow;
 
-    public int updateServerMilliseconds = 100;
+    public int updateServerMilliseconds = 1000;
     private GameController GameController;
-    private DateTime lastUpdateTime = DateTime.Now;
+	private DateTime lastUpdateTime = DateTime.Now.AddMilliseconds(1500);
 
     public bool isOnlinePlayer = false;
     public string playerKey = string.Empty;
@@ -48,7 +49,9 @@ public class CannonPlayerState : MonoBehaviour {
             }
 
             var inputController = CannonBarrow.GetComponent<InputController>();
-            inputController.AllowInput = false;
+			if (inputController != null) {
+				inputController.AllowInput = false;
+			}
         }
     }
 
@@ -95,6 +98,7 @@ public class CannonPlayerState : MonoBehaviour {
                 
         NetworkObjectData data = new NetworkObjectData()
         {
+			uniqueId = Guid.NewGuid().ToString(),
             objectName = gameObject.name,
             fire = fired,
             holeId = GameController.GetHoleId(),
@@ -113,7 +117,10 @@ public class CannonPlayerState : MonoBehaviour {
             currentBullet = GameController.CurrentBullet,
             fire_power = power,
             fire_torque = torque,
-            fire_turn = turn
+            fire_turn = turn,
+			fire_accurracy = 1,
+			stroke = Stroke,
+			holeComplete = isHoleComplete,
         };
         if (!data.Compare(_previousObjectData))
         {
@@ -131,13 +138,7 @@ public class CannonPlayerState : MonoBehaviour {
 			return;
 		
 		}
-
-        if (objectData.Compare(_previousObjectData))
-        {
-            return;
-        }
-        _previousObjectData = objectData;
-
+			
         // new data
         //Debug.Log(objectData);
         gameObject.transform.position = new Vector3(objectData.root_position_x, objectData.root_position_y, objectData.root_position_z);
@@ -168,18 +169,26 @@ public class CannonPlayerState : MonoBehaviour {
             return;
         }
 
-        if (GameController.IsShooting()) {
-            return;
-        }
         
+		if (isOnlinePlayer)
+		{
+			if (GameSettings.playerMode == PlayerMode.ServerMultiplayer && GameSettings.GameInfo != null && GameSettings.GameInfo.Items != null) {
+				var data = GameSettings.GameInfo.Items.FirstOrDefault (x => x.objectId == playerKey);
+				if (data != null && data.uniqueId != _previousObjectData.uniqueId) {
+					_previousObjectData = data;
+					OnUpdateRemoteData (data);
+				}
+			}
+		}
+
+		if (GameController.IsShooting()) {
+			return;
+		}
+
         if (DateTime.Now.Subtract(lastUpdateTime).TotalMilliseconds > updateServerMilliseconds) {
             lastUpdateTime = DateTime.Now;
 
-            if (isOnlinePlayer)
-            {
-                NetworkClientManager.GetGameObjectData(playerKey, this, (objectData) => OnUpdateRemoteData(objectData));
-            }
-            else
+            if (!isOnlinePlayer)
             {
                 // set the game object information
                 SendNetworkObjectData();

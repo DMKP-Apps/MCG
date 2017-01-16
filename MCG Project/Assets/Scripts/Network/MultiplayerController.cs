@@ -24,6 +24,7 @@ public class MultiplayerController : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 		NetworkClientManager.NetworkPlayerReady (this, () => { });
+		GameSettings.HoleStatus = new HoleStatus ();
 	}
 
 	void UpdatePlayerInfo() {
@@ -34,6 +35,7 @@ public class MultiplayerController : MonoBehaviour {
 
 		if (!GameSettings.NetworkPlayers.Any (x => !x.Ready) && GameSettings.NetworkPlayers.Count > 1) {
 			// load the seen
+			GameSettings.HoleStatus.currentHoleIndex = 1;
 			SceneManager.LoadScene(gameScene, LoadSceneMode.Single);
 
 		}
@@ -42,7 +44,13 @@ public class MultiplayerController : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 		if (DateTime.Now.Subtract (lastCheckDate).TotalMilliseconds > 1000) {
-			NetworkClientManager.GetNetworkPlayers (this, () => UpdatePlayerInfo());
+			GetNetworkPlayer ();
 		}
+	}
+
+	void GetNetworkPlayer()
+	{
+		lastCheckDate = DateTime.Now;
+		NetworkClientManager.GetNetworkPlayers (this, () => UpdatePlayerInfo());
 	}
 }

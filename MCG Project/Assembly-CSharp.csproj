@@ -91,6 +91,7 @@
      <Compile Include="Assets\Scripts\InputController.cs" />
      <Compile Include="Assets\Scripts\Menu Scripts\GameSettings.cs" />
      <Compile Include="Assets\Scripts\Menu Scripts\StartMenuController.cs" />
+     <Compile Include="Assets\Scripts\Network\EndMatchController.cs" />
      <Compile Include="Assets\Scripts\Network\MultiplayerController.cs" />
      <Compile Include="Assets\Scripts\Network\NetworkClientManager.cs" />
      <Compile Include="Assets\Scripts\Network\NetworkMessage.cs" />

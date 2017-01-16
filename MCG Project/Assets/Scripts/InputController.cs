@@ -133,8 +133,7 @@ public class InputController : MonoBehaviour {
             {
                 var y = Input.GetAxis("Mouse Y");
                 var x = Input.GetAxis("Mouse X");
-                Debug.Log(string.Format("{0};{1}", x, y));
-
+                
                 if (!GameController.IsShooting())
                 {
                     transform.localRotation = SmoothRotator.Rotate(transform.localRotation, ref m_OriginalRotation,

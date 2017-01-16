@@ -35,12 +35,13 @@ public static class NetworkClientManager
 		}
     }
 
-    public static void Login()
+	public static void Login(bool isRace = false)
     {
         GameSettings.NetworkPlayers = null;
         IsOnline = false;
 
         player = new NetworkPlayerInfo();
+		player.isRace = isRace;
         player.UID = SystemInfo.deviceUniqueIdentifier;
         if (!string.IsNullOrEmpty(PlayerPrefs.GetString("accName")))
         {
@@ -54,6 +55,7 @@ public static class NetworkClientManager
             PlayerPrefs.SetString("accName", player.AccountName);
             PlayerPrefs.Save();
             IsOnline = true;
+			GameSettings.isRace = isRace;
         }
         else {
             IsOnline = false;
@@ -68,7 +70,11 @@ public static class NetworkClientManager
 
         if (gameObject != null)
         {
-            gameObject.StartCoroutine(OnPostRequest("/Message/Request/SaveObjectData", objectData, null, null));
+			gameObject.StartCoroutine(OnPostRequest("/Message/Request/SaveObjectData", objectData, (data) => { 
+				Debug.Log(data);
+			}, (err) => {
+				Debug.Log(err);
+			}));
         }
         else
         {
@@ -76,11 +82,33 @@ public static class NetworkClientManager
         }
     }
 
+	public static void SendGameWaitingData(NetworkPlayerData objectData, MonoBehaviour gameObject = null, Action<string> onComplete = null, Action<string> onError = null) {
+
+		objectData.sessionId = GameSettings.SessionId;
+		objectData.objectId = player.UID;
+		objectData.accName = player.AccountName;
+
+		if (gameObject != null)
+		{
+			gameObject.StartCoroutine(OnPostRequest("/Message/Request/SaveWaitingData", objectData, (data) => { 
+				Debug.Log(data);
+			}, (err) => {
+				Debug.Log(err);
+			}));
+		}
+		else
+		{
+			var data = OnPostRequest<string>("/Message/Request/SaveObjectData", objectData);
+		}
+	}
+
 	[Serializable]
 	public class GetAvailablePlayersResult
 	{
 		public NetworkPlayerData[] Items;
 	}
+
+
 
 	public static void GetNetworkPlayers(MonoBehaviour gameObject, Action onComplete, Action<string> onError = null)
 	{
@@ -96,6 +124,41 @@ public static class NetworkClientManager
 		}
 
 	}
+
+	public static void GetGameInfo(MonoBehaviour gameObject, Action onComplete, Action<string> onError = null)
+	{
+
+		if (gameObject != null)
+		{
+			gameObject.StartCoroutine(OnGetRequest(string.Format("/Message/Request/GetGameInfo?id={0}", player.UID), (data) => {
+				try { 
+					data = string.Format("{{ \"Items\": {0} }}", data);
+					var objectData = JsonUtility.FromJson<GameInfoResults>(data);
+					GameSettings.GameInfo = objectData;
+					onComplete();
+				}
+				catch {
+					// do nothing
+					Debug.Log(data);
+				}
+			}, onError));
+		}
+
+	}
+
+	public static void IsPlayerOnline(MonoBehaviour gameObject, Action<bool> onComplete, Action<string> onError = null)
+	{
+
+		if (gameObject != null)
+		{
+			gameObject.StartCoroutine(OnGetRequest(string.Format("/Message/Request/IsPlayerOnline?id={0}", player.UID), (data) => {
+				var objectData = JsonUtility.FromJson<NetworkPlayerData>(data);
+				onComplete(objectData != null);
+			}, onError));
+		}
+
+	}
+
 
 	public static void NetworkPlayerReady(MonoBehaviour gameObject, Action onComplete, Action<string> onError = null)
 	{
@@ -118,7 +181,10 @@ public static class NetworkClientManager
         {
             gameObject.StartCoroutine(OnGetRequest(string.Format("/Message/Request/GetById?id={0}", objectId), (data) => {
                 var objectData = JsonUtility.FromJson<NetworkObjectData>(data);
-                onComplete(objectData);
+				if(objectData.type == "NetworkObjectData") {
+					onComplete(objectData);
+				}
+                
             }, onError));
         }
         
@@ -146,7 +212,7 @@ public static class NetworkClientManager
     }
     static ResponseData<TData> OnGetRequest<TData>(string methodUrl)
     {
-        using (UnityWebRequest www = UnityWebRequest.Get(string.Format("{0}/{1}", ServerUrl.TrimEnd('/'), methodUrl.TrimStart('/'))))
+		        using (UnityWebRequest www = UnityWebRequest.Get(string.Format("{0}/{1}", ServerUrl.TrimEnd('/'), methodUrl.TrimStart('/'))))
         {
             var response = www.Send();
             

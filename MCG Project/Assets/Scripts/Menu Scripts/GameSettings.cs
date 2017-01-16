@@ -8,6 +8,13 @@ public enum PlayerMode {
     ServerMultiplayer
 }
 
+public class HoleStatus
+{
+	public int currentHoleIndex = 1;
+	public string currentHoleName = "";
+	public int playerRanking = 0;
+}
+
 public static class GameSettings {
 
     public static PlayerMode playerMode = PlayerMode.Single;
@@ -29,4 +36,11 @@ public static class GameSettings {
 			_networkPlayers = value;
 		}
 	}
+
+	public static GameInfoResults GameInfo;
+	public static bool isRace;
+
+	private static HoleStatus _holeStatus = new HoleStatus();
+	public static HoleStatus HoleStatus { get; set; }
+
 }

@@ -18,7 +18,7 @@ public class BoundaryController : MonoBehaviour {
 			return;		
 		}
 
-		GameController.OutOfBounds (other.gameObject.transform.position);
+		GameController.OutOfBounds (other.gameObject.transform.position, other.gameObject);
 		Destroy(other.gameObject);
 	}
 }
