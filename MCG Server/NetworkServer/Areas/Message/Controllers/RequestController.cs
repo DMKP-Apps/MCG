@@ -126,11 +126,12 @@ namespace NetworkServer.Areas.Message.Controllers
                 return Repository.Find(id) as NetworkObjectData;
             });
 
-            IEnumerable<NetworkObjectData> result = null;
+            List<NetworkObjectData> result = null;
             if (data != null) {
                 // locate all other players...
                 result = Repository.GetAll<NetworkObjectData>()
-                    .Where(x => x.sessionId == data.sessionId);
+                    .Where(x => x.sessionId == data.sessionId).ToList();
+                result.ForEach(x => x.UpdateWaitMillieseconds());
                     
             }
 

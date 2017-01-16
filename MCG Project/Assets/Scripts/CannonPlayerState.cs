@@ -31,6 +31,11 @@ public class CannonPlayerState : MonoBehaviour {
         cannonFireController = this.GetComponent<CannonFireController>();
     }
 
+    public bool isFiring()
+    {
+        return cannonFireController.IsFiring();
+    }
+
     public void SetPlayerInfo(string key) {
         cannonFireController = this.GetComponent<CannonFireController>();
         CannonBarrow = transform.FindChild("Cannon").gameObject;
@@ -74,12 +79,12 @@ public class CannonPlayerState : MonoBehaviour {
 			if (_state == State.Set) {
 				var system = Spark.GetComponent<ParticleSystem> ();
 				system.Play ();
-			} else {
+			} /*else {
 				var system = Spark.GetComponent<ParticleSystem>();
 				system.Stop ();
 
 
-			}
+			}*/
 		}
 	}
 
@@ -114,7 +119,7 @@ public class CannonPlayerState : MonoBehaviour {
             cannon_rotation_x = CannonBarrow.transform.localRotation.eulerAngles.x,
             cannon_rotation_y = CannonBarrow.transform.localRotation.eulerAngles.y,
             cannon_rotation_z = CannonBarrow.transform.localRotation.eulerAngles.z,
-            currentBullet = GameController.CurrentBullet,
+            currentBullet = currentBullet,
             fire_power = power,
             fire_torque = torque,
             fire_turn = turn,
@@ -148,11 +153,11 @@ public class CannonPlayerState : MonoBehaviour {
         //rotate us over time according to speed until we are in the required rotation
         CannonBarrow.transform.localEulerAngles = new Vector3(objectData.cannon_rotation_x, objectData.cannon_rotation_y, objectData.cannon_rotation_z);
 
-        GameController.CurrentBullet = objectData.currentBullet;
+        currentBullet = objectData.currentBullet;
 
         if (objectData.fire)
         {
-            cannonFireController.Fire(objectData.fire_power, objectData.fire_torque, objectData.fire_turn);
+            cannonFireController.Fire(objectData.fire_power, objectData.fire_torque, objectData.fire_turn, objectData.waitMilliseconds, objectData.currentBullet);
         }
 
 
@@ -181,7 +186,7 @@ public class CannonPlayerState : MonoBehaviour {
 			}
 		}
 
-		if (GameController.IsShooting()) {
+		if (cannonFireController.IsFiring()) {
 			return;
 		}
 

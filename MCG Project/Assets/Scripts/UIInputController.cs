@@ -39,7 +39,7 @@ public class UIInputController : MonoBehaviour {
 			currentCannonState.CurrentState = CannonPlayerState.State.None;
 
 			var fireController = currentCannon.GetComponent<CannonFireController> ();
-			fireController.Fire (GameController.GetCurrentBullet (), powerControl.PowerRating);
+			fireController.Fire (powerControl.PowerRating);
 			powerControl.ResetMeter ();
 			GuageController.OnReady ();
 			//currentCannonState.ResetBarrowPosition ();

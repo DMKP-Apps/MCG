@@ -32,6 +32,8 @@ public class NetworkObjectData
         fire = false;
 		playerType = "default";
 		uniqueId = Guid.NewGuid ().ToString ();
+		Ready = false;
+		isRace = GameSettings.isRace;
     }
 
 	public string type;
@@ -69,6 +71,10 @@ public class NetworkObjectData
 	public bool isRace;
 	public bool holeComplete;
 	public int stroke;
+	
+	public bool Ready;
+	
+	public double waitMilliseconds;
 
     public bool Compare(NetworkObjectData other)
     {

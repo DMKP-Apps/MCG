@@ -48,7 +48,7 @@ public class BulletHitController : MonoBehaviour {
 
 		var distance = Vector3.Distance (new Vector3 (px, py, px), new Vector3 (cx, cy, cx));
 
-		return !(distance < 0.5f);
+		return !(distance < 1f);
 		//Debug.Log(string.Format("Distance: {0}", distance));
 
 		//return new Vector3 (px, py, px) != new Vector3 (cx, cy, cx);

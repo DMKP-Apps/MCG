@@ -40,12 +40,13 @@ namespace NetworkServer.Areas.Message.Models
         public bool Ready { get; set; }
     }
 
-    public class NetworkObjectData : NetworkData
+    public class NetworkObjectData : NetworkWaitingData
     {
         public NetworkObjectData() : base()
         {
             fire = false;
             playerType = "default";
+            waitMilliseconds = 0;
         }
         
         public string playerType { get; set; }
@@ -74,8 +75,26 @@ namespace NetworkServer.Areas.Message.Models
         public float fire_turn { get; set; }
         public float fire_power { get; set; }
         public float fire_accurracy { get; set; }
+
+        public double waitMilliseconds { get; set; }
+
         public int currentBullet { get; set; }
         public bool holeComplete { get; set; }
+
+        public void UpdateWaitMillieseconds() {
+            if (waitMilliseconds <= 0) {
+                return; // do nothing
+            }
+            var currentDateTime = DateTime.Now.ToUniversalTime();
+            var milliseconds = currentDateTime.Subtract(timeStamp).TotalMilliseconds;
+
+            waitMilliseconds = waitMilliseconds - milliseconds;
+            if (waitMilliseconds < 0) {
+                waitMilliseconds = 0;
+            }
+
+        }
+
     }
 
    
