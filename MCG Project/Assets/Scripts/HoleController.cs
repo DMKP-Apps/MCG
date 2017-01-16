@@ -1,11 +1,13 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 public class HoleController : MonoBehaviour {
 
 	public int Par = 3;
 
+	private List<Transform> raceTeePositions = null;
 	private Transform teePosition = null;
 	private Transform holePosition = null;
 
@@ -15,11 +17,16 @@ public class HoleController : MonoBehaviour {
 	public CameraPathAnimator EndCameraAnimator;
 	public GameController GameController;
 
+	public string HoleTitle = string.Empty;
+
 	public int showPlayerHoleCompleteFor = 5000; 
 	private System.DateTime startTime = System.DateTime.MaxValue;
 
 	void Start() {
 		GameController = GameObject.Find ("GameController").GetComponent<GameController> ();
+		if (string.IsNullOrEmpty (HoleTitle)) {
+			HoleTitle = gameObject.name;
+		}
 	}
 
 	public Transform tee {
@@ -33,6 +40,21 @@ public class HoleController : MonoBehaviour {
 				}
 			}
 			return teePosition;
+		}
+	}
+
+	public List<Transform> raceTees {
+		get { 
+			if (raceTeePositions == null) {
+				List<Transform> positions = new List<Transform> ();
+				foreach (Transform child in this.transform) {
+					if (child.tag == "TeeRace") {
+						positions.Add(child.gameObject.transform);
+					}
+				}
+				raceTeePositions = positions.OrderBy (x => x.gameObject.name).ToList ();
+			}
+			return raceTeePositions;
 		}
 	}
 

@@ -25,7 +25,9 @@ public class CannonFireController : MonoBehaviour {
 		if (bullet != null) {
 			LastBulletTransform = bullet.transform.position;
 		} else if (bullet == null && hasFired) {
-			GameController.StrokeComplete (LastBulletTransform);
+			if (!(GameSettings.playerMode == PlayerMode.ServerMultiplayer && GameSettings.isRace && cannonPlayerState.isOnlinePlayer)) {
+				GameController.StrokeComplete (LastBulletTransform);
+			}
 			hasFired = false;
 		}
 	}
@@ -46,7 +48,10 @@ public class CannonFireController : MonoBehaviour {
 	
 		//CannonBulletParent.transform.forward = position;
 		CannonBulletParent.transform.localRotation = Quaternion.Euler (new Vector3 (0, 0, 0));
-		CannonBulletParent.GetComponent<InputController> ().Reset ();
+		var inputController = CannonBulletParent.GetComponent<InputController> ();
+		if (inputController != null) { 
+			inputController.Reset ();
+		}
 		//CannonBulletParent.transform.LookAt (position);
 	
 	}

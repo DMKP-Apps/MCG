@@ -3,13 +3,17 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using System.Linq;
+using UnityEngine.SceneManagement;
 
 public class GameController : MonoBehaviour {
 	public GameObject playerPrefab;
+	public GameObject playerOnlinePrefab;
 	public List<GameObject> holePrefabs = new List<GameObject> ();
 	public int CurrentHole = 1;
 	public List<GameObject> bulletPrefabs = new List<GameObject> ();
 	//public int CurrentBullet = 1;
+
+	private string endMatchGameScene = "EndMatch";
 
 	//private bool isHoleComplete = false;
 	//private bool isHazardPoint = false;
@@ -17,6 +21,21 @@ public class GameController : MonoBehaviour {
 	//var playerController = player.GetComponent<CannonPlayerState> ();
 	//playerController.isHoleComplete = false;
 	//playerController.isHarzard = false;
+
+	void OnApplicationFocus( bool hasFocus )
+	{
+		if (!hasFocus && NetworkClientManager.IsOnline) {
+			//this.EndGame ();
+		}
+	}
+
+
+
+	public void EndGame() {
+		NetworkClientManager.Logoff ();
+		SceneManager.LoadScene("StartMenu", LoadSceneMode.Single);
+
+	}
 
 	private List<GameObject> players;
 	private GameObject player 
@@ -111,7 +130,6 @@ public class GameController : MonoBehaviour {
 	}
 
 
-    private List<string> playerKeys = new List<string>();
 	void Start() {
 	
 		scoring.Add (-3, "Albatross");
@@ -122,27 +140,7 @@ public class GameController : MonoBehaviour {
 		scoring.Add (2, "Double Bogey");
 		scoring.Add (3, "Triple Bogey");
 
-        /*if (holePrefabs.Count > CurrentHole - 1) {
-		
-			hole = (GameObject)Instantiate (holePrefabs [CurrentHole - 1]);
-
-		}
-
-		if (playerPrefab != null && hole != null) {
-			var holeController = hole.GetComponent<HoleController> ();
-			player = (GameObject)Instantiate (playerPrefab, holeController.tee.position, holeController.tee.rotation);
-
-			var playerController = player.GetComponent<CannonPlayerState> ();
-			playerController.Stroke = 1;
-			textController.SetStroke (playerController.Stroke);
-			textController.SetPar (holeController.Par);
-			textController.SetPlayer (1);
-			textController.SetHole (CurrentHole);
-
-			var watchActivate = HoleCompleteAlert.GetComponent<ActivateWithGameObject> ();
-			watchActivate.WatchObject = holeController.EndCamera;
-			
-		}*/
+        
 
         switch (GameSettings.playerMode) {
             case PlayerMode.Single:
@@ -151,10 +149,9 @@ public class GameController : MonoBehaviour {
             case PlayerMode.LocalMultiplayer:
                 NumberOfPlayers = GameSettings.LocalMultiplayerCount < 2 ? 2 : GameSettings.LocalMultiplayerCount;
                 break;
-            case PlayerMode.ServerMultiplayer:
-                playerKeys = NetworkClientManager.GetAvailablePlayers();
-                NumberOfPlayers = playerKeys.Count;
-                //if(pla)
+		case PlayerMode.ServerMultiplayer:
+				NumberOfPlayers = GameSettings.NetworkPlayers.Count;
+				CurrentHole = GameSettings.HoleStatus.currentHoleIndex;
                 break;
         }
 
@@ -193,6 +190,8 @@ public class GameController : MonoBehaviour {
 
 	}
 
+	private System.DateTime lastPlayerInfoRequest = System.DateTime.Now;
+	private bool checkEndingHole = false;
 	void Update() 
 	{
 		var setActive = true;
@@ -207,36 +206,92 @@ public class GameController : MonoBehaviour {
 		}
 
 		ControlsContainer.SetActive (setActive);
+
+		if (GameSettings.playerMode == PlayerMode.ServerMultiplayer && !buildingHole) {
+			if (System.DateTime.Now.Subtract (lastPlayerInfoRequest).TotalMilliseconds > 1000 && !checkEndingHole) {
+				
+				lastPlayerInfoRequest = System.DateTime.Now;
+				NetworkClientManager.GetGameInfo (this, () => {
+					if(checkEndingHole || buildingHole) {
+						return;
+					}
+					checkEndingHole = true;
+					try
+					{
+						if(GameSettings.GameInfo != null && GameSettings.GameInfo.Items != null) {
+							var info = GameSettings.GameInfo.Items.ToList();
+							info = info.OrderByDescending(x => x.holeComplete).ThenBy(x => x.timeStamp).ToList();
+							if(info.Count < 2 && info.Any(x => !x.holeComplete)) {
+								return;
+							}
+							var index = info.FindIndex(x => x.objectId == NetworkClientManager.player.UID);
+							if(index > -1) {
+								
+								textController.SetHoleCompleteScore(0, (index+1).ToString());
+								GameSettings.HoleStatus.playerRanking = index+1;
+							
+								if(info.Count(x => !x.holeComplete) < 2) {
+									//var holeController = hole.GetComponent<HoleController> ();
+									//if(!holeController.EndCamera.activeInHierarchy) {
+									//	holeController.EndCamera.SetActive(true);
+									//}
+
+									CurrentHole++;
+									if (CurrentHole > holePrefabs.Count) {
+										CurrentHole = 1;
+									}
+
+									GameSettings.HoleStatus.currentHoleIndex = CurrentHole;
+									SceneManager.LoadScene(endMatchGameScene, LoadSceneMode.Single);
+
+
+
+								}
+							}
+						}
+					}
+					finally
+					{
+						checkEndingHole = false;
+					}
+
+
+				});
+			}
+		}
+
 	}
 
 
 
 	private void MoveToNextPlayer() {
-		if (currentPlayer > -1) {
-			player.SetActive (false);
-		}
-		currentPlayer++;
-		if (currentPlayer >= players.Count) {
-			currentPlayer = 0;
-		}
-		var holeController = hole.GetComponent<HoleController> ();
-		var playerList = players.Select (p => new { 
-			PlayerState = p.GetComponent<CannonPlayerState> (),
-			Position = p.transform.position,
-			DistanceFromHole = Vector3.Distance(p.transform.position, holeController.hole.position)
-		}).ToList();
-
-		if (!playerList.Any (p => p.PlayerState.Stroke < 2) && playerList.Any (p => !p.PlayerState.isHoleComplete)) {
-			// every player has shot once... determine the next shooter based on distance from tee.
-			var tmpplayer = playerList.Where (p => !p.PlayerState.isHoleComplete).OrderByDescending (p => p.DistanceFromHole)
-				.FirstOrDefault ();
-			if (tmpplayer != null) {
-				currentPlayer = playerList.FindIndex (p => p.PlayerState.playerNumber == tmpplayer.PlayerState.playerNumber);
+		if (GameSettings.playerMode != PlayerMode.ServerMultiplayer || (GameSettings.playerMode == PlayerMode.ServerMultiplayer && !GameSettings.isRace)) {
+			if (currentPlayer > -1) {
+				player.SetActive (false);
 			}
+			currentPlayer++;
+			if (currentPlayer >= players.Count) {
+				currentPlayer = 0;
+			}
+			var holeController = hole.GetComponent<HoleController> ();
+			var playerList = players.Select (p => new { 
+				PlayerState = p.GetComponent<CannonPlayerState> (),
+				Position = p.transform.position,
+				DistanceFromHole = Vector3.Distance(p.transform.position, holeController.hole.position)
+			}).ToList();
+
+			if (!playerList.Any (p => p.PlayerState.Stroke < 2) && playerList.Any (p => !p.PlayerState.isHoleComplete)) {
+				// every player has shot once... determine the next shooter based on distance from tee.
+				var tmpplayer = playerList.Where (p => !p.PlayerState.isHoleComplete).OrderByDescending (p => p.DistanceFromHole)
+					.FirstOrDefault ();
+				if (tmpplayer != null) {
+					currentPlayer = playerList.FindIndex (p => p.PlayerState.playerNumber == tmpplayer.PlayerState.playerNumber);
+				}
+			}
+
+			player.SetActive (true);
 		}
-
-		player.SetActive (true);
-
+			
 		var playerController = player.GetComponent<CannonPlayerState> ();
 		playerController.isHoleComplete = false;
 		playerController.isHarzard = false;
@@ -283,11 +338,33 @@ public class GameController : MonoBehaviour {
 		return lastContactPoint;
 	}
 
-	public void WaterHazard(GameObject water, Vector3 contactPoint)
+	private CannonPlayerState GetPlayerState(GameObject item) {
+		CannonPlayerState playerController = item.GetComponent<CannonPlayerState> ();
+		var parent = item.transform.parent;
+		while (parent != null && playerController == null) {
+			playerController = parent.GetComponent<CannonPlayerState> ();
+			if (playerController != null) {
+				break;
+			}
+			parent = parent.parent;
+		}
+		return playerController;
+	}
+
+	public void WaterHazard(GameObject water, Vector3 contactPoint, GameObject bullet)
 	{
-		var playerController = player.GetComponent<CannonPlayerState> ();
+		CannonPlayerState playerController = GetPlayerState (bullet);
+
+		if (playerController == null) {
+			return;
+		}
+
 		playerController.Stroke += 2;
 		playerController.isHarzard = true;
+
+		if (playerController.isOnlinePlayer && GameSettings.playerMode == PlayerMode.ServerMultiplayer && GameSettings.isRace) {
+			return;
+		} 
 
 		lastContactPoint = contactPoint;
 		//isHazardPoint = true;
@@ -304,11 +381,23 @@ public class GameController : MonoBehaviour {
 
 	}
 
-	public void OutOfBounds(Vector3 contactPoint)
+
+
+	public void OutOfBounds(Vector3 contactPoint, GameObject bullet)
 	{
-		var playerController = player.GetComponent<CannonPlayerState> ();
+		CannonPlayerState playerController = GetPlayerState (bullet);
+
+		if (playerController == null) {
+			return;
+		}
+
 		playerController.Stroke += 2;
 		playerController.isHarzard = true;
+
+		if (playerController.isOnlinePlayer && GameSettings.playerMode == PlayerMode.ServerMultiplayer && GameSettings.isRace) {
+			return;
+		} 
+
 		
 		lastContactPoint = contactPoint;
 		//isHazardPoint = true;
@@ -322,14 +411,14 @@ public class GameController : MonoBehaviour {
 	}
 
 
-	public void HoleOver()
+	public void HoleOver(GameObject bullet)
 	{
+		CannonPlayerState playerController = GetPlayerState (bullet);
+
 		if (isHoleComplete) {
 			return;
 		}
-		//isHoleComplete = true;
-		//isHazardPoint = false;
-		var playerController = player.GetComponent<CannonPlayerState> ();
+
 		playerController.isHoleComplete = true;
 
 		var holeController = hole.GetComponent<HoleController> ();
@@ -367,8 +456,21 @@ public class GameController : MonoBehaviour {
 		}
 
 		playerController.TotalScore += score;
-
 		holeController.allPlayersComplete = !players.Select (p => p.GetComponent<CannonPlayerState> ()).Any (p => !p.isHoleComplete);
+
+		if (GameSettings.playerMode == PlayerMode.ServerMultiplayer && GameSettings.isRace) {
+			if (playerController.isOnlinePlayer && GameSettings.playerMode == PlayerMode.ServerMultiplayer && GameSettings.isRace) {
+				return;
+			} 
+
+			playerController.SendNetworkObjectData ();
+			holeController.EndCamera.SetActive (true);
+			playerController.gameObject.SetActive (false);
+			return;
+		} 
+
+
+
 		holeController.HoleCompleted ();
 
 		textController.SetHoleCompleteScore (playerController.playerNumber, scoreValue);
@@ -379,7 +481,6 @@ public class GameController : MonoBehaviour {
 	{
 		var holeController = hole.GetComponent<HoleController> ();
 
-		//var allPlayersComplete = !players.Select (p => p.GetComponent<CannonPlayerState> ()).Any (p => !p.isHoleComplete);
 		if (!holeController.allPlayersComplete) {
 			return;
 		}
@@ -390,30 +491,6 @@ public class GameController : MonoBehaviour {
 		}
 
 
-
-		//player.transform.position = holeController.tee.position; 
-		//player.transform.rotation = holeController.tee.rotation;
-
-		// move player into the next position
-		//MoveToPosition(holeController.tee.position);
-
-
-
-		/*var playerController = player.GetComponent<CannonPlayerState> ();
-		var totalScore = playerController.TotalScore;
-
-		Destroy (player);
-
-		player = (GameObject)Instantiate (playerPrefab, holeController.tee.position, holeController.tee.rotation);
-
-	 	playerController = player.GetComponent<CannonPlayerState> ();
-		playerController.Stroke = 1;
-		playerController.TotalScore = totalScore;
-		textController.SetStroke (playerController.Stroke);
-		textController.SetPar (holeController.Par);
-		textController.SetPlayer (1, totalScore);
-		textController.SetHole (CurrentHole);
-		*/
 		BeginHole ();
 
 	}
@@ -425,110 +502,176 @@ public class GameController : MonoBehaviour {
 		public int CurrentBullet;
         public string playerKey;
 	}
-
+	private bool buildingHole= false;
 	private void BeginHole() {
-		
-		//isHoleComplete = false;
-		//isHazardPoint = false;
 
-		// destroy the previous hole if exists
-		if(hole != null) {
-			Destroy (hole);
+		if (buildingHole) {
+			return;
 		}
 
-		hole = (GameObject)Instantiate (holePrefabs [CurrentHole - 1]);
-		var holeController = hole.GetComponent<HoleController> ();
-		holeController.allPlayersComplete = false;
-		var watchActivate = HoleCompleteAlert.GetComponent<ActivateWithGameObject> ();
-		watchActivate.WatchObject = holeController.EndCamera;
+		buildingHole = true;
+		try
+		{
+			//isHoleComplete = false;
+			//isHazardPoint = false;
 
-		textController.SetPar (holeController.Par);
-		textController.SetHole (CurrentHole);
-
-		if (players == null) {
-			players = new List<GameObject> ();
-		}
-		List<playerState> playerScores = new List<playerState> ();
-		if (players.Count > 0) {
-			players.ForEach (p => { 
-
-				var playerController = p.GetComponent<CannonPlayerState> ();
-				playerState state = new playerState() {
-					TotalScore = playerController.TotalScore,
-					StrokeCount = playerController.Stroke,
-					PlayerNumber = playerController.playerNumber,
-					CurrentBullet = playerController.currentBullet,
-                    playerKey = playerController.playerKey
-				};
-				playerScores.Add(state);
-				Destroy (p); 
-			});
-		}
-		players = new List<GameObject> ();
-
-		if (NumberOfPlayers < 1) {
-			NumberOfPlayers = 1;
-		}
-		if (NumberOfPlayers > 4) {
-			NumberOfPlayers = 4;
-		}
-
-		currentPlayer = 0;
-		if (playerScores.Count > 0) {
-
-			playerScores.OrderBy (x => x.StrokeCount).ToList ().ForEach (p => {
-				var player = (GameObject)Instantiate (playerPrefab, holeController.tee.position, holeController.tee.rotation);
-                
-
-                var pController = player.GetComponent<CannonPlayerState> ();
-
-                if (GameSettings.playerMode == PlayerMode.ServerMultiplayer && !string.IsNullOrEmpty(p.playerKey))
-                {
-                    pController.SetPlayerInfo(p.playerKey);
-                }
-
-
-                pController.Stroke = 1;
-				pController.TotalScore = p.TotalScore;
-				pController.playerNumber = p.PlayerNumber;
-				pController.isHoleComplete = false;
-				pController.isHarzard = false;
-				pController.currentBullet = p.CurrentBullet;
-				// set the current object to in-active
-				player.SetActive(false);
-                // add the game object to the list
-                player.name = string.Format("CannonPlayer{0}", p.PlayerNumber);
-                players.Add(player);
-
-			});
-
-		} else {
-			// create the player and de-activate them within the scene
-			for(int i = 0; i < NumberOfPlayers; i++) {
-				var player = (GameObject)Instantiate (playerPrefab, holeController.tee.position, holeController.tee.rotation);
-                
-                var pController = player.GetComponent<CannonPlayerState> ();
-
-                if (GameSettings.playerMode == PlayerMode.ServerMultiplayer && playerKeys.Count >= NumberOfPlayers)
-                {
-                    pController.SetPlayerInfo(playerKeys[i]);
-                }
-
-				pController.Stroke = 1;
-				pController.TotalScore = 0;
-				pController.playerNumber = i + 1;
-				pController.isHoleComplete = false;
-				pController.isHarzard = false;
-				// set the current object to in-active
-				player.SetActive(false);
-                // add the game object to the list
-                player.name = string.Format("CannonPlayer{0}", i + 1);
-                players.Add(player);
+			// destroy the previous hole if exists
+			if(hole != null) {
+				Destroy (hole);
 			}
+
+			hole = (GameObject)Instantiate (holePrefabs [CurrentHole - 1]);
+			var holeController = hole.GetComponent<HoleController> ();
+			holeController.allPlayersComplete = false;
+			var watchActivate = HoleCompleteAlert.GetComponent<ActivateWithGameObject> ();
+			watchActivate.WatchObject = holeController.EndCamera;
+
+			if(GameSettings.HoleStatus == null) {
+				GameSettings.HoleStatus = new HoleStatus() {
+					currentHoleIndex = CurrentHole
+				};
+			}
+			GameSettings.HoleStatus.currentHoleName = holeController.HoleTitle;
+
+			textController.SetPar (holeController.Par);
+			textController.SetHole (CurrentHole);
+
+			if (players == null) {
+				players = new List<GameObject> ();
+			}
+			List<playerState> playerScores = new List<playerState> ();
+			if (players.Count > 0) {
+				players.ForEach (p => { 
+
+					var playerController = p.GetComponent<CannonPlayerState> ();
+					playerState state = new playerState() {
+						TotalScore = playerController.TotalScore,
+						StrokeCount = playerController.Stroke,
+						PlayerNumber = playerController.playerNumber,
+						CurrentBullet = playerController.currentBullet,
+	                    playerKey = playerController.playerKey
+					};
+					playerScores.Add(state);
+					Destroy (p); 
+				});
+			}
+			players = new List<GameObject> ();
+
+			if (NumberOfPlayers < 1) {
+				NumberOfPlayers = 1;
+			}
+			if (NumberOfPlayers > 4) {
+				NumberOfPlayers = 4;
+			}
+
+			currentPlayer = 0;
+			if (playerScores.Count > 0) {
+
+				int i = 0;
+				playerScores.OrderBy (x => x.StrokeCount).ToList ().ForEach (p => {
+
+					var isRacePlayer = false;
+					isRacePlayer = GameSettings.playerMode == PlayerMode.ServerMultiplayer && GameSettings.isRace && !string.IsNullOrEmpty(p.playerKey)
+						&& NetworkClientManager.player != null && NetworkClientManager.player.UID != p.playerKey;
+
+					if(GameSettings.playerMode == PlayerMode.ServerMultiplayer && GameSettings.isRace && !isRacePlayer) {
+						currentPlayer = i;
+					}
+
+
+					GameObject currentPlayerObject;
+					Transform tee = holeController.tee;
+					if(GameSettings.playerMode == PlayerMode.ServerMultiplayer && GameSettings.isRace && holeController.raceTees.Count > i) {
+						tee = holeController.raceTees[i];
+					}
+
+					i++;
+
+					if(isRacePlayer) {
+						currentPlayerObject = (GameObject)Instantiate (playerOnlinePrefab, tee.position, tee.rotation);
+					}
+					else 
+					{
+						currentPlayerObject = (GameObject)Instantiate (playerPrefab, tee.position, tee.rotation);
+					}
+
+
+					var pController = currentPlayerObject.GetComponent<CannonPlayerState> ();
+
+	                if (GameSettings.playerMode == PlayerMode.ServerMultiplayer && !string.IsNullOrEmpty(p.playerKey))
+	                {
+	                    pController.SetPlayerInfo(p.playerKey);
+	                }
+
+
+	                pController.Stroke = 1;
+					pController.TotalScore = p.TotalScore;
+					pController.playerNumber = p.PlayerNumber;
+					pController.isHoleComplete = false;
+					pController.isHarzard = false;
+					pController.currentBullet = p.CurrentBullet;
+					// set the current object to in-active
+					currentPlayerObject.SetActive(GameSettings.playerMode == PlayerMode.ServerMultiplayer && GameSettings.isRace);
+	                // add the game object to the list
+					currentPlayerObject.name = string.Format("CannonPlayer{0}", p.PlayerNumber);
+					players.Add(currentPlayerObject);
+
+				});
+
+			} else {
+				// create the player and de-activate them within the scene
+				for(int i = 0; i < NumberOfPlayers; i++) {
+					var isRacePlayer = false;
+					var playerKey = GameSettings.NetworkPlayers.Count >= NumberOfPlayers ? GameSettings.NetworkPlayers [i].objectId : string.Empty;
+					isRacePlayer = GameSettings.playerMode == PlayerMode.ServerMultiplayer && GameSettings.isRace && !string.IsNullOrEmpty(playerKey)
+						&& NetworkClientManager.player != null && NetworkClientManager.player.UID != playerKey;
+
+					if(GameSettings.playerMode == PlayerMode.ServerMultiplayer && GameSettings.isRace && !isRacePlayer) {
+						currentPlayer = i;
+					}
+
+					GameObject currentPlayerObject;
+					Transform tee = holeController.tee;
+					if(GameSettings.playerMode == PlayerMode.ServerMultiplayer && GameSettings.isRace && holeController.raceTees.Count > i) {
+						tee = holeController.raceTees[i];
+					}
+
+					if(isRacePlayer) {
+						currentPlayerObject = (GameObject)Instantiate (playerOnlinePrefab, tee.position, tee.rotation);
+					}
+					else 
+					{
+						currentPlayerObject = (GameObject)Instantiate (playerPrefab, tee.position, tee.rotation);
+					}
+
+					var pController = currentPlayerObject.GetComponent<CannonPlayerState> ();
+
+					if (GameSettings.playerMode == PlayerMode.ServerMultiplayer && GameSettings.NetworkPlayers.Count >= NumberOfPlayers)
+	                {
+						pController.SetPlayerInfo(playerKey);
+	                }
+
+					pController.Stroke = 1;
+					pController.TotalScore = 0;
+					pController.playerNumber = i + 1;
+					pController.isHoleComplete = false;
+					pController.isHarzard = false;
+					// set the current object to in-active
+					currentPlayerObject.SetActive(GameSettings.playerMode == PlayerMode.ServerMultiplayer && GameSettings.isRace);
+	                // add the game object to the list
+					currentPlayerObject.name = string.Format("CannonPlayer{0}", i + 1);
+					players.Add(currentPlayerObject);
+				}
+			}
+
+			if(!(GameSettings.playerMode == PlayerMode.ServerMultiplayer && GameSettings.isRace)) {
+				currentPlayer = -1;
+			}
+			MoveToNextPlayer ();
 		}
-		
-		currentPlayer = -1;
-		MoveToNextPlayer ();
+		finally {
+			buildingHole = false;
+		}
 	}
 
 	public GameObject GetCurrentCannonPlayer()

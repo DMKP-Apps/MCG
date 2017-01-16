@@ -6,7 +6,8 @@ using System.Text;
 
 public class NetworkPlayerInfo
 {
-    public string UID;
+    public string UID;	
     public string AccountName;
+	public bool isRace;
 }
 
