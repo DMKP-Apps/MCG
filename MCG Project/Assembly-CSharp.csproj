@@ -89,6 +89,14 @@
      <Compile Include="Assets\Scripts\GameController.cs" />
      <Compile Include="Assets\Scripts\HoleController.cs" />
      <Compile Include="Assets\Scripts\InputController.cs" />
+     <Compile Include="Assets\Scripts\Menu Scripts\GameSettings.cs" />
+     <Compile Include="Assets\Scripts\Menu Scripts\StartMenuController.cs" />
+     <Compile Include="Assets\Scripts\Network\EndMatchController.cs" />
+     <Compile Include="Assets\Scripts\Network\MultiplayerController.cs" />
+     <Compile Include="Assets\Scripts\Network\NetworkClientManager.cs" />
+     <Compile Include="Assets\Scripts\Network\NetworkMessage.cs" />
+     <Compile Include="Assets\Scripts\Network\NetworkObjectData.cs" />
+     <Compile Include="Assets\Scripts\Network\NetworkPlayerInfo.cs" />
      <Compile Include="Assets\Scripts\SmoothRotator.cs" />
      <Compile Include="Assets\Scripts\UIInputController.cs" />
      <Compile Include="Assets\Scripts\UITextController.cs" />
@@ -108,6 +116,9 @@
      <None Include="Assets\Packages\Animated Flags\Shaders\Mobile-Alpha-BumpSpec-1DirectionalLight-NoCull.shader" />
      <None Include="Assets\Standard Assets\ParticleSystems\Shaders\PriorityParticleAdd.shader" />
      <None Include="Assets\Packages\Animated Flags\Shaders\Mobile-BumpSpec-1DirectionalLight-NoCull.shader" />
+ <Reference Include="UnityEngine.Advertisements">
+ <HintPath>/Applications/Unity/Unity.app/Contents/UnityExtensions/Unity/Advertisements/UnityEngine.Advertisements.dll</HintPath>
+ </Reference>
  <Reference Include="UnityEngine.UI">
  <HintPath>/Applications/Unity/Unity.app/Contents/UnityExtensions/Unity/GUISystem/UnityEngine.UI.dll</HintPath>
  </Reference>
@@ -122,6 +133,9 @@
  </Reference>
  <Reference Include="UnityEngine.HoloLens">
  <HintPath>/Applications/Unity/Unity.app/Contents/UnityExtensions/Unity/UnityHoloLens/RuntimeEditor/UnityEngine.HoloLens.dll</HintPath>
+ </Reference>
+ <Reference Include="UnityEngine.Purchasing">
+ <HintPath>/Applications/Unity/Unity.app/Contents/UnityExtensions/Unity/UnityPurchasing/UnityEngine.Purchasing.dll</HintPath>
  </Reference>
  <Reference Include="UnityEngine.VR">
  <HintPath>/Applications/Unity/Unity.app/Contents/UnityExtensions/Unity/UnityVR/RuntimeEditor/UnityEngine.VR.dll</HintPath>

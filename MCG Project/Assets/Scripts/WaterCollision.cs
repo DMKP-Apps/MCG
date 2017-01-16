@@ -13,7 +13,7 @@ public class WaterCollision : MonoBehaviour {
 
 	void OnTriggerEnter(Collider other) {
 		
-		GameController.WaterHazard (this.gameObject, other.gameObject.transform.position);
+		GameController.WaterHazard (this.gameObject, other.gameObject.transform.position, other.gameObject);
 		//var bulletHit
 		//this.gameObject.SetActive (false);
 		if (splash != null) {
