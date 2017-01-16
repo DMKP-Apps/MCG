@@ -31,28 +31,41 @@ public class InputController : MonoBehaviour {
 		m_FollowVelocity = new Vector3();
 	}
 
+    private bool isMoving = false;
+
+    public bool AllowInput = true;
+
 	// Update is called once per frame
 	void Update () {
+
 		InputPosition = new Vector2(0, 0);
+        bool hasTouch = false;
 		Input.touches.ToList ().ForEach (touch => {
 			if(touch.phase == TouchPhase.Began) {
 				GameController.TouchDetected();
+                hasTouch = true;
 
-			}
+            }
+
 			if(touch.phase == TouchPhase.Moved) {
-				// Construct a ray from the current touch coordinates
+				if (!AllowInput) {
+					return;
+				}
 
-				//var ray = Camera.main.ScreenPointToRay (touch.position);
-				//Debug.Log(string.Format("x: {0}, y: {1}", ray.direction.x, ray.direction.y));
-				//var hits = Physics2D.RaycastAll(new Vector2(ray.origin.x, ray.origin.y),new Vector2(ray.direction.x, ray.direction.y));
-				//Debug.Log(string.Format("hits: {0}", hits.Length));
-				//hits.ToList().Where(hit => hit.collider != null).ToList()
-				//	.ForEach(hit => {
-				//		Debug.Log(hit.collider.gameObject.name);
+                hasTouch = true;
+                // Construct a ray from the current touch coordinates
 
-				//	});
+                //var ray = Camera.main.ScreenPointToRay (touch.position);
+                //Debug.Log(string.Format("x: {0}, y: {1}", ray.direction.x, ray.direction.y));
+                //var hits = Physics2D.RaycastAll(new Vector2(ray.origin.x, ray.origin.y),new Vector2(ray.direction.x, ray.direction.y));
+                //Debug.Log(string.Format("hits: {0}", hits.Length));
+                //hits.ToList().Where(hit => hit.collider != null).ToList()
+                //	.ForEach(hit => {
+                //		Debug.Log(hit.collider.gameObject.name);
 
-				/*Vector2 v2 = new Vector2(Camera.main.ScreenToWorldPoint(touch.position).x, Camera.main.ScreenToWorldPoint(touch.position).y);
+                //	});
+
+                /*Vector2 v2 = new Vector2(Camera.main.ScreenToWorldPoint(touch.position).x, Camera.main.ScreenToWorldPoint(touch.position).y);
 				Collider2D c2d = Physics2D.OverlapPoint(v2);
 
 				if(c2d != null)
@@ -60,26 +73,27 @@ public class InputController : MonoBehaviour {
 					Debug.Log(c2d.gameObject.name);
 				}*/
 
-				//hits.ToList().Where(hit => hit.collider != null).ToList()
-				//	.ForEach(hit => {
+                //hits.ToList().Where(hit => hit.collider != null).ToList()
+                //	.ForEach(hit => {
 
-				//		Debug.Log(string.Format("name: {0}", hit.collider.gameObject.name));
-				//		if(hit.collider.gameObject.name == this.name) {
+                //		Debug.Log(string.Format("name: {0}", hit.collider.gameObject.name));
+                //		if(hit.collider.gameObject.name == this.name) {
 
-							//float step = Speed * Time.deltaTime;
-							//transform.position = Vector3.MoveTowards(transform.position, 
-							//	new Vector3(touch.deltaPosition.x,0.0f,touch.deltaPosition.y), step);
-							//transform.Rotate(touch.deltaPosition.y,0.0f,0.0f);
-				if(!GameController.IsShooting())
+                //float step = Speed * Time.deltaTime;
+                //transform.position = Vector3.MoveTowards(transform.position, 
+                //	new Vector3(touch.deltaPosition.x,0.0f,touch.deltaPosition.y), step);
+                //transform.Rotate(touch.deltaPosition.y,0.0f,0.0f);
+                if (!GameController.IsShooting())
 				{
 					transform.localRotation = SmoothRotator.Rotate( transform.localRotation, ref m_OriginalRotation,
 								ref m_TargetAngles, ref m_FollowAngles,
 								ref m_FollowVelocity, rotationRange, rotationSpeed,
 								dampingTime,touch.deltaPosition.x, touch.deltaPosition.y);
 
-					//m_OriginalRotation = transform.localRotation;
+                    
+                    //m_OriginalRotation = transform.localRotation;
 
-					var currentRotation = string.Format("{0},{1},{2}", 
+                    var currentRotation = string.Format("{0},{1},{2}", 
 						transform.localRotation.x.ToString("0000.0000"),
 						transform.localRotation.y.ToString("0000.0000"),
 						transform.localRotation.z.ToString("0000.0000"));
@@ -102,5 +116,47 @@ public class InputController : MonoBehaviour {
 					//});
 			}
 		});
-	}
+
+        if (!hasTouch)
+        {
+            if (Input.GetMouseButtonDown(0))
+            {
+                GameController.TouchDetected();
+                isMoving = !isMoving;
+            };
+
+			if (!AllowInput) {
+				return;
+			}
+
+            if (isMoving)
+            {
+                var y = Input.GetAxis("Mouse Y");
+                var x = Input.GetAxis("Mouse X");
+                
+                if (!GameController.IsShooting())
+                {
+                    transform.localRotation = SmoothRotator.Rotate(transform.localRotation, ref m_OriginalRotation,
+                                ref m_TargetAngles, ref m_FollowAngles,
+                                ref m_FollowVelocity, rotationRange, rotationSpeed * 2,
+                                dampingTime, x, y);
+                    
+                    var currentRotation = string.Format("{0},{1},{2}",
+                        transform.localRotation.x.ToString("0000.0000"),
+                        transform.localRotation.y.ToString("0000.0000"),
+                        transform.localRotation.z.ToString("0000.0000"));
+
+                    if (previousPosition != currentRotation)
+                    {
+                        previousPosition = currentRotation;
+                        InputPosition.x = x;
+                        InputPosition.y = y;
+
+                    }
+
+                }
+
+            }
+        }
+    }
 }

@@ -16,9 +16,13 @@ public class BulletHitController : MonoBehaviour {
 
 	private System.DateTime time = System.DateTime.Now;
 
+
+
 	void LateUpdate()
 	{
-		if (System.DateTime.Now.Subtract (time).TotalMilliseconds > 750) {
+		if (System.DateTime.Now.Subtract (time).TotalMilliseconds > 300) {
+			
+
 			time = System.DateTime.Now;
 			var destroyObject = false;
 			if (!DetectMovement (lastPosition, transform.position) && !DetectMovement (lastRotation, transform.rotation.eulerAngles)) {
@@ -34,15 +38,20 @@ public class BulletHitController : MonoBehaviour {
 
 	private bool DetectMovement(Vector3 previous, Vector3 current) {
 		var multiplier = 10f;
-		var px = float.Parse((System.Math.Floor (previous.x * multiplier) / 10).ToString());
-		var py = float.Parse((System.Math.Floor (previous.y * multiplier) / 10).ToString());
-		var pz = float.Parse((System.Math.Floor (previous.z * multiplier) / 10).ToString());
+		var px = float.Parse((System.Math.Floor (previous.x * multiplier) / multiplier).ToString());
+		var py = float.Parse((System.Math.Floor (previous.y * multiplier) / multiplier).ToString());
+		var pz = float.Parse((System.Math.Floor (previous.z * multiplier) / multiplier).ToString());
 
-		var cx = float.Parse((System.Math.Floor (current.x * multiplier) / 10).ToString());
-		var cy = float.Parse((System.Math.Floor (current.y * multiplier) / 10).ToString());
-		var cz = float.Parse((System.Math.Floor (current.z * multiplier) / 10).ToString());
+		var cx = float.Parse((System.Math.Floor (current.x * multiplier) / multiplier).ToString());
+		var cy = float.Parse((System.Math.Floor (current.y * multiplier) / multiplier).ToString());
+		var cz = float.Parse((System.Math.Floor (current.z * multiplier) / multiplier).ToString());
 
-		return new Vector3 (px, py, px) != new Vector3 (cx, cy, cx);
+		var distance = Vector3.Distance (new Vector3 (px, py, px), new Vector3 (cx, cy, cx));
+
+		return !(distance < 0.5f);
+		//Debug.Log(string.Format("Distance: {0}", distance));
+
+		//return new Vector3 (px, py, px) != new Vector3 (cx, cy, cx);
 	
 	}
 
@@ -57,7 +66,7 @@ public class BulletHitController : MonoBehaviour {
         {
 			if (contact.otherCollider.gameObject.tag == tagHole && HitDetected != tagHole)
             {
-				GameController.HoleOver ();
+				GameController.HoleOver (this.gameObject);
 				Destroy(this.gameObject);
 				HitDetected = tagHole;
                 
@@ -65,7 +74,7 @@ public class BulletHitController : MonoBehaviour {
 			else if (contact.otherCollider.gameObject.tag == tagWater && HitDetected != tagWater )
 			{
 				HitDetected = tagWater;
-				GameController.WaterHazard (contact.otherCollider.gameObject, contact.point);
+				GameController.WaterHazard (contact.otherCollider.gameObject, contact.point, this.gameObject);
 				this.gameObject.SetActive (false);
 				if (splash != null) {
 					var ps = (GameObject)Instantiate (splash, new Vector3 (contact.point.x, contact.point.y, contact.point.z), Quaternion.Euler (-90, 0, 0));
