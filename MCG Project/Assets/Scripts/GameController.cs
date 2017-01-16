@@ -519,6 +519,11 @@ public class GameController : MonoBehaviour {
 				Destroy (hole);
 			}
 
+			if (CurrentHole > holePrefabs.Count) {
+				CurrentHole = 1;
+			}
+
+
 			hole = (GameObject)Instantiate (holePrefabs [CurrentHole - 1]);
 			var holeController = hole.GetComponent<HoleController> ();
 			holeController.allPlayersComplete = false;
@@ -527,9 +532,9 @@ public class GameController : MonoBehaviour {
 
 			if(GameSettings.HoleStatus == null) {
 				GameSettings.HoleStatus = new HoleStatus() {
-					currentHoleIndex = CurrentHole
 				};
 			}
+			GameSettings.HoleStatus.currentHoleIndex = CurrentHole;
 			GameSettings.HoleStatus.currentHoleName = holeController.HoleTitle;
 
 			textController.SetPar (holeController.Par);

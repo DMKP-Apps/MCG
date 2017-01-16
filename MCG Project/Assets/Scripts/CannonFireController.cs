@@ -101,7 +101,7 @@ public class CannonFireController : MonoBehaviour {
 
         if (cannonPlayerState != null)
         {
-            cannonPlayerState.SendNetworkObjectData(true, power, torque, turn);
+			cannonPlayerState.SendNetworkObjectData(true, power, torque, turn, waitForFire);
         }
 
         Fire(power, torque, turn, waitForFire);
@@ -113,6 +113,10 @@ public class CannonFireController : MonoBehaviour {
         if (cannonBodyAnimate != null) {
             cannonBodyAnimate.PlayAnimation();
         }
+		if (cannonPlayerState.isOnlinePlayer) {
+			var system = cannonPlayerState.Spark.GetComponent<ParticleSystem>();
+			system.Play();
+		}
         fireData = new FireData()
         {
             torque = torque,

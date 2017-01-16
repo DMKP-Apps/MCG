@@ -46,7 +46,7 @@ public class EndMatchController : MonoBehaviour {
 
 		if (!GameSettings.NetworkPlayers.Any (x => !x.Ready) && GameSettings.NetworkPlayers.Count > 1) {
 			// load the seen
-			GameSettings.HoleStatus.currentHoleIndex = 1;
+			GameSettings.HoleStatus.currentHoleIndex++;
 			SceneManager.LoadScene(gameScene, LoadSceneMode.Single);
 
 		}

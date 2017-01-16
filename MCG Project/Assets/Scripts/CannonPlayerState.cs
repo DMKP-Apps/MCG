@@ -95,7 +95,7 @@ public class CannonPlayerState : MonoBehaviour {
 
     private NetworkObjectData _previousObjectData = new NetworkObjectData();
 
-    public void SendNetworkObjectData(bool fired = false, float power = 0f, float torque = 0f, float turn = 0f) {
+	public void SendNetworkObjectData(bool fired = false, float power = 0f, float torque = 0f, float turn = 0f, double wait = 0f) {
         if (!NetworkClientManager.IsOnline)
         {
             return;
@@ -126,6 +126,7 @@ public class CannonPlayerState : MonoBehaviour {
 			fire_accurracy = 1,
 			stroke = Stroke,
 			holeComplete = isHoleComplete,
+			waitMilliseconds = wait
         };
         if (!data.Compare(_previousObjectData))
         {
