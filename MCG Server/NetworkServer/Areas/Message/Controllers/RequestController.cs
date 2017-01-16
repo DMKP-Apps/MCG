@@ -14,17 +14,17 @@ namespace NetworkServer.Areas.Message.Controllers
     
     public class RequestController : Controller
     {
-        public IGameObjectDataRepository Repository { get; set; }
+        public INetworkDataRepository Repository { get; set; }
 
         public RequestController()
         {
-            this.Repository = DependencyResolver.Current.GetService<IGameObjectDataRepository>();
+            this.Repository = DependencyResolver.Current.GetService<INetworkDataRepository>();
         }
 
         [HttpGet]
         public async Task<ActionResult> Ping()
         {
-            var messages = await Task.Run<IEnumerable<NetworkObjectData>>(() => Repository.GetAll());
+            var messages = await Task.Run<IEnumerable<NetworkData>>(() => Repository.GetAll());
             var data = await Task.Run<string>(() => string.Format("Successfully ping at {0} - {1} Requests in queue", System.DateTime.Now, messages.Count()));
             return Json(data, JsonRequestBehavior.AllowGet);
         }
@@ -32,14 +32,14 @@ namespace NetworkServer.Areas.Message.Controllers
         [HttpGet]
         public async Task<ActionResult> GetAll()
         {
-            var data = await Task.Run<IEnumerable<NetworkObjectData>>(() => Repository.GetAll());
+            var data = await Task.Run<IEnumerable<NetworkData>>(() => Repository.GetAll());
             return Json(new { Items = data }, JsonRequestBehavior.AllowGet);
         }
 
         [HttpGet]
         public async Task<ActionResult> GetById(string id)
         {
-            var data = await Task.Run<NetworkObjectData>(() => Repository.Find(id));
+            var data = await Task.Run<object>(() => Repository.Find(id));
             return Json(data, JsonRequestBehavior.AllowGet);
             
         }
@@ -57,53 +57,99 @@ namespace NetworkServer.Areas.Message.Controllers
 
         }
 
+        [HttpPost]
+        public async Task<ActionResult> SaveWaitingData(NetworkWaitingData model)
+        {
+            //var data = await Task.Run<MessageItem>(() => Repository.Add(model));
+            var data = await Task.Run<string>(() => {
+                Repository.Add(model);
+                return "Success";
+            });
+            return Json(data, JsonRequestBehavior.AllowGet);
+
+        }
+
+
+        [HttpGet]
+        public async Task<ActionResult> GetNetworkPlayers(string id)
+        {
+            var data = await Task.Run<IEnumerable<NetworkWaitingData>>(() =>
+            {
+                var info = Repository.Find(id);
+                if (info != null) {
+                    Repository.Update(info);
+                    return Repository.GetAll<NetworkWaitingData>()
+                        .Where(x => x.sessionId == info.sessionId);
+                }
+
+                return new List<NetworkWaitingData>();
+            });
+            return Json(data, JsonRequestBehavior.AllowGet);
+        }
+
+        [HttpGet]
+        public async Task<ActionResult> NetworkPlayerReady(string id)
+        {
+            var data = await Task.Run<string>(() =>
+            {
+                var info = Repository.Find(id) as NetworkWaitingData;
+                if (info != null)
+                {
+                    info.Ready = true;
+                    Repository.Update(info);
+                    return info.sessionId;
+                }
+
+                return string.Empty;
+            });
+            return Json(data, JsonRequestBehavior.AllowGet);
+
+
+        }
+
         
+        [HttpGet]
+        public async Task<ActionResult> IsPlayerOnline(string id)
+        {
+            var data = await Task.Run<NetworkData>(() =>
+            {
+                return Repository.Find(id);
+            });
+            return Json(data, JsonRequestBehavior.AllowGet);
+        }
 
-        //[HttpPost]
-        //public async Task<ActionResult> SaveActionData(NetworkActionShotData model)
-        //{
-        //    //var data = await Task.Run<MessageItem>(() => Repository.Add(model));
-        //    var data = await Task.Run<string>(() => {
-        //        SaveNetworkObjectData(model);
-        //        return "Success";
-        //    });
-        //    return Json(data, JsonRequestBehavior.AllowGet);
+        [HttpGet]
+        public async Task<ActionResult> GetGameInfo(string id)
+        {
+            var data = await Task.Run<NetworkObjectData>(() =>
+            {
+                return Repository.Find(id) as NetworkObjectData;
+            });
 
-        //}
+            List<NetworkObjectData> result = null;
+            if (data != null) {
+                // locate all other players...
+                result = Repository.GetAll<NetworkObjectData>()
+                    .Where(x => x.sessionId == data.sessionId).ToList();
+                result.ForEach(x => x.UpdateWaitMillieseconds());
+                    
+            }
 
-        //private void SaveNetworkObjectData(NetworkObjectData model)
-        //{
-        //    using (MCGDbContext context = new MCGDbContext())
-        //    {
-        //        Guid sessionId = Guid.Empty;
-        //        if (!Guid.TryParse(model.sessionId, out sessionId)) {
-        //            sessionId = Guid.Empty;
-        //        }
-        //        GameObjectData entity = new GameObjectData()
-        //        {
-        //            objectId = model.objectId,
-        //            objectName = model.objectName,
-        //            SessionId = sessionId,
-        //            holeId = model.holeId,
-        //            type = model.GetType().Name,
-        //            data = Newtonsoft.Json.JsonConvert.SerializeObject(model)
-        //        };
-        //        context.GameObjectData.Add(entity);
-        //        context.SaveChanges();
-        //    }
-        //}
+
+            return Json(result, JsonRequestBehavior.AllowGet);
+        }
 
 
         [HttpPost]
-        public async Task<ActionResult> Login(Player model)
+        public async Task<ActionResult> Login(PlayerLoginModel model)
         {
-            var data = await Task.Run<Player>(() => { 
+            var data = await Task.Run<PlayerLoginModel>(() => { 
                 using (MCGDbContext context = new MCGDbContext())
                 {
                     var player = context.Players.FirstOrDefault(x => x.UID == model.UID);
                     if (player != null)
                     {
-                        model = player;
+                        model.AccountName = player.AccountName;
                     }
                     else
                     {
@@ -131,28 +177,47 @@ namespace NetworkServer.Areas.Message.Controllers
                             model.AccountName = string.Format("{0}{1}", model.AccountName, currentInterval.ToString("00"));
                         }
 
-                        context.Players.Add(model);
+                        context.Players.Add(new Player() { UID = model.UID, AccountName = model.AccountName });
                         context.SaveChanges();
                     }
                 }
 
+                var sessionId = Guid.NewGuid().ToString();
+                Repository.GetAll<NetworkWaitingData>()
+                    .GroupBy(x => x.sessionId)
+                    .Where(x => x.Count() < 2)
+                    .Select(x => x.FirstOrDefault())
+                    .Where(x => x != null && x.isRace == model.isRace)
+                    .OrderBy(x => x.timeStamp)
+                    .Take(1).ToList().ForEach(n => sessionId = n.sessionId);
+
+                NetworkWaitingData clientInfo = new NetworkWaitingData() {
+                    accName = model.AccountName,
+                    objectId = model.UID,
+                    sessionId = sessionId,
+                    isRace = model.isRace
+                };
+
+                Repository.Add(clientInfo);
+
                 return model;
+
+
             });
             //var data = await Task.Run<MessageItem>(() => Repository.Add(model));
             return Json(data, JsonRequestBehavior.AllowGet);
-
         }
 
-        /*[HttpGet("{id}", Name = "GetMessage")]
-        public IActionResult GetById(string id)
+        [HttpGet]
+        public async Task<ActionResult> Logout(string id)
         {
-            var item = Repository.Find(id);
-            if (item == null)
+            var data = await Task.Run<bool>(() =>
             {
-                return NotFound();
-            }
-            return new ObjectResult(item);
-        }*/
+                Repository.Remove(id);
+                return true;
+            });
+            return Json(data, JsonRequestBehavior.AllowGet);
+        }
 
     }
 }

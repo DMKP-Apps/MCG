@@ -20,5 +20,14 @@ namespace NetworkServer
             AutofacConfig.SetAutofacContainer();
             BundleConfig.RegisterBundles(BundleTable.Bundles);
         }
+
+        protected void Application_End()
+        {
+            var repository = DependencyResolver.Current.GetService<Areas.Message.Models.INetworkDataRepository>();
+            if (repository != null) {
+                repository.ShutDown = false;
+            }
+
+        }
     }
 }
