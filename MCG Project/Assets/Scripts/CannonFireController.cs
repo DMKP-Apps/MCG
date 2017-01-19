@@ -1,27 +1,35 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 public class CannonFireController : MonoBehaviour {
 
 	private GameObject bullet;
 	public GameObject BulletPosition;
 	public GameObject CannonBurstPrefab;
-	public GameController GameController;
+	private GameController GameController;
 	public GameObject CannonBulletParent;
 
+    
 	private bool hasFired = false;
 
 	private Vector3 LastBulletTransform;
     private CannonPlayerState cannonPlayerState = null;
+    public CannonBodyAnimate cannonBodyAnimate;
 
-	void Start() {
+
+    void Start() {
 		GameController = GameObject.Find ("GameController").GetComponent<GameController> ();
         cannonPlayerState = this.GetComponent<CannonPlayerState>();
     }
 
 	void Update()
 	{
+        if (fireData != null && fireData.canFire()) {
+            OnFire();
+        }
+
 		if (bullet != null) {
 			LastBulletTransform = bullet.transform.position;
 		} else if (bullet == null && hasFired) {
@@ -33,12 +41,16 @@ public class CannonFireController : MonoBehaviour {
 	}
 
 	public GameObject GetBullet() {
-	
 		return bullet;
-	
 	}
 
-	public Vector3 GetBulletTransform() {
+    public bool IsFiring()
+    {
+        return fireData != null || GetBullet() != null;
+    }
+
+
+    public Vector3 GetBulletTransform() {
 
 		return LastBulletTransform;
 
@@ -56,79 +68,118 @@ public class CannonFireController : MonoBehaviour {
 	
 	}
 
-	public void Fire(GameObject bulletPrefab, float powerRate) {
-		
-		GameController.powerRate = powerRate;
+    public double waitForFire = 1000;
 
-		bullet = (GameObject)Instantiate(
-			bulletPrefab, BulletPosition.transform.position, BulletPosition.transform.rotation);//new Vector3(transform.position.x, transform.position.y, transform.position.z + 10),
+    //private DateTime _waitFireStartTime = DateTime.MaxValue;
+    class FireData
+    {
+        public DateTime waitStartTime = System.DateTime.Now;
+        public float torque;
+        public float turn;
+        public float power;
+        public GameObject bullet;
+        public double waitForFireMilliseconds = 1000;
+        public bool canFire()
+        {
+            return DateTime.Now.Subtract(waitStartTime).TotalMilliseconds > this.waitForFireMilliseconds;
+        }
+    }
 
-		bullet.transform.parent = CannonBulletParent.transform;
-		//bullet.transform.localRotation = bulletPrefab.transform.localRotation;
-		//bullet.GetComponent<Rigidbody>().rotation = bulletPrefab.transform.localRotation;
-		var burst = (GameObject)Instantiate(
-			CannonBurstPrefab, BulletPosition.transform.position, BulletPosition.transform.rotation);//new Vector3(transform.position.x, transform.position.y, transform.position.z + 10),
-		
-		var bulletData = bullet.GetComponent<BulletData> ();
+    private FireData fireData = null;
 
-		var torque = Random.Range (-20.0f, 20.0f);
-		var turn = Random.Range (-20.0f, 20.0f);
+	public void Fire(float powerRate) {
+
+        fireData = null;
+
+        GameController.powerRate = powerRate;
+        GameObject bulletPrefab = GameController.GetCurrentBullet();
+        var bulletData = bulletPrefab.GetComponent<BulletData>();
+
+        var torque = UnityEngine.Random.Range(-20.0f, 20.0f);
+        var turn = UnityEngine.Random.Range(-20.0f, 20.0f);
         var power = (bulletData.Power * powerRate);
+
         if (cannonPlayerState != null)
         {
-            cannonPlayerState.SendNetworkObjectData(true, power, torque, turn);
+			cannonPlayerState.SendNetworkObjectData(true, power, torque, turn, waitForFire);
         }
 
-		bullet.GetComponent<Rigidbody>().velocity = bullet.transform.forward * power;
-		//bullet.GetComponent<Rigidbody>().AddForce(bullet.transform.forward * bulletData.Power * powerRate, ForceMode.Impulse);
-		bullet.GetComponent<Rigidbody>().AddTorque(transform.up * torque);
-		bullet.GetComponent<Rigidbody>().AddTorque(transform.right * turn);
+        Fire(power, torque, turn, waitForFire);
 
-		Destroy(bullet, 30.0f);
-		Destroy(burst, 5.0f);
+    }
 
-		hasFired = true;
-
-		GameController.Log ("Power Rate: {0}; Velocity: {1}", powerRate, power);
-	
-	}
-
-    public void Fire(float power, float torque, float turn)
+    public void Fire(float power, float torque, float turn, double waitTime, int? currentBullet = null)
     {
+        if (cannonBodyAnimate != null) {
+            cannonBodyAnimate.PlayAnimation();
+        }
+		if (cannonPlayerState.isOnlinePlayer) {
+			var system = cannonPlayerState.Spark.GetComponent<ParticleSystem>();
+			system.Play();
+		}
+        fireData = new FireData()
+        {
+            torque = torque,
+            turn = turn,
+            power = power,
+            waitForFireMilliseconds = waitTime,
+            bullet = GameController.GetCurrentBullet(currentBullet)
+        };
+    }
 
-        //GameController.powerRate = powerRate;
+    private void OnFire()
+    {
+        try
+        {
+            
 
-        bullet = (GameObject)Instantiate(
-            GameController.GetCurrentBullet(), BulletPosition.transform.position, BulletPosition.transform.rotation);//new Vector3(transform.position.x, transform.position.y, transform.position.z + 10),
+            var system = cannonPlayerState.Spark.GetComponent<ParticleSystem>();
+            system.Stop();
 
-        bullet.transform.parent = CannonBulletParent.transform;
-        //bullet.transform.localRotation = bulletPrefab.transform.localRotation;
-        //bullet.GetComponent<Rigidbody>().rotation = bulletPrefab.transform.localRotation;
-        var burst = (GameObject)Instantiate(
-            CannonBurstPrefab, BulletPosition.transform.position, BulletPosition.transform.rotation);//new Vector3(transform.position.x, transform.position.y, transform.position.z + 10),
+            if (cannonBodyAnimate != null)
+            {
+                cannonBodyAnimate.StopAnimation();
+            }
 
-        var bulletData = bullet.GetComponent<BulletData>();
-        GameController.powerRate = power / bulletData.Power;
+            if (fireData == null)
+            {
+                return;
+            }
 
-        //var torque = Random.Range(-20.0f, 20.0f);
-        //var turn = Random.Range(-20.0f, 20.0f);
-        //var power = (bulletData.Power * powerRate);
-        //if (cannonPlayerState != null)
-        //{
-            //cannonPlayerState.SendNetworkObjectData(true, power, torque, turn);
-        //}
+            float power = fireData.power;
+            float torque = fireData.torque;
+            float turn = fireData.turn;
+            GameObject currentBullet = fireData.bullet;
 
-        bullet.GetComponent<Rigidbody>().velocity = bullet.transform.forward * power;
-        //bullet.GetComponent<Rigidbody>().AddForce(bullet.transform.forward * bulletData.Power * powerRate, ForceMode.Impulse);
-        bullet.GetComponent<Rigidbody>().AddTorque(transform.up * torque);
-        bullet.GetComponent<Rigidbody>().AddTorque(transform.right * turn);
+            // destroy fireData
+            fireData = null;
 
-        Destroy(bullet, 30.0f);
-        Destroy(burst, 5.0f);
+            bullet = (GameObject)Instantiate(
+                currentBullet, BulletPosition.transform.position, BulletPosition.transform.rotation);//new Vector3(transform.position.x, transform.position.y, transform.position.z + 10),
 
-        hasFired = true;
+            bullet.transform.parent = CannonBulletParent.transform;
 
-        GameController.Log("Power Rate: {0}; Velocity: {1}", GameController.powerRate, power);
+            var burst = (GameObject)Instantiate(
+                CannonBurstPrefab, BulletPosition.transform.position, BulletPosition.transform.rotation);//new Vector3(transform.position.x, transform.position.y, transform.position.z + 10),
+
+            var bulletData = bullet.GetComponent<BulletData>();
+            GameController.powerRate = power / bulletData.Power;
+
+            bullet.GetComponent<Rigidbody>().velocity = bullet.transform.forward * power;
+            bullet.GetComponent<Rigidbody>().AddTorque(transform.up * torque);
+            bullet.GetComponent<Rigidbody>().AddTorque(transform.right * turn);
+
+            Destroy(bullet, 30.0f);
+            Destroy(burst, 5.0f);
+
+            hasFired = true;
+
+            GameController.Log("Power Rate: {0}; Velocity: {1}", GameController.powerRate, power);
+        }
+        finally {
+            // destroy fireData
+            fireData = null;
+        }
 
     }
 }

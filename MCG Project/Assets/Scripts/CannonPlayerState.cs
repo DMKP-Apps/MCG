@@ -31,6 +31,11 @@ public class CannonPlayerState : MonoBehaviour {
         cannonFireController = this.GetComponent<CannonFireController>();
     }
 
+    public bool isFiring()
+    {
+        return cannonFireController.IsFiring();
+    }
+
     public void SetPlayerInfo(string key) {
         cannonFireController = this.GetComponent<CannonFireController>();
         CannonBarrow = transform.FindChild("Cannon").gameObject;
@@ -74,12 +79,12 @@ public class CannonPlayerState : MonoBehaviour {
 			if (_state == State.Set) {
 				var system = Spark.GetComponent<ParticleSystem> ();
 				system.Play ();
-			} else {
+			} /*else {
 				var system = Spark.GetComponent<ParticleSystem>();
 				system.Stop ();
 
 
-			}
+			}*/
 		}
 	}
 
@@ -90,7 +95,7 @@ public class CannonPlayerState : MonoBehaviour {
 
     private NetworkObjectData _previousObjectData = new NetworkObjectData();
 
-    public void SendNetworkObjectData(bool fired = false, float power = 0f, float torque = 0f, float turn = 0f) {
+	public void SendNetworkObjectData(bool fired = false, float power = 0f, float torque = 0f, float turn = 0f, double wait = 0f) {
         if (!NetworkClientManager.IsOnline)
         {
             return;
@@ -114,13 +119,14 @@ public class CannonPlayerState : MonoBehaviour {
             cannon_rotation_x = CannonBarrow.transform.localRotation.eulerAngles.x,
             cannon_rotation_y = CannonBarrow.transform.localRotation.eulerAngles.y,
             cannon_rotation_z = CannonBarrow.transform.localRotation.eulerAngles.z,
-            currentBullet = GameController.CurrentBullet,
+            currentBullet = currentBullet,
             fire_power = power,
             fire_torque = torque,
             fire_turn = turn,
 			fire_accurracy = 1,
 			stroke = Stroke,
 			holeComplete = isHoleComplete,
+			waitMilliseconds = wait
         };
         if (!data.Compare(_previousObjectData))
         {
@@ -148,11 +154,11 @@ public class CannonPlayerState : MonoBehaviour {
         //rotate us over time according to speed until we are in the required rotation
         CannonBarrow.transform.localEulerAngles = new Vector3(objectData.cannon_rotation_x, objectData.cannon_rotation_y, objectData.cannon_rotation_z);
 
-        GameController.CurrentBullet = objectData.currentBullet;
+        currentBullet = objectData.currentBullet;
 
         if (objectData.fire)
         {
-            cannonFireController.Fire(objectData.fire_power, objectData.fire_torque, objectData.fire_turn);
+            cannonFireController.Fire(objectData.fire_power, objectData.fire_torque, objectData.fire_turn, objectData.waitMilliseconds, objectData.currentBullet);
         }
 
 
@@ -181,7 +187,7 @@ public class CannonPlayerState : MonoBehaviour {
 			}
 		}
 
-		if (GameController.IsShooting()) {
+		if (cannonFireController.IsFiring()) {
 			return;
 		}
 

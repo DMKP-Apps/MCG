@@ -6,12 +6,31 @@ using UnityEngine;
 public class InputController : MonoBehaviour {
 
 	private GameController GameController;
+    private CannonPlayerState playerState = null;
+    private CannonPlayerState GetPlayerState()
+    {
+        CannonPlayerState playerController = this.GetComponent<CannonPlayerState>();
+        var parent = this.transform.parent;
+        while (parent != null && playerController == null)
+        {
+            playerController = parent.GetComponent<CannonPlayerState>();
+            if (playerController != null)
+            {
+                break;
+            }
+            parent = parent.parent;
+        }
+        return playerController;
+    }
 
-	private void Start()
+    private void Start()
 	{
+        
 		m_OriginalRotation = transform.localRotation;
 		GameController = GameObject.Find ("GameController").GetComponent<GameController> ();
-	}
+        playerState = GetPlayerState();
+
+    }
 
 	public Vector3 rotationRange = new Vector3(0, 0, 70);
 	public float rotationSpeed = 10;
@@ -83,7 +102,7 @@ public class InputController : MonoBehaviour {
                 //transform.position = Vector3.MoveTowards(transform.position, 
                 //	new Vector3(touch.deltaPosition.x,0.0f,touch.deltaPosition.y), step);
                 //transform.Rotate(touch.deltaPosition.y,0.0f,0.0f);
-                if (!GameController.IsShooting())
+                if (!playerState.isFiring())
 				{
 					transform.localRotation = SmoothRotator.Rotate( transform.localRotation, ref m_OriginalRotation,
 								ref m_TargetAngles, ref m_FollowAngles,
@@ -134,7 +153,7 @@ public class InputController : MonoBehaviour {
                 var y = Input.GetAxis("Mouse Y");
                 var x = Input.GetAxis("Mouse X");
                 
-                if (!GameController.IsShooting())
+                if (!playerState.isFiring())
                 {
                     transform.localRotation = SmoothRotator.Rotate(transform.localRotation, ref m_OriginalRotation,
                                 ref m_TargetAngles, ref m_FollowAngles,
