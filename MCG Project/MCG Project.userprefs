@@ -1,74 +1,27 @@
 ﻿<Properties StartupItem="Assembly-CSharp.csproj">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="Unity.Instance.Unity Editor" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Controls/PowerMeter/Scripts/PowerControl.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/Obstacles/MoveAroundObject.cs">
     <Files>
-<<<<<<< HEAD
-      <File FileName="Assets/Notes/AnimationCamera Show Case Hole TIPS.txt" Line="1" Column="1" />
-      <File FileName="Assets/Scripts/Network/NetworkClientManager.cs" Line="1" Column="1" />
-      <File FileName="Assets/Scripts/Network/NetworkObjectData.cs" Line="1" Column="1" />
-      <File FileName="Assets/Scripts/Menu Scripts/GameSettings.cs" Line="1" Column="1" />
-      <File FileName="Assets/Scripts/GameController.cs" Line="532" Column="1" />
-      <File FileName="Assets/Scripts/CannonPlayerState.cs" Line="1" Column="1" />
-      <File FileName="Assets/Scripts/Network/MultiplayerController.cs" Line="1" Column="1" />
-      <File FileName="Assets/Scripts/Menu Scripts/StartMenuController.cs" Line="1" Column="1" />
-=======
-      <File FileName="Assets/Scripts/Network/NetworkClientManager.cs" Line="1" Column="1" />
-      <File FileName="Assets/Scripts/Network/NetworkObjectData.cs" Line="1" Column="1" />
-      <File FileName="Assets/Scripts/Menu Scripts/GameSettings.cs" Line="21" Column="31" />
-      <File FileName="Assets/Scripts/GameController.cs" Line="142" Column="3" />
-      <File FileName="Assets/Scripts/CannonPlayerState.cs" Line="1" Column="1" />
-      <File FileName="Assets/Scripts/Network/MultiplayerController.cs" Line="1" Column="1" />
-      <File FileName="Assets/Scripts/Menu Scripts/StartMenuController.cs" Line="24" Column="18" />
->>>>>>> develop
-      <File FileName="Assets/Scripts/InputController.cs" Line="1" Column="1" />
-      <File FileName="Assets/Scripts/BulletHitController.cs" Line="1" Column="1" />
-      <File FileName="Assets/Scripts/Network/NetworkPlayerInfo.cs" Line="1" Column="1" />
-      <File FileName="Assets/Scripts/HoleController.cs" Line="1" Column="1" />
-<<<<<<< HEAD
-      <File FileName="Assets/Scripts/CannonFireController.cs" Line="1" Column="1" />
-      <File FileName="Assets/Scripts/BoundaryController.cs" Line="1" Column="1" />
-      <File FileName="Assets/Scripts/WaterCollision.cs" Line="1" Column="1" />
-      <File FileName="Assets/Scripts/Network/EndMatchController.cs" Line="1" Column="1" />
-    </Files>
-=======
-      <File FileName="Assets/Scripts/CannonFireController.cs" Line="106" Column="3" />
-      <File FileName="Assets/Scripts/BoundaryController.cs" Line="1" Column="1" />
-      <File FileName="Assets/Scripts/WaterCollision.cs" Line="1" Column="1" />
-      <File FileName="Assets/Scripts/Network/EndMatchController.cs" Line="1" Column="1" />
-      <File FileName="Assets/Scripts/UIScripts/PlayerInfo.cs" Line="151" Column="38" />
-      <File FileName="Assets/Controls/Bullets/Scripts/MeatSelector.cs" Line="1" Column="1" />
-      <File FileName="Assets/Scripts/UITextController.cs" Line="1" Column="1" />
-      <File FileName="Assets/Controls/PowerMeter/Scripts/PowerControl.cs" Line="77" Column="10" />
-      <File FileName="Assets/Controls/PowerMeter/Scripts/GuageController.cs" Line="1" Column="1" />
-      <File FileName="Assets/Scripts/UIInputController.cs" Line="15" Column="85" />
-      <File FileName="Assets/Scripts/BulletData.cs" Line="8" Column="20" />
-      <File FileName="Assets/Scripts/UIScripts/PointToPin.cs" Line="10" Column="2" />
+      <File FileName="Assets/Scripts/HoleController.cs" Line="26" Column="1" />
+      <File FileName="Assets/Scripts/Obstacles/MoveObject.cs" Line="19" Column="37" />
+      <File FileName="Assets/Scripts/CameraController.cs" Line="112" Column="98" />
+      <File FileName="Assets/Scripts/Obstacles/RotateObject.cs" Line="5" Column="1" />
+      <File FileName="Assets/Controls/PowerMeter/Scripts/PowerControl.cs" Line="44" Column="68" />
+      <File FileName="Assets/Scripts/Obstacles/MoveAroundObject.cs" Line="5" Column="24" />
     </Files>
     <Pads>
       <Pad Id="ProjectPad">
         <State name="__root__">
           <Node name="MCG Project" expanded="True">
             <Node name="Assembly-CSharp" expanded="True">
-              <Node name="Controls" expanded="True">
-                <Node name="Bullets" expanded="True" />
-                <Node name="PowerMeter" expanded="True">
-                  <Node name="Scripts" expanded="True">
-                    <Node name="PowerControl.cs" selected="True" />
-                  </Node>
+              <Node name="Scripts" expanded="True">
+                <Node name="Obstacles" expanded="True">
+                  <Node name="MoveAroundObject.cs" selected="True" />
                 </Node>
               </Node>
-              <Node name="Scripts" expanded="True">
-                <Node name="UIScripts" expanded="True" />
-              </Node>
             </Node>
-            <Node name="Assembly-CSharp-Editor" expanded="True" />
-            <Node name="Assembly-CSharp-Editor-firstpass" expanded="True" />
-            <Node name="Assembly-CSharp-firstpass" expanded="True" />
           </Node>
         </State>
-      </Pad>
-      <Pad Id="MonoDevelop.Debugger.WatchPad">
-        <State />
       </Pad>
       <Pad Id="MonoDevelop.NUnit.TestPad">
         <State name="__root__">
@@ -76,7 +29,6 @@
         </State>
       </Pad>
     </Pads>
->>>>>>> develop
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
     <BreakpointStore />
