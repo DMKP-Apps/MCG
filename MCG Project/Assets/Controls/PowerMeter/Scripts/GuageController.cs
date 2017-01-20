@@ -9,11 +9,11 @@ public class GuageController : MonoBehaviour {
 	public Sprite Set;
 	public Sprite Fire;
 	public Image Image;
-	public GameObject Meter;
+	public PowerControl Meter;
 
 	// Use this for initialization
 	void Start () {
-		Meter.SetActive (false);
+		//Meter.SetActive (false);
 	}
 	
 	// Update is called once per frame
@@ -24,13 +24,13 @@ public class GuageController : MonoBehaviour {
 	public void OnReady()
 	{
 		Image.sprite = Ready;
-		Meter.SetActive (false);
+		Meter.ResetMeter ();
 
 	}
 	public void OnSet()
 	{
 		Image.sprite = Set;
-		Meter.SetActive (true);
+		//Meter.SetActive (true);
 
 	}
 

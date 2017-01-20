@@ -97,7 +97,7 @@ public class CannonFireController : MonoBehaviour {
 
         var torque = UnityEngine.Random.Range(-20.0f, 20.0f);
         var turn = UnityEngine.Random.Range(-20.0f, 20.0f);
-        var power = (bulletData.Power * powerRate);
+		var power = bulletData.BasePower + (bulletData.Power * powerRate);
 
         if (cannonPlayerState != null)
         {

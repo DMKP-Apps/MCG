@@ -141,6 +141,7 @@
     <Compile Include="Assets\Scripts\Network\NetworkPlayerInfo.cs" />
     <Compile Include="Assets\Scripts\SmoothRotator.cs" />
     <Compile Include="Assets\Scripts\UIInputController.cs" />
+    <Compile Include="Assets\Scripts\UIScripts\ScaleControls.cs" />
     <Compile Include="Assets\Scripts\UITextController.cs" />
     <Compile Include="Assets\Scripts\WaterCollision.cs" />
   </ItemGroup>

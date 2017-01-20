@@ -5,51 +5,48 @@ using UnityEngine.UI;
 
 public class UITextController : MonoBehaviour {
 
-	public Text Hole;
-	public Text Par;
-	public Text Stroke;
-	public Text Player;
+	public PlayerInfo playerInfo;
 	public Text HoleCompleteScore;
-	public Text OutputLog;
+	//public Text OutputLog;
 
 	public GameObject alertWaterHazard;
 	public GameObject alertOutOfBounds;
 	
 	public void SetHole(int value) {
 
-		Hole.text = string.Format ("Hole: {0}", value);
+		playerInfo.HoleNumber = value;
+
 
 	}
 	public void SetPar(int value) {
+		playerInfo.Par = value;
 
-		Par.text = string.Format ("Par: {0}", value);
 
 	}
 	public void SetStroke(int value) {
-
-		Stroke.text = string.Format ("Stroke: {0}", value);
+		playerInfo.Stroke = value;
 
 	}
 	public void SetPlayer(int value) {
-
-		Player.text = string.Format ("Player {0}", value);
-
+		SetPlayer (value, 0);
 	}
-	public void SetPlayer(int value, int score) {
 
-		Player.text = string.Format ("Player {0} ({1})", value, score);
+	public void SetPlayer(int value, int score) {
+		playerInfo.PlayerIndex = value - 1;
+		playerInfo.Score = score;
+
 
 	}
 
 	public void Log(string output) {
 
-		OutputLog.text = output;
+		//OutputLog.text = output;
 
 	}
 
 	public void Log(string output, params object[] args) {
 
-		OutputLog.text = string.Format(output, args);
+		//OutputLog.text = string.Format(output, args);
 
 	}
 
