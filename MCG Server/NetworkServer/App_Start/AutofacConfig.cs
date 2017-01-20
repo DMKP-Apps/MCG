@@ -21,7 +21,7 @@ namespace NetworkServer
 
             var builder = new ContainerBuilder();
 
-            builder.RegisterType<GameObjectDataRepository>().As<IGameObjectDataRepository>().SingleInstance();
+            builder.RegisterType<NetworkDataRepository>().As<INetworkDataRepository>().SingleInstance();
 
             // Factories
             //builder.RegisterType<ConfigurationFactory>().As<IConfigurationFactory>().InstancePerRequest();

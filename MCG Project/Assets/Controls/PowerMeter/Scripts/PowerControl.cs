@@ -18,8 +18,8 @@ public class PowerControl : MonoBehaviour {
     public float Speed = 5.0f;
     private float direction = -1;
 
-    private float startValue = 155;
-    private float endValue = 0;
+    public float startValue = 155;
+    public float endValue = 0;
     private MeterState state = MeterState.Paused;
 
 
@@ -75,6 +75,8 @@ public class PowerControl : MonoBehaviour {
         if (PowerRating < 0) {
             PowerRating *= -1;
         }
+		// testing
+		//PowerRating = 1;
 
 		GameController.Log ("Power Rate: {0}", PowerRating);
     }

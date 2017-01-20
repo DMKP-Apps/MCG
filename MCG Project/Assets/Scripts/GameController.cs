@@ -173,6 +173,26 @@ public class GameController : MonoBehaviour {
         return hole == null ? null : hole.gameObject.name;
     }
 
+	public Vector3 GetHolePinPosition()
+	{
+		return hole == null ? new Vector3() : hole.GetComponent<HoleController>().hole.transform.position;
+	}
+
+	public bool IsHoleCameraActive()
+	{
+		var holeController = hole.GetComponent<HoleController> ();
+		return holeController.IsHoleCameraActive ();
+	}
+
+	public GameObject GetCurrentShotBullet()
+	{
+		if (player == null) {
+			return null;
+		}
+		var fireController = player.GetComponent<CannonFireController> ();
+		return fireController.GetBullet ();
+	}
+
     public void TouchDetected() {
 
 		if(hole != null) {
@@ -202,7 +222,7 @@ public class GameController : MonoBehaviour {
 		}
 		if (setActive && player != null) {
 			var fireController = player.GetComponent<CannonFireController> ();
-			setActive = fireController.GetBullet () == null;
+            setActive = !fireController.IsFiring();
 		}
 
 		ControlsContainer.SetActive (setActive);
@@ -309,8 +329,7 @@ public class GameController : MonoBehaviour {
 
 		player.transform.forward = holeController.hole.position;
 		player.transform.LookAt (holeController.hole.position);
-		//player.transform.localRotation = Quaternion.Euler(new Vector3(0f,player.transform.localRotation.y, 0f));
-		//player.transform.rotation = Quaternion.Euler(new Vector3(0f,player.transform.rotation.y, 0f));
+		player.transform.rotation = Quaternion.Euler(new Vector3(0f,player.transform.rotation.eulerAngles.y, 0f));
 		playerCannon.AimCannon (holeController.hole.position);
 
     }
@@ -520,6 +539,11 @@ public class GameController : MonoBehaviour {
 				Destroy (hole);
 			}
 
+			if (CurrentHole > holePrefabs.Count) {
+				CurrentHole = 1;
+			}
+
+
 			hole = (GameObject)Instantiate (holePrefabs [CurrentHole - 1]);
 			var holeController = hole.GetComponent<HoleController> ();
 			holeController.allPlayersComplete = false;
@@ -528,9 +552,9 @@ public class GameController : MonoBehaviour {
 
 			if(GameSettings.HoleStatus == null) {
 				GameSettings.HoleStatus = new HoleStatus() {
-					currentHoleIndex = CurrentHole
 				};
 			}
+			GameSettings.HoleStatus.currentHoleIndex = CurrentHole;
 			GameSettings.HoleStatus.currentHoleName = holeController.HoleTitle;
 
 			textController.SetPar (holeController.Par);
@@ -680,11 +704,11 @@ public class GameController : MonoBehaviour {
 
 	}
 
-	public GameObject GetCurrentBullet()
+	public GameObject GetCurrentBullet(int? playerCurrentBullet = null)
 	{
-        if (bulletPrefabs != null && bulletPrefabs.Count >= CurrentBullet) {
-			var bullet = bulletPrefabs [CurrentBullet - 1];
-
+        var index = playerCurrentBullet.HasValue ? playerCurrentBullet.Value : CurrentBullet;
+        if (bulletPrefabs != null && bulletPrefabs.Count >= index) {
+			var bullet = bulletPrefabs [index - 1];
 			return bullet;
 		} else
 			return null;
