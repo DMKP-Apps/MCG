@@ -173,6 +173,26 @@ public class GameController : MonoBehaviour {
         return hole == null ? null : hole.gameObject.name;
     }
 
+	public Vector3 GetHolePinPosition()
+	{
+		return hole == null ? new Vector3() : hole.GetComponent<HoleController>().hole.transform.position;
+	}
+
+	public bool IsHoleCameraActive()
+	{
+		var holeController = hole.GetComponent<HoleController> ();
+		return holeController.IsHoleCameraActive ();
+	}
+
+	public GameObject GetCurrentShotBullet()
+	{
+		if (player == null) {
+			return null;
+		}
+		var fireController = player.GetComponent<CannonFireController> ();
+		return fireController.GetBullet ();
+	}
+
     public void TouchDetected() {
 
 		if(hole != null) {
