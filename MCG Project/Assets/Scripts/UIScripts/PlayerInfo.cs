@@ -152,7 +152,7 @@ public class PlayerInfo : MonoBehaviour {
 	{
 
 		currentYRDSToPIN = index;
-		YRDSToPINText.text = string.Format ("{0}", currentYRDSToPIN);
+		YRDSToPINText.text = string.Format ("{0}", System.Math.Ceiling(System.Convert.ToDouble(currentYRDSToPIN) / 3));
 
 	}
 
@@ -168,7 +168,7 @@ public class PlayerInfo : MonoBehaviour {
 	{
 
 		currentShotDistance = index;
-		ShotDistanceText.text = string.Format ("Shot: {0} YRDS", currentShotDistance);
+		ShotDistanceText.text = string.Format ("Shot: {0} YRDS", System.Math.Ceiling(System.Convert.ToDouble(currentShotDistance) / 3));
 
 	}
 

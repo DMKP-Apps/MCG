@@ -9,7 +9,7 @@ public class PowerControl : MonoBehaviour {
 		GameController = GameObject.Find ("GameController").GetComponent<GameController> ();
 	}
 
-    enum MeterState
+    public enum MeterState
     {
         Paused,
         Running
@@ -20,7 +20,7 @@ public class PowerControl : MonoBehaviour {
 
     public float startValue = 155;
     public float endValue = 0;
-    private MeterState state = MeterState.Paused;
+    public MeterState state = MeterState.Paused;
 
 
 
@@ -31,17 +31,7 @@ public class PowerControl : MonoBehaviour {
 
         if (state == MeterState.Running)
         {
-			/*var currentValue = transform.rotation.eulerAngles.z + (Speed * direction);
-			if (direction == -1 && currentValue <= endValue)
-			{
-				direction = 1;
-			}
-			else if (direction == 1 && currentValue >= startValue)
-			{
-				direction = -1;
-			}*/
-
-            transform.Rotate(new Vector3(0, 0, Speed * direction));
+			transform.Rotate(new Vector3(0, 0, (Speed) * direction));
 
             var currentValue = transform.rotation.eulerAngles.z;
             if (currentValue > 180)
@@ -57,6 +47,32 @@ public class PowerControl : MonoBehaviour {
             {
                 direction = -1;
             }
+
+			//currentValue = transform.rotation.eulerAngles.z;
+			var startValueOffset = startValue;
+			var offset = 0f;
+			if (endValue < 0) {
+				offset = endValue * -1;
+			}
+			startValueOffset += offset;
+			currentValue += offset;
+			var power = 1 - (currentValue / startValueOffset);
+			if (power < 0) {
+				power *= -1;
+			}
+
+			if (power < 0) {
+				power = 0;
+			}
+			else if (power > 1) {
+				power = 1;
+			}
+
+			power = float.Parse((System.Math.Ceiling ((power * 100) / 5) * 5 / 100).ToString());
+
+			PowerRating = power; 
+
+
         }
     }
 
@@ -70,47 +86,23 @@ public class PowerControl : MonoBehaviour {
     {
         state = MeterState.Paused;
 
-        var currentValue = transform.rotation.eulerAngles.z;
+        /*var currentValue = transform.rotation.eulerAngles.z;
         PowerRating = 1 - (currentValue / startValue);
         if (PowerRating < 0) {
             PowerRating *= -1;
         }
 		// testing
 		//PowerRating = 1;
+		*/
 
-		GameController.Log ("Power Rate: {0}", PowerRating);
     }
 
 	public void ResetMeter()
 	{
 		state = MeterState.Paused;
 
-		transform.rotation = Quaternion.Euler (0, 0, 155);
+		transform.rotation = Quaternion.Euler (0, 0, startValue);
 	}
 
-    public void ToggleMeter()
-    {
-		
-		//CannonController.Execute ();
-
-		//if (CannonController.State == CannonController.CannonState.Ready) {
-		//	StartMeter ();
-		//} else {
-		//	StopMeter ();
-		//	if (CannonController.State == CannonController.CannonState.Set) {
-		//		CannonController.PowerRate = PowerRating;
-		//	} else {
-		//		transform.rotation = Quaternion.Euler (0, 0, 155);
-		//	}
-		//}
-
-        /*if (state == MeterState.Paused)
-        {
-            StartMeter();
-        }
-        else {
-            StopMeter();
-        }*/
-    }
-
+    
 }

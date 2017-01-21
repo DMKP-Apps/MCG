@@ -158,7 +158,7 @@ public class CannonPlayerState : MonoBehaviour {
 
         if (objectData.fire)
         {
-            cannonFireController.Fire(objectData.fire_power, objectData.fire_torque, objectData.fire_turn, objectData.waitMilliseconds, objectData.currentBullet);
+			cannonFireController.Fire(objectData.fire_power, objectData.fire_accurracy, objectData.fire_torque, objectData.fire_turn, objectData.waitMilliseconds, objectData.currentBullet);
         }
 
 
