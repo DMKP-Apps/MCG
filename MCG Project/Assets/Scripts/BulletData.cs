@@ -7,6 +7,8 @@ public class BulletData : MonoBehaviour {
 
 	public float Power = 50.0f;
 	public float BasePower = 5f;
+	public float MaxAccuracy = 10f; 
+	public float MaxTorque = 10f; 
 
 	public Sprite Image;
 

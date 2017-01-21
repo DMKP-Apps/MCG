@@ -77,6 +77,7 @@ public class CannonFireController : MonoBehaviour {
         public float torque;
         public float turn;
         public float power;
+		public float accuracy;
         public GameObject bullet;
         public double waitForFireMilliseconds = 1000;
         public bool canFire()
@@ -87,7 +88,7 @@ public class CannonFireController : MonoBehaviour {
 
     private FireData fireData = null;
 
-	public void Fire(float powerRate) {
+	public void Fire(float powerRate, float accuracy) {
 
         fireData = null;
 
@@ -104,11 +105,11 @@ public class CannonFireController : MonoBehaviour {
 			cannonPlayerState.SendNetworkObjectData(true, power, torque, turn, waitForFire);
         }
 
-        Fire(power, torque, turn, waitForFire);
+		Fire(power, accuracy, torque, turn, waitForFire);
 
     }
 
-    public void Fire(float power, float torque, float turn, double waitTime, int? currentBullet = null)
+	public void Fire(float power, float accuracy, float torque, float turn, double waitTime, int? currentBullet = null)
     {
         if (cannonBodyAnimate != null) {
             cannonBodyAnimate.PlayAnimation();
@@ -123,6 +124,7 @@ public class CannonFireController : MonoBehaviour {
             turn = turn,
             power = power,
             waitForFireMilliseconds = waitTime,
+			accuracy = accuracy,
             bullet = GameController.GetCurrentBullet(currentBullet)
         };
     }
@@ -132,7 +134,6 @@ public class CannonFireController : MonoBehaviour {
         try
         {
             
-
             var system = cannonPlayerState.Spark.GetComponent<ParticleSystem>();
             system.Stop();
 
@@ -149,6 +150,7 @@ public class CannonFireController : MonoBehaviour {
             float power = fireData.power;
             float torque = fireData.torque;
             float turn = fireData.turn;
+			float accuracy = fireData.accuracy;
             GameObject currentBullet = fireData.bullet;
 
             // destroy fireData
@@ -168,6 +170,13 @@ public class CannonFireController : MonoBehaviour {
             bullet.GetComponent<Rigidbody>().velocity = bullet.transform.forward * power;
             bullet.GetComponent<Rigidbody>().AddTorque(transform.up * torque);
             bullet.GetComponent<Rigidbody>().AddTorque(transform.right * turn);
+
+			var constantForce = bullet.GetComponent<ConstantForce>();
+			if(constantForce != null) {
+				constantForce.relativeForce = new Vector3(accuracy * bulletData.MaxAccuracy,0f,0f);
+				constantForce.relativeTorque = new Vector3(bulletData.MaxTorque * accuracy, bulletData.MaxTorque * accuracy,0f);
+
+			}
 
             Destroy(bullet, 30.0f);
             Destroy(burst, 5.0f);

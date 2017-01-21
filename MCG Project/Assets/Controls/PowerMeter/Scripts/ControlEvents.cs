@@ -8,7 +8,7 @@ public class ControlEvents : MonoBehaviour {
 
     public void OnMeterButtonClick()
     {
-        PowerControl.ToggleMeter();
+        //PowerControl.ToggleMeter();
         Debug.Log(string.Format("Power: {0}", PowerControl.PowerRating));
 
 

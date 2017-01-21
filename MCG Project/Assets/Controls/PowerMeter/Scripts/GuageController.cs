@@ -10,10 +10,13 @@ public class GuageController : MonoBehaviour {
 	public Sprite Fire;
 	public Image Image;
 	public PowerControl Meter;
+	public AccuracyControl Accuracy;
 
 	// Use this for initialization
 	void Start () {
-		//Meter.SetActive (false);
+		Accuracy.StopMeter ();
+		Accuracy.ResetMeter ();
+		Accuracy.gameObject.SetActive (false);
 	}
 	
 	// Update is called once per frame
@@ -25,6 +28,9 @@ public class GuageController : MonoBehaviour {
 	{
 		Image.sprite = Ready;
 		Meter.ResetMeter ();
+		Accuracy.StopMeter ();
+		Accuracy.ResetMeter ();
+		Accuracy.gameObject.SetActive (false);
 
 	}
 	public void OnSet()
@@ -38,6 +44,9 @@ public class GuageController : MonoBehaviour {
 	{
 
 		Image.sprite = Fire;
+		Accuracy.gameObject.SetActive (true);
+		Accuracy.StartMeter ();
+
 	}
 		
 
