@@ -31,7 +31,8 @@ public class PowerControl : MonoBehaviour {
 
         if (state == MeterState.Running)
         {
-			transform.Rotate(new Vector3(0, 0, (Speed) * direction));
+			var speed = (Speed * Time.deltaTime);
+			transform.Rotate(new Vector3(0, 0, (speed) * direction));
 
             var currentValue = transform.rotation.eulerAngles.z;
             if (currentValue > 180)

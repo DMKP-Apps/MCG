@@ -7,24 +7,24 @@ public class AccuracyControl : MonoBehaviour {
 
 	public List<GameObject> percentObjects;
 	public PowerControl powerControl;
-	private PowerControl.MeterState state;
+	private PowerControl.MeterState state = PowerControl.MeterState.Paused;
 	public float accuracy = 0f;
 
 	private int currentIndex = 0;
 	private int previousIndex = -1;
 
 	void Start() {
-		StopMeter ();
+		//StopMeter ();
 	}
 
 	public void StartMeter() {
-		powerControl.gameObject.SetActive (true);
+		//powerControl.gameObject.SetActive (true);
 		powerControl.ResetMeter ();
 		powerControl.StartMeter ();
 	}
 
 	public void StopMeter() {
-		powerControl.gameObject.SetActive (false);
+		//powerControl.gameObject.SetActive (false);
 		powerControl.StopMeter ();
 	}
 
