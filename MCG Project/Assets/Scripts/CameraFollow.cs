@@ -42,7 +42,16 @@ public class CameraFollow : MonoBehaviour {
 	}
 
 	private void followSourceTarget() {
-		var speed = 5f;
+
+        
+        var followPosition = target.transform.position + PositionOffset;
+        var step = (Vector3.Distance(followPosition, transform.position) * 0.5f) * Time.deltaTime;
+        //var followPosition = GameSettings.EstimatedShotHighPoint;
+        //Debug.Log();
+        transform.position = Vector3.MoveTowards(transform.position, followPosition, step);
+
+        /*
+        var speed = 5f;
 
 		if (startTime == System.DateTime.MaxValue) {
 			startTime = System.DateTime.Now;
@@ -72,6 +81,7 @@ public class CameraFollow : MonoBehaviour {
 		var step = speed * Time.deltaTime;
 		var followPosition = target.transform.position + PositionOffset;
 		transform.position = Vector3.MoveTowards (transform.position, followPosition, step);
+        */
 	}
 
 	private void followAlternateTarget() {

@@ -1,0 +1,85 @@
+﻿@section scripts{
+    <script type="text/javascript">
+
+        $services.messages = function () {
+            "use strict";
+            return {
+
+                /*getPatientProfile: function (options) {
+                    //options = {};
+                    return $.ajax({
+                        url: "/Clinic/PatientInfo/GetAll",
+                        cache: false,
+                        data: options
+                    })
+
+                },*/
+                getAll: function () {
+                    return $.ajax({
+                        url: "/Message/Request/GetAll",
+                        cache: false
+                    })
+                }/*,
+               upatePatientProfile: function (options) {
+                    return $.ajax({
+                        url: "/Clinic/PatientInfo/UpdatePatientProfile",
+                        cache: false,
+                        method: "post",
+                        dataType: 'json',
+                        contentType: "application/json; charset=utf-8",
+                        data: JSON.stringify(options)
+                    })
+                },*/
+            };
+        }();
+
+        function formViewModel(parent, options) {
+            var self = this;
+            self.parent = parent;
+            //options = $.extend({ userId: "" }, options);
+
+            self.items = ko.observableArray([]);
+
+            self.loadData = function () {
+                $services.messages.getAll().done(function (data) {
+                    data = $.extend({ Items: [] }, data);
+                    var items = $.map(data.Items, function (item) {
+                        return new dataViewModel(self, item);
+                    });
+                    self.items(items);
+                });
+            };
+
+            setInterval(function () { self.loadData(); }, 1000);
+        }
+
+        $(document).ready(function () {
+
+            var model = new formViewModel(null, null);
+            ko.applyBindings(model, $('#messagesOutput').get(0));
+           // model.loadData();
+
+        });
+
+    </script>
+}
+
+<div class="row" id="messagesOutput">
+    <div class="col-md-12">
+        <span data-bind="text: items().length"></span>
+        <div data-bind="foreach: items">
+
+            <div class="row" data-bind="foreach: properties">
+                <div class="col-md-3">
+                    <strong data-bind="text: key"></strong>
+                </div>
+                <div class="col-md-9">
+                    <span data-bind="text: value"></span>
+                </div>
+
+            </div>
+            <hr />
+        </div>
+    </div>
+</div>
+

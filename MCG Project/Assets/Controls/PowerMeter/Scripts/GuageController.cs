@@ -31,6 +31,7 @@ public class GuageController : MonoBehaviour {
 		Accuracy.StopMeter ();
 		Accuracy.ResetMeter ();
 		Accuracy.gameObject.SetActive (false);
+		GameSettings.ShotPower = null;
 
 	}
 	public void OnSet()
@@ -46,6 +47,7 @@ public class GuageController : MonoBehaviour {
 		Image.sprite = Fire;
 		Accuracy.gameObject.SetActive (true);
 		Accuracy.StartMeter ();
+		GameSettings.ShotPower = Meter.PowerRating;
 
 	}
 		

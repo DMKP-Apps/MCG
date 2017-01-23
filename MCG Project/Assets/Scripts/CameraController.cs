@@ -62,8 +62,10 @@ public class CameraController : MonoBehaviour {
 			followCamera.powerRate = GameController.powerRate;
 			//followCamera.PositionOffset = CameraShot1.transform.localPosition - bullet.transform.localPosition;
 			followCamera.PositionOffset = CameraShot1.transform.position - bullet.transform.position;
+            followCamera.PositionOffset.y += 10;
 
-			CameraShot1.SetActive (true);
+
+            CameraShot1.SetActive (true);
 		}
 
 	}

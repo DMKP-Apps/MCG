@@ -106,7 +106,10 @@ public class GameController : MonoBehaviour {
 	public GameObject ControlsContainer;
 	public GameObject HoleCompleteAlert;
 
-	private Dictionary<int, string> scoring = new Dictionary<int, string>();
+    private GameObject topographicCamera;
+
+
+    private Dictionary<int, string> scoring = new Dictionary<int, string>();
 
 	public float powerRate = 0f;
 
@@ -140,7 +143,10 @@ public class GameController : MonoBehaviour {
 		scoring.Add (2, "Double Bogey");
 		scoring.Add (3, "Triple Bogey");
 
-        
+        var tcam = GameObject.FindObjectOfType<TopographicCamera>();
+        if (tcam != null) {
+            topographicCamera = tcam.gameObject;
+        }
 
         switch (GameSettings.playerMode) {
             case PlayerMode.Single:
@@ -219,6 +225,7 @@ public class GameController : MonoBehaviour {
 		if(hole != null) {
 			var holeController = hole.GetComponent<HoleController> ();
 			setActive = !holeController.IsHoleCameraActive ();
+            
 		}
 		if (setActive && player != null) {
 			var fireController = player.GetComponent<CannonFireController> ();
@@ -226,8 +233,12 @@ public class GameController : MonoBehaviour {
 		}
 
 		ControlsContainer.SetActive (setActive);
+        if (topographicCamera != null)
+        {
+            topographicCamera.SetActive(setActive);
+        }
 
-		if (GameSettings.playerMode == PlayerMode.ServerMultiplayer && !buildingHole) {
+        if (GameSettings.playerMode == PlayerMode.ServerMultiplayer && !buildingHole) {
 			if (System.DateTime.Now.Subtract (lastPlayerInfoRequest).TotalMilliseconds > 1000 && !checkEndingHole) {
 				
 				lastPlayerInfoRequest = System.DateTime.Now;

@@ -14,7 +14,8 @@ public class NetworkClientController : MonoBehaviour
 
 public static class NetworkClientManager
 {
-    public static string ServerUrl = "http://mcg.moebull.com/";//"http://localhost:8321";
+    //public static string ServerUrl = "http://localhost:8321";
+    public static string ServerUrl = "http://mcg.moebull.com/";
     public static NetworkPlayerInfo player = null;
 	public static bool IsOnline { get { return GameSettings.playerMode == PlayerMode.ServerMultiplayer; } 
 		private set { GameSettings.playerMode = value ? PlayerMode.ServerMultiplayer : PlayerMode.Single; } }

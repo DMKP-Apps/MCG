@@ -20,6 +20,15 @@ namespace NetworkServer
                       "~/Scripts/bootstrap.js",
                       "~/Scripts/respond.js"));
 
+            bundles.Add(new ScriptBundle("~/bundles/knockout").Include(
+                      "~/Scripts/knockout-3.2.0.js",
+                      "~/Scripts/knockout.datatables.js",
+                      "~/Scripts/knockout.mapping.js",
+                      "~/Scripts/moment.min.js"));
+
+            bundles.Add(new ScriptBundle("~/bundles/viewModels").Include(
+                      "~/Scripts/Services/dataViewModel.js"));
+
             bundles.Add(new StyleBundle("~/Content/css").Include(
                       "~/Content/bootstrap.css",
                       "~/Content/site.css"));

@@ -41,6 +41,13 @@ public static class GameSettings {
 	public static bool isRace;
 
 	private static HoleStatus _holeStatus = new HoleStatus();
-	public static HoleStatus HoleStatus { get; set; }
+	public static HoleStatus HoleStatus { get {  return _holeStatus; } set { _holeStatus = value; }}
+
+	public static float? ShotPower;
+
+    public static Vector3 EstimatedShotLocation;
+    public static Vector3 CurrentCannonLocation;
+    public static Vector3 EstimatedShotHighPoint;
+
 
 }

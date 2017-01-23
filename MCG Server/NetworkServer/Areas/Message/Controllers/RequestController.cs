@@ -21,6 +21,11 @@ namespace NetworkServer.Areas.Message.Controllers
             this.Repository = DependencyResolver.Current.GetService<INetworkDataRepository>();
         }
 
+        public ActionResult Index()
+        {
+            return View();
+        }
+
         [HttpGet]
         public async Task<ActionResult> Ping()
         {

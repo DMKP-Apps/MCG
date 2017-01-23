@@ -109,6 +109,7 @@
     <Compile Include="Assets\CameraPath3\Scripts\Util\CameraPathPreviewSupport.cs" />
     <Compile Include="Assets\CameraPath3\Scripts\Util\XMLVariableConverter.cs" />
     <Compile Include="Assets\Controls\Bullets\Scripts\MeatSelector.cs" />
+    <Compile Include="Assets\Controls\PowerMeter\Scripts\AccuracyControl.cs" />
     <Compile Include="Assets\Controls\PowerMeter\Scripts\ControlEvents.cs" />
     <Compile Include="Assets\Controls\PowerMeter\Scripts\GuageController.cs" />
     <Compile Include="Assets\Controls\PowerMeter\Scripts\PowerControl.cs" />
@@ -139,8 +140,15 @@
     <Compile Include="Assets\Scripts\Network\NetworkMessage.cs" />
     <Compile Include="Assets\Scripts\Network\NetworkObjectData.cs" />
     <Compile Include="Assets\Scripts\Network\NetworkPlayerInfo.cs" />
+    <Compile Include="Assets\Scripts\Obstacles\MoveAroundObject.cs" />
+    <Compile Include="Assets\Scripts\Obstacles\MoveObject.cs" />
+    <Compile Include="Assets\Scripts\Obstacles\RotateObject.cs" />
     <Compile Include="Assets\Scripts\SmoothRotator.cs" />
+    <Compile Include="Assets\Scripts\TopographicBulletController.cs" />
+    <Compile Include="Assets\Scripts\TopographicCamera.cs" />
     <Compile Include="Assets\Scripts\UIInputController.cs" />
+    <Compile Include="Assets\Scripts\UIScripts\PlayerInfo.cs" />
+    <Compile Include="Assets\Scripts\UIScripts\PointToPin.cs" />
     <Compile Include="Assets\Scripts\UIScripts\ScaleControls.cs" />
     <Compile Include="Assets\Scripts\UITextController.cs" />
     <Compile Include="Assets\Scripts\WaterCollision.cs" />

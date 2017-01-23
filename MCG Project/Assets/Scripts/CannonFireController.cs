@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using System.Linq;
 
 public class CannonFireController : MonoBehaviour {
 
@@ -10,22 +11,29 @@ public class CannonFireController : MonoBehaviour {
 	public GameObject CannonBurstPrefab;
 	private GameController GameController;
 	public GameObject CannonBulletParent;
+    public GameObject topographicBulletPrefab;
 
-    
-	private bool hasFired = false;
+    private bool hasFired = false;
 
 	private Vector3 LastBulletTransform;
     private CannonPlayerState cannonPlayerState = null;
     public CannonBodyAnimate cannonBodyAnimate;
 
+	private LineRenderer line;
 
     void Start() {
 		GameController = GameObject.Find ("GameController").GetComponent<GameController> ();
         cannonPlayerState = this.GetComponent<CannonPlayerState>();
+		line = this.gameObject.GetComponentInChildren<LineRenderer> ();
     }
+
+	private Vector3 previousBulletFirePosition;
+    private int previousBulletIndex = -1;
+    private float previousShotPower = 0;
 
 	void Update()
 	{
+        
         if (fireData != null && fireData.canFire()) {
             OnFire();
         }
@@ -38,7 +46,66 @@ public class CannonFireController : MonoBehaviour {
 			}
 			hasFired = false;
 		}
+
+        var shotPower = GameSettings.ShotPower.HasValue ? GameSettings.ShotPower.Value : 1;
+        
+        if (!IsFiring() && line != null && (previousShotPower != shotPower || previousBulletFirePosition != BulletPosition.transform.position || previousBulletIndex != GameController.CurrentBullet)) {
+            previousBulletIndex = GameController.CurrentBullet;
+            previousBulletFirePosition = BulletPosition.transform.position;
+            previousShotPower = shotPower;
+
+            if (!line.gameObject.activeInHierarchy) {
+				line.gameObject.SetActive (true);
+			}
+			//Debug.DrawLine (transform.position, GameController.GetHolePinPosition ());
+			var bulletData = GameController.GetCurrentBullet ().GetComponent<BulletData> ();
+			Vector3 startVelocity = BulletPosition.transform.forward * ((bulletData.Power + bulletData.BasePower) * shotPower);
+			//Debug.Log(PlotTrajectoryAtTime(BulletPosition.transform.position, startVelocity, Time.deltaTime));
+			PlotTrajectory (BulletPosition.transform.position, startVelocity, Time.deltaTime, 20);
+		} else if (line != null && bullet != null && line.gameObject.activeInHierarchy) {
+			line.gameObject.SetActive (false);
+            previousBulletIndex = -1;
+            previousShotPower = 0;
+        }
 	}
+
+	public Vector3 PlotTrajectoryAtTime (Vector3 start, Vector3 startVelocity, float time) {
+		return start + startVelocity*time + Physics.gravity*time*time*0.5f;
+	}
+
+	public void PlotTrajectory (Vector3 start, Vector3 startVelocity, float timestep, float maxTime) {
+		Vector3 prev = start;
+		List<Vector3> positions = new List<Vector3> () { start };
+		for (int i=1;;i++) {
+			float t = timestep*i;
+			if (t > maxTime) break;
+			Vector3 pos = PlotTrajectoryAtTime (start, startVelocity, t);
+			if (Physics.Linecast (prev,pos)) break;
+			Debug.DrawLine (prev,pos,Color.red);
+
+			//line.SetPosition (i, pos);
+			positions.Add (pos);
+
+			//Vector.DrawLine (prev,pos,Color.red);
+			prev = pos;
+		}
+		line.numPositions = positions.Count;
+		int index = 0;
+		positions.ForEach (x => line.SetPosition (index++, x));
+		//line.SetPositions (positions.ToArray());
+		line.endWidth = 20f;
+		line.startWidth = 10f;
+
+        if (positions.Count > 0)
+        {
+            GameSettings.CurrentCannonLocation = positions[0];
+            GameSettings.EstimatedShotLocation = positions[positions.Count - 1];
+
+            GameSettings.EstimatedShotHighPoint = positions.OrderByDescending(x => x.y).FirstOrDefault();
+            //EstimatedShotHighPoint
+        }
+        //line.SetVertexCount (positions.Count);
+    }
 
 	public GameObject GetBullet() {
 		return bullet;
@@ -102,7 +169,7 @@ public class CannonFireController : MonoBehaviour {
 
         if (cannonPlayerState != null)
         {
-			cannonPlayerState.SendNetworkObjectData(true, power, torque, turn, waitForFire);
+			cannonPlayerState.SendNetworkObjectData(true, power, accuracy, torque, turn, waitForFire);
         }
 
 		Fire(power, accuracy, torque, turn, waitForFire);
@@ -158,6 +225,15 @@ public class CannonFireController : MonoBehaviour {
 
             bullet = (GameObject)Instantiate(
                 currentBullet, BulletPosition.transform.position, BulletPosition.transform.rotation);//new Vector3(transform.position.x, transform.position.y, transform.position.z + 10),
+
+
+            //topographicBulletPrefab
+            var topoBullet = (GameObject)Instantiate(
+                            topographicBulletPrefab, BulletPosition.transform.position, Quaternion.Euler(new Vector3(90f, BulletPosition.transform.rotation.eulerAngles.y, 0f)));//new Vector3(transform.position.x, transform.position.y, transform.position.z + 10),
+            var topoController = topoBullet.GetComponent<TopographicBulletController>();
+            if (topoController != null) {
+                topoController.target = bullet;
+            }
 
             bullet.transform.parent = CannonBulletParent.transform;
 

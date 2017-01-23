@@ -15,7 +15,7 @@ public class MultiplayerController : MonoBehaviour {
 
 	void OnApplicationFocus( bool hasFocus )
 	{
-		if (!hasFocus && NetworkClientManager.IsOnline) {
+		if (1 ==2 && !hasFocus && NetworkClientManager.IsOnline) {
 			NetworkClientManager.Logoff ();
 			SceneManager.LoadScene("StartMenu", LoadSceneMode.Single);
 		}
