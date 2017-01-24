@@ -103,6 +103,8 @@
      <Compile Include="Assets\Scripts\Obstacles\MoveObject.cs" />
      <Compile Include="Assets\Scripts\Obstacles\RotateObject.cs" />
      <Compile Include="Assets\Scripts\SmoothRotator.cs" />
+     <Compile Include="Assets\Scripts\TopographicBulletController.cs" />
+     <Compile Include="Assets\Scripts\TopographicCamera.cs" />
      <Compile Include="Assets\Scripts\UIInputController.cs" />
      <Compile Include="Assets\Scripts\UIScripts\PlayerInfo.cs" />
      <Compile Include="Assets\Scripts\UIScripts\PointToPin.cs" />
