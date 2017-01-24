@@ -76,12 +76,19 @@ public class CameraController : MonoBehaviour {
 
 
 		if (bullet == null) {
-			//FollowCannon ();
-			var step = 2.5f * Time.deltaTime;
+            //FollowCannon ();
+
+			//var step = 2.5f * Time.deltaTime;
 			var followPosition = CameraPosition.transform.position;
 			followPosition.y = transform.position.y;
-			transform.position = Vector3.MoveTowards (transform.position, followPosition, step);
 
+            var minStep = 2f * Time.deltaTime;
+            var step = (Vector3.Distance(followPosition, transform.position) * 0.8f) * Time.deltaTime;
+            if (step < minStep) {
+                step = minStep;
+            }
+
+            transform.position = Vector3.MoveTowards (transform.position, followPosition, step);
 			transform.LookAt (LookAtTarget.transform);
 			//PositionOffset = transform.localPosition;
 
