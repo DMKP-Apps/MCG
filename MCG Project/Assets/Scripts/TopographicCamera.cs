@@ -12,6 +12,8 @@ public class TopographicCamera : MonoBehaviour {
     public float compareScaleTo = 1280f;
     private Rect originalRect;
     private float scalePercentage = -1f;
+	private Vector3 originalPosition;
+	private GameController GameController;
 
     // Use this for initialization
     void Start () {
@@ -22,7 +24,8 @@ public class TopographicCamera : MonoBehaviour {
             rect = canvas.GetComponent<RectTransform>();
         }
 
-        //originalRect = tcamera.rect;
+		originalPosition = transform.position;
+		GameController = GameObject.Find ("GameController").GetComponent<GameController> ();
 
     }
 	
@@ -65,9 +68,23 @@ public class TopographicCamera : MonoBehaviour {
 
         }
 
+
+
         var step = speed * Time.deltaTime;
-        var difference = (GameSettings.EstimatedShotLocation + GameSettings.CurrentCannonLocation) / 2;
-        var followPosition = new Vector3(difference.x, transform.position.y, difference.z);
+		var cameraZoom = originalPosition.y * (GameSettings.ShotPower.HasValue ? GameSettings.ShotPower.Value : 1);
+		var difference = GameSettings.EstimatedShotLocation;
+		if (!GameSettings.ShotPower.HasValue) {
+			var distance1 = Vector3.Distance (GameController.GetHolePinPosition(), GameSettings.CurrentCannonLocation);
+			var distance2 = Vector3.Distance (GameSettings.EstimatedShotLocation, GameSettings.CurrentCannonLocation);
+
+			if (distance1 < distance2) {
+				var percentage = distance1 / distance2;
+				cameraZoom = originalPosition.y * percentage;
+				difference = GameController.GetHolePinPosition();
+			}
+		}
+		//(GameSettings.EstimatedShotLocation + GameSettings.CurrentCannonLocation) / 2;
+		var followPosition = new Vector3(difference.x, cameraZoom, difference.z);
         transform.position = Vector3.MoveTowards(transform.position, followPosition, step);
 
     }

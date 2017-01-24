@@ -11,7 +11,7 @@ public class CannonFireController : MonoBehaviour {
 	public GameObject CannonBurstPrefab;
 	private GameController GameController;
 	public GameObject CannonBulletParent;
-    public GameObject topographicBulletPrefab;
+    //public GameObject topographicBulletPrefab;
 
     private bool hasFired = false;
 
@@ -228,12 +228,12 @@ public class CannonFireController : MonoBehaviour {
 
 
             //topographicBulletPrefab
-            var topoBullet = (GameObject)Instantiate(
+            /*var topoBullet = (GameObject)Instantiate(
                             topographicBulletPrefab, BulletPosition.transform.position, Quaternion.Euler(new Vector3(90f, BulletPosition.transform.rotation.eulerAngles.y, 0f)));//new Vector3(transform.position.x, transform.position.y, transform.position.z + 10),
             var topoController = topoBullet.GetComponent<TopographicBulletController>();
             if (topoController != null) {
                 topoController.target = bullet;
-            }
+            }*/
 
             bullet.transform.parent = CannonBulletParent.transform;
 
