@@ -24,6 +24,8 @@ public class CannonPlayerState : MonoBehaviour {
     public string playerKey = string.Empty;
     private CannonFireController cannonFireController;
 
+    public Transform MoveToParent = null;
+
     void Start()
 	{
 		CannonBarrow = transform.FindChild ("Cannon").gameObject;

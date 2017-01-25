@@ -27,6 +27,7 @@ GameObject:
   - component: {fileID: 64909342063343324}
   - component: {fileID: 54390828460096832}
   - component: {fileID: 75205563961688574}
+  - component: {fileID: 114655588718384912}
   m_Layer: 0
   m_Name: Hamshank
   m_TagString: Untagged
@@ -199,6 +200,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   multiplier: 1
+--- !u!114 &114655588718384912
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1786719097132324}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bddf739a344a26c4ea303c0c61d5ac7f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  lookForTag:
+  - Terrain
 --- !u!114 &114899412833348548
 MonoBehaviour:
   m_ObjectHideFlags: 1

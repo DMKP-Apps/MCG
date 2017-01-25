@@ -71,7 +71,7 @@ public class TopographicCamera : MonoBehaviour {
         
 
         //var step = speed * Time.deltaTime;
-		var cameraZoom = originalPosition.y * (GameSettings.ShotPower.HasValue ? GameSettings.ShotPower.Value : 1);
+		var cameraZoom = originalPosition.y * (GameSettings.ShotPower.HasValue && GameSettings.ShotPower.Value < 0.6f ? 0.6f : GameSettings.ShotPower.HasValue ? GameSettings.ShotPower.Value : 1);
 		var difference = (GameSettings.EstimatedShotLocation + ((GameSettings.EstimatedShotLocation + GameSettings.CurrentCannonLocation) / 2)) / 2; //
   //      if (!GameSettings.ShotPower.HasValue) {
 		//	var distance1 = Vector3.Distance (GameController.GetHolePinPosition(), GameSettings.CurrentCannonLocation);

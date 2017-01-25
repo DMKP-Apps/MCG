@@ -5,9 +5,9 @@ PhysicMaterial:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
-  m_Name: Dirt
-  dynamicFriction: 1
-  staticFriction: 1
-  bounciness: 0.001
+  m_Name: Cannon
+  dynamicFriction: 100
+  staticFriction: 100
+  bounciness: 0
   frictionCombine: 3
-  bounceCombine: 1
+  bounceCombine: 3
