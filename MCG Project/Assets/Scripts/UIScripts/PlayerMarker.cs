@@ -16,20 +16,55 @@ public class PlayerMarker : MonoBehaviour {
 		gameController = GameObject.Find("GameController").GetComponent<GameController>();
 	}
 
-	private CannonPlayerState GetPlayer(GameObject item) {
-		CannonPlayerState playerController = item.GetComponent<CannonPlayerState> ();
-		var parent = item.transform.parent;
-		while (parent != null && playerController == null) {
-			playerController = parent.GetComponent<CannonPlayerState> ();
-			if (playerController != null) {
-				break;
-			}
-			parent = parent.parent;
-		}
-		return playerController;
-	}
-	
-	void LateUpdate () {
+	//private CannonPlayerState GetPlayer(GameObject item) {
+	//	CannonPlayerState playerController = item.GetComponent<CannonPlayerState> ();
+	//	var parent = item.transform.parent;
+	//	while (parent != null && playerController == null) {
+	//		playerController = parent.GetComponent<CannonPlayerState> ();
+	//		if (playerController != null) {
+	//			break;
+	//		}
+	//		parent = parent.parent;
+	//	}
+	//	return playerController;
+	//}
+
+    private CannonPlayerState GetPlayer(GameObject item)
+    {
+
+        if (item.GetComponent<AssociatedPlayerState>() != null)
+        {
+            if (item.GetComponent<AssociatedPlayerState>().playerState != null)
+            {
+                return item.GetComponent<AssociatedPlayerState>().playerState;
+            }
+        }
+
+        CannonPlayerState playerController = item.GetComponent<CannonPlayerState>();
+        var parent = item.transform.parent;
+        while (parent != null && playerController == null)
+        {
+            if (parent.GetComponent<AssociatedPlayerState>() != null)
+            {
+                if (parent.GetComponent<AssociatedPlayerState>().playerState != null)
+                {
+                    playerController = parent.GetComponent<AssociatedPlayerState>().playerState;
+                    break;
+                }
+            }
+
+            playerController = parent.GetComponent<CannonPlayerState>();
+            if (playerController != null)
+            {
+                break;
+            }
+            parent = parent.parent;
+        }
+        return playerController;
+    }
+
+
+    void LateUpdate () {
 		
 		if (player == null) {
 			player = GetPlayer (this.gameObject);

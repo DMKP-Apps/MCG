@@ -25,13 +25,13 @@ public class BulletHitController : MonoBehaviour {
 
 	void LateUpdate()
 	{
-		//if (System.DateTime.Now.Subtract (time).TotalMilliseconds > 300) {
-			
-		//	time = System.DateTime.Now;
+        //if (System.DateTime.Now.Subtract (time).TotalMilliseconds > 300) {
 
-            if (bulletRigidbody != null && bulletRigidbody.velocity.magnitude < 0.01f)
+        //	time = System.DateTime.Now;
+        Debug.Log(bulletRigidbody.velocity.magnitude);
+        if (bulletRigidbody != null && bulletRigidbody.velocity.magnitude < 0.5f)
             {
-                Debug.Log("Destroy Bullet");
+                
                 Destroy(this.gameObject);
             }
 
@@ -85,9 +85,9 @@ public class BulletHitController : MonoBehaviour {
 				this.gameObject.SetActive (false);
 				if (splash != null) {
 					var ps = (GameObject)Instantiate (splash, new Vector3 (contact.point.x, contact.point.y, contact.point.z), Quaternion.Euler (-90, 0, 0));
-					Destroy (ps, 5f);
+					Destroy (ps, 3f);
 				}
-				Destroy(this.gameObject, 5f);
+				Destroy(this.gameObject, 3f);
 			}
         }
         

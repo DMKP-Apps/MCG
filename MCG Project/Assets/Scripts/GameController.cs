@@ -11,7 +11,8 @@ public class GameController : MonoBehaviour {
 	public List<GameObject> holePrefabs = new List<GameObject> ();
 	public int CurrentHole = 1;
 	public List<GameObject> bulletPrefabs = new List<GameObject> ();
-	//public int CurrentBullet = 1;
+    //public int CurrentBullet = 1;
+    private GameObject BulletCamera;
 
 	private string endMatchGameScene = "EndMatch";
 
@@ -132,10 +133,18 @@ public class GameController : MonoBehaviour {
         
 	}
 
+    public GameObject GetBulletCamera()
+    {
+        return BulletCamera;
+    }
 
 	void Start() {
-	
-		scoring.Add (-3, "Albatross");
+
+
+        BulletCamera = GameObject.Find("BulletCamera");
+        BulletCamera.SetActive(false);
+
+        scoring.Add (-3, "Albatross");
 		scoring.Add (-2, "Eagle");
 		scoring.Add (-1, "Birdie");
 		scoring.Add (0, "Par");
@@ -209,7 +218,7 @@ public class GameController : MonoBehaviour {
 
 			if (IsShooting () && cameraController != null) {
 				// route camera back to cannon.
-				cameraController.CameraShot1.GetComponent<CameraFollow>().FollowAlternate();
+				cameraController.FollowAlternate();
 			}
 		}
 
@@ -225,8 +234,9 @@ public class GameController : MonoBehaviour {
 		if(hole != null) {
 			var holeController = hole.GetComponent<HoleController> ();
 			setActive = !holeController.IsHoleCameraActive ();
-            
-		}
+            textController.playerInfo.gameObject.SetActive(setActive);
+
+        }
 		if (setActive && player != null) {
 			var fireController = player.GetComponent<CannonFireController> ();
             setActive = !fireController.IsFiring();
@@ -333,8 +343,10 @@ public class GameController : MonoBehaviour {
 	}
 
 	private void MoveToPosition(Vector3 position) {
-	
-		player.transform.position = position; 
+
+        position.y += 1f;
+        player.transform.position = position;
+        		
 		var holeController = hole.GetComponent<HoleController> ();
 		var playerCannon = player.GetComponent<CannonFireController> ();
 
@@ -342,6 +354,19 @@ public class GameController : MonoBehaviour {
 		player.transform.LookAt (holeController.hole.position);
 		player.transform.rotation = Quaternion.Euler(new Vector3(0f,player.transform.rotation.eulerAngles.y, 0f));
 		playerCannon.AimCannon (holeController.hole.position);
+
+        var playerState = player.GetComponent<CannonPlayerState>();
+        if (playerState.MoveToParent != null)
+        {
+            player.transform.parent = null;
+            player.transform.localScale = new Vector3(1, 1, 1);
+            player.transform.parent = playerState.MoveToParent;
+            playerState.MoveToParent = null;
+        }
+        else if (player.transform.parent != null) {
+            player.transform.parent = null;
+            player.transform.localScale = new Vector3(1, 1, 1);
+        }
 
     }
 
@@ -369,10 +394,28 @@ public class GameController : MonoBehaviour {
 	}
 
 	private CannonPlayerState GetPlayerState(GameObject item) {
+
+        if (item.GetComponent<AssociatedPlayerState>() != null)
+        {
+            if (item.GetComponent<AssociatedPlayerState>().playerState != null)
+            {
+                return item.GetComponent<AssociatedPlayerState>().playerState;
+            }
+        }
+
 		CannonPlayerState playerController = item.GetComponent<CannonPlayerState> ();
 		var parent = item.transform.parent;
 		while (parent != null && playerController == null) {
-			playerController = parent.GetComponent<CannonPlayerState> ();
+            if (parent.GetComponent<AssociatedPlayerState>() != null)
+            {
+                if (parent.GetComponent<AssociatedPlayerState>().playerState != null)
+                {
+                    playerController = parent.GetComponent<AssociatedPlayerState>().playerState;
+                    break;
+                }
+            }
+
+            playerController = parent.GetComponent<CannonPlayerState> ();
 			if (playerController != null) {
 				break;
 			}
@@ -397,13 +440,20 @@ public class GameController : MonoBehaviour {
 		} 
 
 		lastContactPoint = contactPoint;
-		//isHazardPoint = true;
-		// get the closet respawn point for the current water hazard
-		var respawnPosition = water.transform.FindChild("Respawn");
-		if (respawnPosition != null) {
+        //isHazardPoint = true;
+        // get the closet respawn point for the current water hazard
+        var respawnPoints = GetChildrenByTag(water.transform, "Respawn");
+        var respawnPosition = respawnPoints.Select(x => new
+        {
+            transform = x,
+            distance = Vector3.Distance(x.position, bullet.transform.position)
+        }).OrderBy(x => x.distance).FirstOrDefault();
 
-			// move player into the next position
-			MoveToPosition(respawnPosition.transform.position);
+        if (respawnPosition != null) {
+
+            playerController.MoveToParent = respawnPosition.transform;
+            // move player into the next position
+            MoveToPosition(respawnPosition.transform.position);
 		}
 
 		textController.ShowWaterHazard ();
@@ -411,9 +461,31 @@ public class GameController : MonoBehaviour {
 
 	}
 
+    private List<Transform> GetChildrenByTag(Transform parent, string tag)
+    {
+        var waterData = parent.gameObject.GetComponent<WaterData>();
+        if (waterData != null) {
+            return waterData.respawnPositions;
+        }
+
+        List<Transform> results = new List<Transform>();
+        if (parent != null)
+        {
+            foreach (Transform child in parent)
+            {
+                if (child.tag == tag)
+                {
+                    results.Add(child.gameObject.transform);
+                }
+            }
+        }
+        return results;
+        
+    }
 
 
-	public void OutOfBounds(Vector3 contactPoint, GameObject bullet)
+
+    public void OutOfBounds(Vector3 contactPoint, GameObject bullet)
 	{
 		CannonPlayerState playerController = GetPlayerState (bullet);
 

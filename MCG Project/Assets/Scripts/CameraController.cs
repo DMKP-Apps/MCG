@@ -11,7 +11,7 @@ public class CameraController : MonoBehaviour {
 	private float previousXRotation = 0.0f;
 	public GameObject Cannon;
 	public GameObject LookAtTarget;
-	public GameObject CameraShot1;
+	private GameObject CameraShot1;
 	public GameObject CameraPosition;
 
 	public CannonFireController fireController;
@@ -37,7 +37,11 @@ public class CameraController : MonoBehaviour {
 
 		GameController = GameObject.Find ("GameController").GetComponent<GameController> ();
 		GameController.RegisterCameraController (this);
-	}
+
+        CameraShot1 = GameController.GetBulletCamera();
+        //CameraShot1.SetActive(false);
+        //GameObject ;
+    }
 
 	public bool RunActionCamera = true;
 	public float followSpeed = 1f;
@@ -48,8 +52,9 @@ public class CameraController : MonoBehaviour {
 		Position = Cannon.transform.position;
 
 		var bullet = fireController.GetBullet ();
-		if (bullet == null && Mode == CameraMode.FollowBullet) {
-			Mode = CameraMode.FollowCannon;
+		if (bullet == null && CameraShot1.activeInHierarchy) {//Mode == CameraMode.FollowBullet) {
+
+            Mode = CameraMode.FollowCannon;
 			//transform.localPosition = PositionOffset;
 			CameraShot1.SetActive (false);
 			var followCamera = CameraShot1.GetComponent<CameraFollow> ();
@@ -57,7 +62,10 @@ public class CameraController : MonoBehaviour {
 			followCamera.Reset ();
 		}
 		else if (bullet != null && Mode == CameraMode.FollowCannon) {
-			var followCamera = CameraShot1.GetComponent<CameraFollow> ();
+            CameraShot1.transform.position = transform.position;
+            CameraShot1.transform.LookAt(bullet.transform);
+
+            var followCamera = CameraShot1.GetComponent<CameraFollow> ();
 			followCamera.target = bullet;
 			followCamera.powerRate = GameController.powerRate;
 			//followCamera.PositionOffset = CameraShot1.transform.localPosition - bullet.transform.localPosition;
@@ -109,8 +117,13 @@ public class CameraController : MonoBehaviour {
 
 	}
 
+    public void FollowAlternate()
+    {
+        CameraShot1.GetComponent<CameraFollow>().FollowAlternate();
+    }
 
-	public void FollowCannon()
+
+    public void FollowCannon()
 	{
 		double sourceY = System.Math.Floor (Rotation.y);
 		double destY = System.Math.Floor (transform.rotation.eulerAngles.y);

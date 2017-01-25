@@ -226,6 +226,11 @@ public class CannonFireController : MonoBehaviour {
             bullet = (GameObject)Instantiate(
                 currentBullet, BulletPosition.transform.position, BulletPosition.transform.rotation);//new Vector3(transform.position.x, transform.position.y, transform.position.z + 10),
 
+            if (bullet.GetComponent<AssociatedPlayerState>() == null)
+            {
+                bullet.AddComponent(typeof(AssociatedPlayerState));
+            }
+            bullet.GetComponent<AssociatedPlayerState>().playerState = this.GetComponent<CannonPlayerState>();
 
             //topographicBulletPrefab
             /*var topoBullet = (GameObject)Instantiate(
@@ -235,7 +240,7 @@ public class CannonFireController : MonoBehaviour {
                 topoController.target = bullet;
             }*/
 
-            bullet.transform.parent = CannonBulletParent.transform;
+            ////bullet.transform.parent = CannonBulletParent.transform;
 
             var burst = (GameObject)Instantiate(
                 CannonBurstPrefab, BulletPosition.transform.position, BulletPosition.transform.rotation);//new Vector3(transform.position.x, transform.position.y, transform.position.z + 10),
@@ -258,6 +263,14 @@ public class CannonFireController : MonoBehaviour {
             Destroy(burst, 5.0f);
 
             hasFired = true;
+            //////var cannonPlayer = this.GetComponent<CannonPlayerState>();
+            //////if (cannonPlayerState != null)
+            //////{
+            //////    if (cannonPlayerState.MoveToParent != null) {
+            //////        cannonPlayerState.MoveToParent = null;
+            //////        cannonPlayerState.transform.parent = null;
+            //////    }
+            //////}
 
             GameController.Log("Power Rate: {0}; Velocity: {1}", GameController.powerRate, power);
         }

@@ -46,6 +46,7 @@ GameObject:
   - component: {fileID: 54523872044093770}
   - component: {fileID: 114487946113795994}
   - component: {fileID: 75659451301837198}
+  - component: {fileID: 114605748389562332}
   m_Layer: 0
   m_Name: Turkey
   m_TagString: Untagged
@@ -215,6 +216,19 @@ MonoBehaviour:
   MaxAccuracy: 120
   MaxTorque: 10
   Image: {fileID: 21300000, guid: cbb30e6e7927e44b987aa9ad4a893727, type: 3}
+--- !u!114 &114605748389562332
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1432726811036452}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bddf739a344a26c4ea303c0c61d5ac7f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  lookForTag:
+  - Terrain
 --- !u!114 &114853467533569736
 MonoBehaviour:
   m_ObjectHideFlags: 1
