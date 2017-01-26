@@ -8,6 +8,9 @@ namespace NetworkServer.Areas.Message.Models
 {
     public interface INetworkDataRepository
     {
+        Room GetAvailableRoomForNewLogin(PlayerLoginModel player);
+        List<Room> GetActiveRooms();
+
         NetworkData Add(NetworkData item);
         IEnumerable<NetworkData> GetAll();
         NetworkData Find(string key);
@@ -24,6 +27,9 @@ namespace NetworkServer.Areas.Message.Models
         private static ConcurrentDictionary<string, NetworkData> _messages =
               new ConcurrentDictionary<string, NetworkData>();
 
+        private static ConcurrentDictionary<string, Room> _rooms =
+              new ConcurrentDictionary<string, Room>();
+
         public bool ShutDown { get; set; }
         private DateTime _lastCheckTime = DateTime.Now;
         public NetworkDataRepository()
@@ -37,6 +43,9 @@ namespace NetworkServer.Areas.Message.Models
                         _lastCheckTime = DateTime.Now;
                         ClearStaleSessions();
                     }
+
+                    ProcessRoomWorkflow();
+
                     System.Threading.Thread.Sleep(500);
                 }
                 
@@ -45,11 +54,100 @@ namespace NetworkServer.Areas.Message.Models
             thread.Start();
         }
 
+        public Room GetAvailableRoomForNewLogin(PlayerLoginModel player)
+        {
+            Room room = null;
+
+            // check if the currend login is already attending another room.
+            var existingRooms = _rooms.Where(x => x.Value.attendees.ContainsKey(player.UID)).Select(x => x.Key).ToList();
+            // close the account for the existing rooms
+            existingRooms.ForEach(x => {
+                if (_rooms[x].status == RoomStatus.New)
+                {
+                    // remove them from the room completely
+                    RoomAttendee attendee;
+                    _rooms[x].attendees.TryRemove(player.UID, out attendee);
+                    if (_rooms[x].attendees.Count == 0) {
+                        _rooms[x].status = RoomStatus.Closed;
+                    }
+                }
+                else
+                {
+                    _rooms[x].attendees[player.UID].Removed = true;
+                    
+                }
+            });
+
+            // get an available room based on the players isRace value
+            var key = _rooms.Where(x => x.Value.status == RoomStatus.New && x.Value.maxAttendance > x.Value.attendees.Count && ((player.isRace && x.Value.type == GameType.Race) || (!player.isRace && x.Value.type == GameType.Traditional)))
+                .OrderBy(x => x.Value.created).Select(x => x.Key).FirstOrDefault();
+
+            if (string.IsNullOrWhiteSpace(key))
+            {   // no room available... create new room and add the player.
+                key = Guid.NewGuid().ToString();
+                _rooms[key] = new Room()
+                {
+                    sessionId = key,
+                    status = RoomStatus.New,
+                    type = player.isRace ? GameType.Race : GameType.Traditional,
+                    maxAttendance = player.isRace ? 4 : 2,
+                };
+            }
+
+            _rooms[key].attendees[player.UID] = new RoomAttendee()
+            {
+                UID = player.UID,
+                AccountName = player.AccountName,
+            };
+
+            if (_rooms[key].attendees.Count >= _rooms[key].maxAttendance)
+            {
+                _rooms[key].status = RoomStatus.Waiting;
+            }
+
+            room = _rooms[key];
+
+
+            return room;
+        }
+
+        public List<Room> GetActiveRooms()
+        {
+            return _rooms.Where(x => x.Value.status != RoomStatus.Closed)
+                .Select(x => x.Value).ToList();
+        }
+
+        private void ProcessRoomWorkflow()
+        {
+            _rooms.Where(x => x.Value.nextPhaseOn.HasValue && x.Value.nextPhaseOn.Value < DateTime.Now).ToList()
+                .ForEach(x => {
+                    x.Value.ProcessNextPhase();
+                });
+        }
+
         private void ClearStaleSessions()
         {
             var queryDate = DateTime.Now.ToUniversalTime();
             var oldMessages = _messages.Values.Where(x => queryDate.Subtract(x.timeStamp).TotalMinutes > 10).ToList();
-            oldMessages.ForEach(x => Remove(x.Key));
+            oldMessages.ForEach(x => {
+                var uid = x.Key;
+                var sessionId = x.sessionId;
+
+                if (_rooms.ContainsKey(sessionId)) {
+                    var containsKey = _rooms[sessionId].attendees.ContainsKey(uid);
+                    if (containsKey) {
+                        _rooms[sessionId].attendees[uid].Removed = true;
+                    }
+
+                    if (!_rooms[sessionId].attendees.Any(a => !a.Value.Removed) || _rooms[sessionId].status == RoomStatus.Closed)
+                    {   // room is closed.
+                        Room item;
+                        _rooms.TryRemove(sessionId, out item);
+                    }
+                }
+
+                Remove(x.Key);
+            });
             
         }
 
