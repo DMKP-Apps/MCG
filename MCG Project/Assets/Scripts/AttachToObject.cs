@@ -21,6 +21,8 @@ public class AttachToObject : MonoBehaviour {
         {
             if (lookForTag.Any(x => contact.otherCollider.gameObject.tag == x) && !allParents.Take(1).Any(x => x.GetInstanceID() == contact.otherCollider.gameObject.GetInstanceID()))
             {
+				this.transform.parent = null;
+
                 // move the current item to the parent.
                 this.transform.parent = contact.otherCollider.gameObject.transform;
                 var associatedPlayerState = this.GetComponent<AssociatedPlayerState>();

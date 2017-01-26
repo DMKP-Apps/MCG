@@ -344,7 +344,7 @@ public class GameController : MonoBehaviour {
 
 	private void MoveToPosition(Vector3 position) {
 
-        position.y += 1f;
+        position.y += 0.05f;
         player.transform.position = position;
         		
 		var holeController = hole.GetComponent<HoleController> ();
