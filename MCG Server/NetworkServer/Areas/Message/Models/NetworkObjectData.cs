@@ -8,11 +8,11 @@ namespace NetworkServer.Areas.Message.Models
 {
     public enum RoomStatus
     {
-        None,
-        New,
-        Waiting,
-        InProgress,
-        Closed
+        None = 0,
+        New = 1,
+        Waiting = 2,
+        InProgress = 3,
+        Closed = 4
 
     }
 
@@ -53,7 +53,7 @@ namespace NetworkServer.Areas.Message.Models
 
             _workFlow.Add(RoomStatus.None, () => { nextPhaseOn = null; });
             _workFlow.Add(RoomStatus.New, () => {
-                nextPhaseOn = DateTime.Now.AddSeconds(10);
+                nextPhaseOn = DateTime.Now.AddSeconds(60);
                 currentHole = 0;
             });
             _workFlow.Add(RoomStatus.Waiting, () => {

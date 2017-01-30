@@ -297,6 +297,7 @@
     <Content Include="Areas\Message\Views\web.config" />
     <Content Include="Areas\Message\Views\Request\Index.cshtml" />
     <Content Include="Areas\Message\Views\_ViewStart.cshtml" />
+    <Content Include="Areas\Message\Views\Request\Rooms.cshtml" />
     <None Include="Properties\PublishProfiles\BuildRelease.pubxml" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\jquery-1.10.2.js" />

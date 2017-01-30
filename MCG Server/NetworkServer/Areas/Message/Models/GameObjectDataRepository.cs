@@ -10,6 +10,8 @@ namespace NetworkServer.Areas.Message.Models
     {
         Room GetAvailableRoomForNewLogin(PlayerLoginModel player);
         List<Room> GetActiveRooms();
+        bool RemovePlayerFromRoom(string id);
+        Room GetRoomByKey(string key);
 
         NetworkData Add(NetworkData item);
         IEnumerable<NetworkData> GetAll();
@@ -115,6 +117,41 @@ namespace NetworkServer.Areas.Message.Models
         {
             return _rooms.Where(x => x.Value.status != RoomStatus.Closed)
                 .Select(x => x.Value).ToList();
+        }
+
+        public Room GetRoomByKey(string key)
+        {
+            Room room = null;
+            if (!_rooms.TryGetValue(key, out room))
+                return null;
+            return room;
+        }
+
+        public bool RemovePlayerFromRoom(string id)
+        {
+            var item = Find(id);
+            if (item == null)
+            {
+                _rooms.Where(x => x.Value.attendees.ContainsKey(id))
+                    .ToList().ForEach(x =>
+                    {
+                        x.Value.attendees[id].Removed = true;
+                        if (x.Value.attendees.Count(y => !y.Value.Removed) < 2) {
+                            x.Value.status = RoomStatus.Closed;
+                        }
+                    });
+            }
+            else if (_rooms.ContainsKey(item.sessionId) && _rooms[item.sessionId].attendees.ContainsKey(id))
+            {
+                _rooms[item.sessionId].attendees[id].Removed = true;
+
+                if (_rooms[item.sessionId].attendees.Count(y => !y.Value.Removed) < 2)
+                {
+                    _rooms[item.sessionId].status = RoomStatus.Closed;
+                }
+            }
+
+            return true;
         }
 
         private void ProcessRoomWorkflow()

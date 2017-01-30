@@ -1,0 +1,113 @@
+﻿@section scripts{
+    <script type="text/javascript">
+
+        $services.messages = function () {
+            "use strict";
+            return {
+
+                getRooms: function () {
+                    return $.ajax({
+                        url: "/Message/Request/GetRooms",
+                        cache: false
+                    })
+                }
+            };
+        }();
+
+        function formViewModel(parent, options) {
+            var self = this;
+            self.parent = parent;
+            //options = $.extend({ userId: "" }, options);
+
+            self.items = ko.observableArray([]);
+
+            self.loadData = function () {
+                $services.messages.getRooms().done(function (data) {
+                    data = $.extend({ Items: [] }, data);
+                    var items = $.map(data.Items, function (item) {
+                        return new dataViewModel(self, item);
+                    });
+                    self.items(items);
+                });
+            };
+
+            setInterval(function () { self.loadData(); }, 1000);
+        }
+
+        $(document).ready(function () {
+
+            var model = new formViewModel(null, null);
+            ko.applyBindings(model, $('#messagesOutput').get(0));
+           // model.loadData();
+
+        });
+
+    </script>
+}
+
+<div class="row" id="messagesOutput">
+    <div class="col-md-12">
+        <span data-bind="text: items().length"></span>
+        <div data-bind="foreach: items">
+
+            <div class="row" data-bind="with: data">
+                <div class="col-md-3">
+                    <strong>sessionId</strong>
+                </div>
+                <div class="col-md-9">
+                    <span data-bind="text: sessionId"></span>
+                </div>
+            </div>
+            <div class="row" data-bind="with: data">
+                <div class="col-md-3">
+                    <strong>game type</strong>
+                </div>
+                <div class="col-md-9">
+                    <span data-bind="text: type() == 1 ? 'Race' : 'Traditional'"></span>
+                </div>
+            </div>
+            <div class="row" data-bind="with: data">
+                <div class="col-md-3">
+                    <strong>nextPhaseOn</strong>
+                </div>
+                <div class="col-md-9">
+                    <span data-bind="text: nextPhaseOn"></span>
+                </div>
+            </div>
+            <div class="row" data-bind="with: data">
+                <div class="col-md-3">
+                    <strong>status</strong>
+                </div>
+                <div class="col-md-9">
+                    <span data-bind="text: status() == 1 ? 'New' : status() == 2 ? 'Waiting' : status() == 3 ? 'In Progress' : status() == 4 ? 'Closed' : 'None'"></span>
+                </div>
+            </div>
+            <div class="row" data-bind="with: data">
+                <div class="col-md-3">
+                    <strong>current hole</strong>
+                </div>
+                <div class="col-md-9">
+                    <span data-bind="text: currentHole"></span>
+                </div>
+            </div>
+            <div class="row" data-bind="with: data">
+                <div class="col-md-3">
+                    <strong>active attendee count</strong>
+                </div>
+                <div class="col-md-9">
+                    <span data-bind="text: attendeesActive().length"></span>
+                </div>
+            </div>
+            <div class="row" data-bind="with: data">
+                <div class="col-md-3">
+                    <strong>all attendee count</strong>
+                </div>
+                <div class="col-md-9">
+                    <span data-bind="text: attendeesAll().length"></span>
+                </div>
+            </div>
+            <hr />
+        </div>
+    </div>
+</div>
+

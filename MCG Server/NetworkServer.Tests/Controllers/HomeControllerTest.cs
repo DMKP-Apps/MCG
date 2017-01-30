@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using System.Diagnostics;
 
 namespace NetworkServer.Tests.Controllers
 {
@@ -104,14 +105,17 @@ namespace NetworkServer.Tests.Controllers
                 Assert.AreEqual(room3.sessionId, room4.sessionId);
 
                 var allRooms1 = _repository.GetActiveRooms();
+                Debug.WriteLine(string.Join(",", allRooms1.Select(x => x.status.ToString())));
 
                 Thread.Sleep(12000);
 
                 var allRooms2 = _repository.GetActiveRooms();
+                Debug.WriteLine(string.Join(",", allRooms2.Select(x => x.status.ToString())));
 
                 Thread.Sleep(12000);
 
                 var allRooms3 = _repository.GetActiveRooms();
+                Debug.WriteLine(string.Join(",", allRooms3.Select(x => x.status.ToString())));
 
 
 

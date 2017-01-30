@@ -26,6 +26,11 @@ namespace NetworkServer.Areas.Message.Controllers
             return View();
         }
 
+        public ActionResult Rooms()
+        {
+            return View();
+        }
+
         [HttpGet]
         public async Task<ActionResult> Ping()
         {
@@ -42,6 +47,72 @@ namespace NetworkServer.Areas.Message.Controllers
         }
 
         [HttpGet]
+        public async Task<ActionResult> GetRooms()
+        {
+            var data = await Task.Run<IEnumerable<object>>(() => Repository.GetActiveRooms().Select(x => new {
+                sessionId = x.sessionId,
+                maxAttendance = x.maxAttendance,
+                minAttendance = x.minAttendance,
+                created = x.created.ToString(),
+                lastRequestTime = x.lastRequestTime.ToString(),
+                type = x.type,
+                course = x.course,
+                currentHole = x.currentHole,
+                nextPhaseOn = x.nextPhaseOn.HasValue ? x.nextPhaseOn.Value.ToString() : string.Empty,
+                attendeesActive = x.attendees.Where(a => !a.Value.Removed).Select(a => a.Value),
+                attendeesAll = x.attendees.Select(a => a.Value),
+                status = x.status
+            }));
+            return Json(new { Items = data }, JsonRequestBehavior.AllowGet);
+        }
+
+        [HttpGet]
+        public async Task<ActionResult> GetPlayerRoom(string id)
+        {
+            var data = await Task.Run<object>(() => {
+                return Repository.GetActiveRooms().Where(x => x.attendees.Any(a => a.Value.UID == id && !a.Value.Removed))
+                    .Select(x => new {
+                        sessionId = x.sessionId,
+                        maxAttendance = x.maxAttendance,
+                        minAttendance = x.minAttendance,
+                        created = DateTime.Now.Subtract(x.created).TotalMilliseconds,
+                        type = x.type,
+                        course = x.course,
+                        currentHole = x.currentHole,
+                        nextPhaseOn = x.nextPhaseOn.HasValue ? x.nextPhaseOn.Value.Subtract(DateTime.Now).TotalMilliseconds : -1,
+                        status = x.status,
+                        attendees = x.attendees.Select(a => a.Value),
+                    }).FirstOrDefault();
+            });
+            return Json(data, JsonRequestBehavior.AllowGet);
+
+        }
+
+        [HttpGet]
+        public async Task<ActionResult> GetRoomStatus(string id)
+        {
+            var data = await Task.Run<object>(() => {
+                var room = Repository.GetRoomByKey(id);
+                return new
+                {
+                    sessionId = room.sessionId,
+                    maxAttendance = room.maxAttendance,
+                    minAttendance = room.minAttendance,
+                    created = DateTime.Now.Subtract(room.created).TotalMilliseconds,
+                    type = room.type,
+                    course = room.course,
+                    currentHole = room.currentHole,
+                    nextPhaseOn = room.nextPhaseOn.HasValue ? room.nextPhaseOn.Value.Subtract(DateTime.Now).TotalMilliseconds : -1,
+                    status = room.status,
+                    attendees = room.attendees.Select(a => a.Value),
+                };
+            });
+            return Json(data, JsonRequestBehavior.AllowGet);
+
+        }
+
+
+        [HttpGet]
         public async Task<ActionResult> GetById(string id)
         {
             var data = await Task.Run<object>(() => Repository.Find(id));
@@ -56,11 +127,20 @@ namespace NetworkServer.Areas.Message.Controllers
             //var data = await Task.Run<MessageItem>(() => Repository.Add(model));
             var data = await Task.Run<string>(() => {
                 Repository.Add(model);
+
+                _items.Add(model);
+                using (System.IO.StreamWriter sw = new System.IO.StreamWriter(@"C:\Users\kyle.pearn\Source\Repos\MCG\data.txt", false))
+                {
+                    sw.Write(Newtonsoft.Json.JsonConvert.SerializeObject(_items));
+                }
+
                 return "Success";
             });
             return Json(data, JsonRequestBehavior.AllowGet);
 
         }
+
+        private List<NetworkObjectData> _items = new List<NetworkObjectData>();
 
         [HttpPost]
         public async Task<ActionResult> SaveWaitingData(NetworkWaitingData model)
@@ -187,15 +267,13 @@ namespace NetworkServer.Areas.Message.Controllers
                     }
                 }
 
-                var sessionId = Guid.NewGuid().ToString();
-                Repository.GetAll<NetworkWaitingData>()
-                    .GroupBy(x => x.sessionId)
-                    .Where(x => x.Count() < 2)
-                    .Select(x => x.FirstOrDefault())
-                    .Where(x => x != null && x.isRace == model.isRace)
-                    .OrderBy(x => x.timeStamp)
-                    .Take(1).ToList().ForEach(n => sessionId = n.sessionId);
-
+                var room = Repository.GetAvailableRoomForNewLogin(model);
+                if (room == null)
+                {
+                    throw new Exception("No rooms available.");
+                }
+                var sessionId = room.sessionId;
+                
                 NetworkWaitingData clientInfo = new NetworkWaitingData() {
                     accName = model.AccountName,
                     objectId = model.UID,
@@ -218,6 +296,7 @@ namespace NetworkServer.Areas.Message.Controllers
         {
             var data = await Task.Run<bool>(() =>
             {
+                Repository.RemovePlayerFromRoom(id);
                 Repository.Remove(id);
                 return true;
             });
