@@ -13,6 +13,8 @@ public class CameraController : MonoBehaviour {
 	public GameObject LookAtTarget;
 	private GameObject CameraShot1;
 	public GameObject CameraPosition;
+	public GameObject Camera2Position;
+	public Vector3 explorePosition;
 
 	public CannonFireController fireController;
 	private GameController GameController;
@@ -25,9 +27,14 @@ public class CameraController : MonoBehaviour {
 	{
 		FollowCannon,
 		FollowBullet,
+		Explore
 	}
 
 	public CameraMode Mode = CameraMode.FollowCannon;
+	public GameObject cameraHomePostion;
+	public bool canInputMovement = false;
+
+	//private SmoothLookAt lookAtController;
 
 	void Start () 
 	{
@@ -39,8 +46,7 @@ public class CameraController : MonoBehaviour {
 		GameController.RegisterCameraController (this);
 
         CameraShot1 = GameController.GetBulletCamera();
-        //CameraShot1.SetActive(false);
-        //GameObject ;
+		//lookAtController = this.GetComponent<SmoothLookAt> ();
     }
 
 	public bool RunActionCamera = true;
@@ -52,7 +58,7 @@ public class CameraController : MonoBehaviour {
 		Position = Cannon.transform.position;
 
 		var bullet = fireController.GetBullet ();
-		if (bullet == null && CameraShot1.activeInHierarchy) {//Mode == CameraMode.FollowBullet) {
+		if (bullet == null && CameraShot1 != null && CameraShot1.activeInHierarchy) {//Mode == CameraMode.FollowBullet) {
 
             Mode = CameraMode.FollowCannon;
 			//transform.localPosition = PositionOffset;
@@ -83,24 +89,60 @@ public class CameraController : MonoBehaviour {
 		var bullet = fireController.GetBullet ();
 
 
-		if (bullet == null) {
-            //FollowCannon ();
+		if (bullet == null && (Mode == CameraMode.FollowBullet || Mode == CameraMode.FollowCannon)) {
+			
 
-			//var step = 2.5f * Time.deltaTime;
-			var followPosition = CameraPosition.transform.position;
-			followPosition.y = transform.position.y;
+			Mode = CameraMode.FollowCannon;
 
-            var minStep = 2f * Time.deltaTime;
-            var step = (Vector3.Distance(followPosition, transform.position) * 0.8f) * Time.deltaTime;
-            if (step < minStep) {
-                step = minStep;
-            }
+			var followPosition = CameraPosition.transform.position;				
+			followPosition.y = cameraHomePostion.transform.position.y;
 
-            transform.position = Vector3.MoveTowards (transform.position, followPosition, step);
+			var minStep = 2f * Time.deltaTime;
+			var step = (Vector3.Distance (followPosition, transform.position) * 0.8f) * Time.deltaTime;
+			if (step < minStep) {
+				step = minStep;
+			}
+
+			transform.position = Vector3.MoveTowards (transform.position, followPosition, step);
+
 			transform.LookAt (LookAtTarget.transform);
-			//PositionOffset = transform.localPosition;
 
-		} else {
+
+
+		} else if (Mode == CameraMode.Explore && !canInputMovement) {
+		
+			var followPosition = Camera2Position.transform.position;				
+
+			var minStep = 10f * Time.deltaTime;
+			var step = (Vector3.Distance (followPosition, transform.position) * 1f) * Time.deltaTime;
+			if (step < minStep) {
+				step = minStep;
+			}
+
+			transform.position = Vector3.MoveTowards (transform.position, followPosition, step);
+			transform.LookAt (LookAtTarget.transform);
+			explorePosition = new Vector3 (0, 0, 0);
+
+			canInputMovement = Vector3.Distance( transform.position, followPosition) < 1;
+		
+		}
+		else if (Mode == CameraMode.Explore && canInputMovement) {
+			//transform.LookAt (LookAtTarget.transform);
+			if(explorePosition == new Vector3(0,0,0)) {
+				return;
+			}
+			var followPosition = (explorePosition) ;				
+
+			var minStep = 1f * Time.deltaTime;
+			var step = (Vector3.Distance (followPosition, transform.position) * 1f) * Time.deltaTime;
+			if (step < minStep) {
+				step = minStep;
+			}
+
+			transform.position = Vector3.MoveTowards (transform.position, followPosition, step);
+
+		}
+		else {
 			Mode = CameraMode.FollowBullet;
 			if (bullet.activeInHierarchy) {
 				//transform.localPosition = (bullet.transform.localPosition + PositionOffset) * followSpeed;
@@ -123,7 +165,7 @@ public class CameraController : MonoBehaviour {
     }
 
 
-    public void FollowCannon()
+    /*public void FollowCannon()
 	{
 		double sourceY = System.Math.Floor (Rotation.y);
 		double destY = System.Math.Floor (transform.rotation.eulerAngles.y);
@@ -164,6 +206,6 @@ public class CameraController : MonoBehaviour {
 
 		return sourceY != destY;
 	}
-
+*/
 
 }

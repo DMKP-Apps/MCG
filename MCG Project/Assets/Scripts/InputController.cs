@@ -7,6 +7,9 @@ public class InputController : MonoBehaviour {
 
 	private GameController GameController;
     private CannonPlayerState playerState = null;
+
+	public Camera camera;
+
     private CannonPlayerState GetPlayerState()
     {
         CannonPlayerState playerController = this.GetComponent<CannonPlayerState>();
@@ -54,87 +57,172 @@ public class InputController : MonoBehaviour {
 
     public bool AllowInput = true;
 
+	public float perspectiveZoomSpeed = 0.5f;        // The rate of change of the field of view in perspective mode.
+	public float orthoZoomSpeed = 0.5f;        // The rate of change of the orthographic size in orthographic mode.
+
+
 	// Update is called once per frame
 	void Update () {
 
 		InputPosition = new Vector2(0, 0);
         bool hasTouch = false;
-		Input.touches.ToList ().ForEach (touch => {
-			if(touch.phase == TouchPhase.Began) {
-				GameController.TouchDetected();
-                hasTouch = true;
 
-            }
+		var touches = Input.touches.ToList ();
 
-			if(touch.phase == TouchPhase.Moved) {
-				if (!AllowInput) {
-					return;
+		if (touches.Count > 0) {
+			GameController.TouchDetected ();
+			hasTouch = true;
+
+		}
+
+		var cameraController = camera.gameObject.GetComponent<CameraController> ();
+		if (touches.Count == 2 && camera != null && !touches.Any(x => !(x.phase == TouchPhase.Moved || x.phase == TouchPhase.Stationary))) {
+
+			if (!AllowInput) {
+				return;
+			}
+
+			// Store both touches.
+			Touch touchZero = touches [0];
+			Touch touchOne = touches [1];
+
+			// Find the position in the previous frame of each touch.
+			Vector2 touchZeroPrevPos = touchZero.position - touchZero.deltaPosition;
+			Vector2 touchOnePrevPos = touchOne.position - touchOne.deltaPosition;
+
+			// Find the magnitude of the vector (the distance) between the touches in each frame.
+			float prevTouchDeltaMag = (touchZeroPrevPos - touchOnePrevPos).magnitude;
+			float touchDeltaMag = (touchZero.position - touchOne.position).magnitude;
+
+			// Find the difference in the distances between each frame.
+			float deltaMagnitudeDiff = prevTouchDeltaMag - touchDeltaMag;
+
+			if (deltaMagnitudeDiff > 0 && cameraController.Mode != CameraController.CameraMode.Explore) {
+				// zoom out.
+				cameraController.Mode = CameraController.CameraMode.Explore;
+				cameraController.canInputMovement = false;
+			} else if(deltaMagnitudeDiff < 0 && cameraController.Mode == CameraController.CameraMode.Explore && cameraController.canInputMovement) {
+				// zoom in.
+				cameraController.Mode = CameraController.CameraMode.FollowCannon;
+
+				//camera.transform.r
+
+				/*camera.transform.localRotation = Quaternion.Euler(new Vector3(camera.transform.localRotation.eulerAngles.x
+					,camera.transform.localRotation.y + (touchZero.deltaPosition.x * -1), 
+					camera.transform.localRotation.z));*/
+
+			}
+
+
+			//Vector3 target = camera.transform.localPosition;
+			//target.y += (deltaMagnitudeDiff * perspectiveZoomSpeed) * Time.deltaTime;
+			//target.z -= (deltaMagnitudeDiff * (perspectiveZoomSpeed * 0.8f)) * Time.deltaTime;
+
+
+
+
+			//if (!(target.y < 8f || target.y > 50f)) {
+			//	camera.transform.localPosition = target;
+			//}
+
+			//camera.transform.localPosition = target;
+
+			/*// If the camera is orthographic...
+			if (camera.orthographic)
+			{
+				// ... change the orthographic size based on the change in distance between the touches.
+				camera.orthographicSize += deltaMagnitudeDiff * orthoZoomSpeed;
+
+				// Make sure the orthographic size never drops below zero.
+				camera.orthographicSize = Mathf.Max(camera.orthographicSize, 0.1f);
+			}
+			else
+			{
+				// Otherwise change the field of view based on the change in distance between the touches.
+				camera.fieldOfView += deltaMagnitudeDiff * perspectiveZoomSpeed;
+
+				// Clamp the field of view to make sure it's between 0 and 180.
+				camera.fieldOfView = Mathf.Clamp(camera.fieldOfView, 0.1f, 179.9f);
+			}*/
+
+
+		
+		} 
+
+		if(cameraController.Mode == CameraController.CameraMode.Explore && cameraController.canInputMovement && touches.Count == 1)
+		{
+			touches.Where(x => x.phase == TouchPhase.Moved).Take(1).ToList().ForEach (touch => {
+
+
+				if (touch.phase == TouchPhase.Moved) {
+					if (!AllowInput) {
+						return;
+					}
+
+					hasTouch = true;
+
+					var followPosition = (new Vector3(touch.deltaPosition.x * 1.5f, 0f, touch.deltaPosition.y * 5f));
+
+					cameraController.explorePosition = camera.transform.position + followPosition;
+
+					/*var minStep = 2f * Time.deltaTime;
+					var step = (Vector3.Distance (followPosition, camera.transform.position) * 0.8f) * Time.deltaTime;
+					if (step < minStep) {
+						step = minStep;
+					}
+
+					camera.transform.position = Vector3.MoveTowards (camera.transform.position, followPosition, step);*/
+
+
+
 				}
+			});
+		}
 
-                hasTouch = true;
-                // Construct a ray from the current touch coordinates
 
-                //var ray = Camera.main.ScreenPointToRay (touch.position);
-                //Debug.Log(string.Format("x: {0}, y: {1}", ray.direction.x, ray.direction.y));
-                //var hits = Physics2D.RaycastAll(new Vector2(ray.origin.x, ray.origin.y),new Vector2(ray.direction.x, ray.direction.y));
-                //Debug.Log(string.Format("hits: {0}", hits.Length));
-                //hits.ToList().Where(hit => hit.collider != null).ToList()
-                //	.ForEach(hit => {
-                //		Debug.Log(hit.collider.gameObject.name);
+		if(cameraController.Mode == CameraController.CameraMode.FollowCannon)
+		{
+			
 
-                //	});
+			touches.Where(x => x.phase == TouchPhase.Moved).Take(1).ToList().ForEach (touch => {
+				
 
-                /*Vector2 v2 = new Vector2(Camera.main.ScreenToWorldPoint(touch.position).x, Camera.main.ScreenToWorldPoint(touch.position).y);
-				Collider2D c2d = Physics2D.OverlapPoint(v2);
+				if (touch.phase == TouchPhase.Moved) {
+					if (!AllowInput) {
+						return;
+					}
 
-				if(c2d != null)
-				{
-					Debug.Log(c2d.gameObject.name);
-				}*/
-
-                //hits.ToList().Where(hit => hit.collider != null).ToList()
-                //	.ForEach(hit => {
-
-                //		Debug.Log(string.Format("name: {0}", hit.collider.gameObject.name));
-                //		if(hit.collider.gameObject.name == this.name) {
-
-                //float step = Speed * Time.deltaTime;
-                //transform.position = Vector3.MoveTowards(transform.position, 
-                //	new Vector3(touch.deltaPosition.x,0.0f,touch.deltaPosition.y), step);
-                //transform.Rotate(touch.deltaPosition.y,0.0f,0.0f);
-                if (!playerState.isFiring())
-				{
-					transform.localRotation = SmoothRotator.Rotate( transform.localRotation, ref m_OriginalRotation,
-								ref m_TargetAngles, ref m_FollowAngles,
-								ref m_FollowVelocity, rotationRange, rotationSpeed,
-								dampingTime,touch.deltaPosition.x, touch.deltaPosition.y);
+					hasTouch = true;
+                
+					if (!playerState.isFiring ()) {
+						transform.localRotation = SmoothRotator.Rotate (transform.localRotation, ref m_OriginalRotation,
+							ref m_TargetAngles, ref m_FollowAngles,
+							ref m_FollowVelocity, rotationRange, rotationSpeed,
+							dampingTime, touch.deltaPosition.x, touch.deltaPosition.y);
 
                     
-                    //m_OriginalRotation = transform.localRotation;
+						//m_OriginalRotation = transform.localRotation;
 
-                    var currentRotation = string.Format("{0},{1},{2}", 
-						transform.localRotation.x.ToString("0000.0000"),
-						transform.localRotation.y.ToString("0000.0000"),
-						transform.localRotation.z.ToString("0000.0000"));
+						var currentRotation = string.Format ("{0},{1},{2}", 
+							                                    transform.localRotation.x.ToString ("0000.0000"),
+							                                    transform.localRotation.y.ToString ("0000.0000"),
+							                                    transform.localRotation.z.ToString ("0000.0000"));
 
 
 
-					if(previousPosition != currentRotation)
-					{
-						previousPosition = currentRotation;
-						InputPosition.x = touch.deltaPosition.x;
-						InputPosition.y = touch.deltaPosition.y;
+						if (previousPosition != currentRotation) {
+							previousPosition = currentRotation;
+							InputPosition.x = touch.deltaPosition.x;
+							InputPosition.y = touch.deltaPosition.y;
+
+						}
 
 					}
 
+
 				}
-
-
-
-						//}
-					//});
-			}
-		});
+			});
+		}
 
         if (!hasTouch)
         {
