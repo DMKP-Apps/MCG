@@ -104,6 +104,7 @@
      <Compile Include="Assets\Scripts\Obstacles\MoveAroundObject.cs" />
      <Compile Include="Assets\Scripts\Obstacles\MoveObject.cs" />
      <Compile Include="Assets\Scripts\Obstacles\RotateObject.cs" />
+     <Compile Include="Assets\Scripts\SmoothLookAt.cs" />
      <Compile Include="Assets\Scripts\SmoothRotator.cs" />
      <Compile Include="Assets\Scripts\TopographicBulletController.cs" />
      <Compile Include="Assets\Scripts\TopographicCamera.cs" />

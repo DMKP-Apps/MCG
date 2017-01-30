@@ -241,6 +241,9 @@ public class GameController : MonoBehaviour {
 			var fireController = player.GetComponent<CannonFireController> ();
             setActive = !fireController.IsFiring();
 		}
+		if (cameraController.Mode == CameraController.CameraMode.Explore) {
+			setActive = false;
+		}
 
 		ControlsContainer.SetActive (setActive);
         if (topographicCamera != null)
@@ -344,7 +347,7 @@ public class GameController : MonoBehaviour {
 
 	private void MoveToPosition(Vector3 position) {
 
-        position.y += 0.05f;
+        position.y += 0.5f;
         player.transform.position = position;
         		
 		var holeController = hole.GetComponent<HoleController> ();
