@@ -128,11 +128,7 @@ namespace NetworkServer.Areas.Message.Controllers
             var data = await Task.Run<string>(() => {
                 Repository.Add(model);
 
-                _items.Add(model);
-                using (System.IO.StreamWriter sw = new System.IO.StreamWriter(@"C:\Users\kyle.pearn\Source\Repos\MCG\data.txt", false))
-                {
-                    sw.Write(Newtonsoft.Json.JsonConvert.SerializeObject(_items));
-                }
+                
 
                 return "Success";
             });
@@ -140,7 +136,7 @@ namespace NetworkServer.Areas.Message.Controllers
 
         }
 
-        private List<NetworkObjectData> _items = new List<NetworkObjectData>();
+        
 
         [HttpPost]
         public async Task<ActionResult> SaveWaitingData(NetworkWaitingData model)
@@ -273,12 +269,13 @@ namespace NetworkServer.Areas.Message.Controllers
                     throw new Exception("No rooms available.");
                 }
                 var sessionId = room.sessionId;
-                
+
                 NetworkWaitingData clientInfo = new NetworkWaitingData() {
                     accName = model.AccountName,
                     objectId = model.UID,
                     sessionId = sessionId,
-                    isRace = model.isRace
+                    isRace = model.isRace,
+                    Ready = true
                 };
 
                 Repository.Add(clientInfo);

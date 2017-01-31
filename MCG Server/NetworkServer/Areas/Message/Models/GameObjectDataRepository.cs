@@ -210,8 +210,19 @@ namespace NetworkServer.Areas.Message.Models
             }
             _messages[item.Key] = item;
 
+            //if (item is NetworkObjectData)
+            //{
+            //    _items.Add(item as NetworkObjectData);
+            //    using (System.IO.StreamWriter sw = new System.IO.StreamWriter(@"C:\Users\kyle.pearn\Source\Repos\MCG\data.txt", false))
+            //    {
+            //        sw.Write(Newtonsoft.Json.JsonConvert.SerializeObject(_items));
+            //    }
+            //}
+
             return item;
         }
+
+        //private List<NetworkObjectData> _items = new List<NetworkObjectData>();
 
         public NetworkData Find(string key)
         {

@@ -122,6 +122,58 @@ namespace NetworkServer.Tests.Controllers
             });
         }
 
+        [TestMethod]
+        public void FormatOutputData()
+        {
+            ExecuteTest(() => {
+                string data = string.Empty;
+                using (System.IO.StreamReader sr = new System.IO.StreamReader(@"C:\Users\kyle.pearn\Source\Repos\MCG\data.txt"))
+                {
+                    data = sr.ReadToEnd();
+                }
+
+                var items = Newtonsoft.Json.JsonConvert.DeserializeObject<List<NetworkObjectData>>(data);
+                var fromTime = items.Where(x => x.accName == "Guest1701090101")
+                    .OrderBy(x => x.timeStamp).Select(x => x.timeStamp).FirstOrDefault();
+
+                var convertedItems = items.Where(x => x.accName == "Guest1701090101")
+                    .OrderBy(x => x.timeStamp)
+                    .Select(x => new
+                    {
+                        holeId = x.holeId,
+                        isRace = x.isRace,
+                        cannon_position_x = x.cannon_position_x,
+                        cannon_position_y = x.cannon_position_y,
+                        cannon_position_z = x.cannon_position_z,
+                        cannon_rotation_x = x.cannon_rotation_x,
+                        cannon_rotation_y = x.cannon_rotation_y,
+                        cannon_rotation_z = x.cannon_rotation_z,
+                        currentBullet = x.currentBullet,
+                        fire = x.fire,
+                        fire_accurracy = x.fire_accurracy,
+                        fire_power = x.fire_power,
+                        fire_torque = x.fire_torque,
+                        fire_turn = x.fire_turn,
+                        holeComplete = x.holeComplete,
+                        root_position_x = x.root_position_x,
+                        root_position_y = x.root_position_y,
+                        root_position_z = x.root_position_z,
+                        root_rotation_x = x.root_rotation_x,
+                        root_rotation_y = x.root_rotation_y,
+                        root_rotation_z = x.root_rotation_z,
+                        stroke = x.stroke,
+                        timeElasped = x.timeStamp.Subtract(fromTime).TotalMilliseconds,
+                        waitMilliseconds = x.fire ? 1000 : x.waitMilliseconds
+                    }).ToList();
+
+                using (System.IO.StreamWriter sw = new System.IO.StreamWriter(@"C:\Users\kyle.pearn\Source\Repos\MCG\data_converted.txt", false))
+                {
+                    sw.Write(Newtonsoft.Json.JsonConvert.SerializeObject(convertedItems));
+                }
+
+            });
+        }
+
         private void ExecuteTest(Action action)
         {
             try
