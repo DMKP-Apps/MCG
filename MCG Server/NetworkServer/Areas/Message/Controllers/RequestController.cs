@@ -220,6 +220,28 @@ namespace NetworkServer.Areas.Message.Controllers
             return Json(result, JsonRequestBehavior.AllowGet);
         }
 
+        [HttpGet]
+        public async Task<ActionResult> GetGameInfoBySessionId(string id)
+        {
+            var data = await Task.Run<List<NetworkObjectData>>(() =>
+            {
+                List<NetworkObjectData> result = null;
+                
+                    // locate all other players...
+                    result = Repository.GetAll<NetworkObjectData>()
+                        .Where(x => x.sessionId == id).ToList();
+                    result.ForEach(x => x.UpdateWaitMillieseconds());
+
+                
+                return result;
+            });
+
+            
+
+
+            return Json(data, JsonRequestBehavior.AllowGet);
+        }
+
 
         [HttpPost]
         public async Task<ActionResult> Login(PlayerLoginModel model)

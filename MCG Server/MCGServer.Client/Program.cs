@@ -1,9 +1,11 @@
 ﻿using MCGServer.Client.Models;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace MCGServer.Client
@@ -12,8 +14,46 @@ namespace MCGServer.Client
     {
         private static string _url = "http://localhost:8321/";
 
-        private static Dictionary<string, Action> _commands = new Dictionary<string, Action>(); 
+        private static Dictionary<string, Action> _commands = new Dictionary<string, Action>();
 
+
+        private static void runPlayerData() {
+            Thread run = new Thread(new ParameterizedThreadStart((args => {
+
+                while (isLoaded) {
+                    var stamp = DateTime.Now;
+                    var items = _playerRunData.Where(y => y.timeStamp <= stamp).ToList();
+                    if (items.Count > 0) {
+                        _playerRunData = _playerRunData.Where(y => y.timeStamp > stamp).ToList();
+
+
+                        // do stuff...
+                        Console.WriteLine(string.Format("{0} items to execute.", items.Count));
+                        Console.Write("> ");
+
+                        items.OrderBy(x => x.timeStamp).ToList()
+                        .ForEach(x => SendObjectData(x));
+                    }
+
+
+                    //Thread.Sleep(100);
+                }
+
+            })));
+            run.Start();
+
+            Thread query = new Thread(new ParameterizedThreadStart((args => {
+
+                while (isLoaded)
+                {
+                    _players.OfType<playerInfoWithRoom>().Select(x => x.room.sessionId)
+                     .Distinct().ToList().ForEach(x => GetGameInfo(x));
+                    Thread.Sleep(1000);
+                }
+
+            })));
+            query.Start();
+        }
 
         static void Main(string[] args)
         {
@@ -42,19 +82,26 @@ namespace MCGServer.Client
             }
 
             _players.ForEach(x => Logout(x));
-
+            isLoaded = false;
 
             //var result = Login(Guid.NewGuid().ToString(), "Guest001", true);
             //Console.WriteLine(result);
         }
 
         static List<playerInfo> _players = new List<playerInfo>();
+        static bool isLoaded = false;
 
         private static void init() {
             _commands.Add("login", PromptLogin);
             _commands.Add("logout", PromptLogout);
             _commands.Add("pinfo", PromptPlayerDetails);
             _commands.Add("refresh", RefreshData);
+            _commands.Add("run", PromptPlayerRun);
+
+            isLoaded = true;
+
+            runPlayerData();
+
         }
 
         private static void PromptLogin()
@@ -167,6 +214,66 @@ namespace MCGServer.Client
 
         }
 
+        private static void PromptPlayerRun()
+        {
+            Console.WriteLine("What player to run? ");
+
+            int i = 0;
+            _players.ForEach(p => {
+                i++;
+                Console.WriteLine("[{0}] {1}", i, p.AccountName);
+            });
+
+            Console.Write(string.Format("Index [1-{0}]: ", _players.Count));
+            var playerKey = Console.ReadKey().KeyChar;
+
+            int index = 0;
+            if (!int.TryParse(playerKey.ToString(), out index))
+            {
+                Console.WriteLine("");
+                Console.WriteLine(string.Format("Invalid key value '{0}'.", playerKey));
+            }
+            else
+            {
+                if (index < 1 || index > _players.Count)
+                {
+                    Console.WriteLine("");
+                    Console.WriteLine(string.Format("Index is out of range '{0}'.", playerKey));
+                }
+                else
+                {
+                    var result = _players[index - 1];
+                    Console.WriteLine("");
+                    Console.WriteLine(string.Format("Player execution: {0}", result.AccountName));
+
+                    string data = string.Empty;
+                    using (System.IO.StreamReader sr = new System.IO.StreamReader(@"C:\Users\kyle.pearn\Source\Repos\MCG\player" + index.ToString() + ".txt"))
+                    {
+                        data = sr.ReadToEnd();
+                    }
+                    var player = _players[index - 1] as playerInfoWithRoom;
+
+                    var items = Newtonsoft.Json.JsonConvert.DeserializeObject<List<NetworkObjectData>>(data);
+                    items.ForEach(x =>
+                    {
+                        
+                        x.objectId = player.UID;
+                        x.accName = player.AccountName;
+                        x.sessionId = player.room.sessionId;
+                    });
+                    lock(_playerRunData)
+                    {
+                        _playerRunData.AddRange(items);
+                    }
+
+                }
+            }
+
+        }
+
+
+        private static List<NetworkObjectData> _playerRunData = new List<NetworkObjectData>();
+
         private static void RefreshData()
         {
             _players.OfType<playerInfoWithRoom>().ToList().ForEach(x => GetRoomStatus(x));
@@ -201,6 +308,40 @@ namespace MCGServer.Client
             }
         }
 
+        private static void SendObjectData(NetworkObjectData data)
+        {
+            var result = PostRequest<playerInfo>("/Message/Request/SaveObjectData", new {
+                objectId = data.objectId,
+                accName = data.accName,
+                sessionId = data.sessionId,
+                holeId = data.holeId,
+                isRace = data.isRace,
+                Ready = true,
+                cannon_position_x = data.cannon_position_x,
+                cannon_position_y = data.cannon_position_y,
+                cannon_position_z = data.cannon_position_z,
+                cannon_rotation_x = data.cannon_rotation_x,
+                cannon_rotation_y = data.cannon_rotation_y,
+                cannon_rotation_z = data.cannon_rotation_z,
+                currentBullet = data.currentBullet,
+                fire = data.fire,
+                fire_accurracy = data.fire_accurracy,
+                fire_power = data.fire_power,
+                fire_torque = data.fire_torque,
+                fire_turn = data.fire_turn,
+                holeComplete = data.holeComplete,
+                root_position_x = data.root_position_x,
+                root_position_y = data.root_position_y,
+                root_position_z = data.root_position_z,
+                root_rotation_x = data.root_rotation_x,
+                root_rotation_y = data.root_rotation_y,
+                root_rotation_z = data.root_rotation_z,
+                stroke = data.stroke,
+                waitMilliseconds = data.waitMilliseconds
+            });
+
+        }
+
         private static void GetRoomStatus(playerInfoWithRoom player)
         {
             if (player.room == null)
@@ -220,6 +361,58 @@ namespace MCGServer.Client
                     room = result
                 };
             }
+        }
+
+        static List<NetworkPlayerData> _otherplayerData = new List<NetworkPlayerData>();
+
+        private static void GetGameInfo(string sessionId)
+        {
+            var result = GetRequest<List<NetworkPlayerData>>(string.Format("/Message/Request/GetGameInfoBySessionId?id={0}", sessionId));
+            if (result != null)
+            {
+                _otherplayerData.AddRange(result.Where(x => !_players.Any(y => y.UID == x.objectId)));
+            }
+            if (_otherplayerData.Count > 0)
+            {
+                var fromTime = _otherplayerData
+                    .OrderBy(x => x.timeStamp).Select(x => x.timeStamp).FirstOrDefault();
+
+                var convertedItems = _otherplayerData
+                   .OrderBy(x => x.timeStamp)
+                   .Select(x => new
+                   {
+                       holeId = x.holeId,
+                       isRace = x.isRace,
+                       cannon_position_x = x.cannon_position_x,
+                       cannon_position_y = x.cannon_position_y,
+                       cannon_position_z = x.cannon_position_z,
+                       cannon_rotation_x = x.cannon_rotation_x,
+                       cannon_rotation_y = x.cannon_rotation_y,
+                       cannon_rotation_z = x.cannon_rotation_z,
+                       currentBullet = x.currentBullet,
+                       fire = x.fire,
+                       fire_accurracy = x.fire_accurracy,
+                       fire_power = x.fire_power,
+                       fire_torque = x.fire_torque,
+                       fire_turn = x.fire_turn,
+                       holeComplete = x.holeComplete,
+                       root_position_x = x.root_position_x,
+                       root_position_y = x.root_position_y,
+                       root_position_z = x.root_position_z,
+                       root_rotation_x = x.root_rotation_x,
+                       root_rotation_y = x.root_rotation_y,
+                       root_rotation_z = x.root_rotation_z,
+                       stroke = x.stroke,
+                       timeElasped = x.timeStamp.Subtract(fromTime).TotalMilliseconds,
+                       waitMilliseconds = x.fire ? 1000 : x.waitMilliseconds
+                   }).ToList();
+
+                using (System.IO.StreamWriter sw = new System.IO.StreamWriter(@"C:\Users\kyle.pearn\Source\Repos\MCG\data_new.txt", false))
+                {
+                    sw.Write(Newtonsoft.Json.JsonConvert.SerializeObject(convertedItems));
+                }
+            }
+
         }
 
         private static T PostRequest<T>(string url, object data)

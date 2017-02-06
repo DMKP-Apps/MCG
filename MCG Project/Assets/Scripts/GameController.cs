@@ -165,7 +165,7 @@ public class GameController : MonoBehaviour {
                 NumberOfPlayers = GameSettings.LocalMultiplayerCount < 2 ? 2 : GameSettings.LocalMultiplayerCount;
                 break;
 		case PlayerMode.ServerMultiplayer:
-				NumberOfPlayers = GameSettings.NetworkPlayers.Count;
+				NumberOfPlayers = GameSettings.Room.getActiveAttendees().Count;
 				CurrentHole = GameSettings.HoleStatus.currentHoleIndex;
                 break;
         }
@@ -241,7 +241,7 @@ public class GameController : MonoBehaviour {
 			var fireController = player.GetComponent<CannonFireController> ();
             setActive = !fireController.IsFiring();
 		}
-		if (cameraController.Mode == CameraController.CameraMode.Explore) {
+		if (cameraController != null && cameraController.Mode == CameraController.CameraMode.Explore) {
 			setActive = false;
 		}
 
@@ -729,10 +729,13 @@ public class GameController : MonoBehaviour {
 				});
 
 			} else {
-				// create the player and de-activate them within the scene
-				for(int i = 0; i < NumberOfPlayers; i++) {
+
+                var activePlayers = GameSettings.Room != null ? GameSettings.Room.getActiveAttendees().OrderBy(x => x.position).ToList() : new List<RoomAttendee>();
+
+                // create the player and de-activate them within the scene
+                for (int i = 0; i < NumberOfPlayers; i++) {
 					var isRacePlayer = false;
-					var playerKey = GameSettings.NetworkPlayers.Count >= NumberOfPlayers ? GameSettings.NetworkPlayers [i].objectId : string.Empty;
+					var playerKey = GameSettings.Room != null && activePlayers.Count >= NumberOfPlayers ? activePlayers[i].UID : string.Empty;
 					isRacePlayer = GameSettings.playerMode == PlayerMode.ServerMultiplayer && GameSettings.isRace && !string.IsNullOrEmpty(playerKey)
 						&& NetworkClientManager.player != null && NetworkClientManager.player.UID != playerKey;
 
@@ -756,7 +759,7 @@ public class GameController : MonoBehaviour {
 
 					var pController = currentPlayerObject.GetComponent<CannonPlayerState> ();
 
-					if (GameSettings.playerMode == PlayerMode.ServerMultiplayer && GameSettings.NetworkPlayers.Count >= NumberOfPlayers)
+					if (GameSettings.playerMode == PlayerMode.ServerMultiplayer && GameSettings.Room != null && activePlayers.Count >= NumberOfPlayers)
 	                {
 						pController.SetPlayerInfo(playerKey);
 	                }

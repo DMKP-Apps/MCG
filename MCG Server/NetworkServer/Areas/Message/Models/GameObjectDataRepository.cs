@@ -100,6 +100,8 @@ namespace NetworkServer.Areas.Message.Models
             {
                 UID = player.UID,
                 AccountName = player.AccountName,
+                playerNumber = _rooms[key].attendees.Count + 1,
+                position = _rooms[key].attendees.Count + 1,
             };
 
             if (_rooms[key].attendees.Count >= _rooms[key].maxAttendance)
@@ -208,6 +210,7 @@ namespace NetworkServer.Areas.Message.Models
             {
                 item.uniqueId = Guid.NewGuid().ToString();
             }
+            //item.sessionId = item.sessionId.Replace("\\\"", string.Empty);
             _messages[item.Key] = item;
 
             //if (item is NetworkObjectData)
