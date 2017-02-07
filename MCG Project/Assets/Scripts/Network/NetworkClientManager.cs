@@ -155,7 +155,7 @@ public static class NetworkClientManager
 		{
 			gameObject.StartCoroutine(OnGetRequest(string.Format("/Message/Request/GetGameInfo?id={0}", player.UID), (data) => {
 				try { 
-					data = string.Format("{{ \"Items\": {0} }}", data);
+					//data = string.Format("{{ \"Items\": {0} }}", data);
 					var objectData = JsonUtility.FromJson<GameInfoResults>(data);
 					GameSettings.GameInfo = objectData;
 					onComplete();

@@ -11,6 +11,7 @@ namespace MCGServer.Client.Models
         public string UID { get; set; }
         public string AccountName { get; set; }
         public bool isRace { get; set; }
+        public bool DataLoaded = false;
     }
 
     public enum RoomStatus
@@ -19,7 +20,8 @@ namespace MCGServer.Client.Models
         New = 1,
         Waiting = 2,
         InProgress = 3,
-        Closed = 4
+        Closed = 4,
+        HoleCompleted = 5
 
     }
 
@@ -34,14 +36,14 @@ namespace MCGServer.Client.Models
     {
         public RoomAttendee()
         {
-            rankings = new Dictionary<int, int>();
+            //rankings = new Dictionary<int, int>();
             Removed = false;
         }
         public string UID { get; set; }
         public string AccountName { get; set; }
         public int playerNumber { get; set; }
         public int position { get; set; }
-        public Dictionary<int, int> rankings { get; set; }
+        //public Dictionary<int, int> rankings { get; set; }
         public bool Removed { get; set; }
 
     }

@@ -114,9 +114,28 @@ public class NetworkObjectData
 }
 
 [Serializable]
+public class PositionStatusResults
+{
+    public string UID;
+    public int playerNumber;
+}
+
+[Serializable]
+public class HoleStatusResults
+{
+    public RoomStatus status;
+    public PositionStatusResults _1st;
+    public PositionStatusResults _2nd;
+    public PositionStatusResults _3rd;
+    public PositionStatusResults _4th;
+
+}
+
+[Serializable]
 public class GameInfoResults
 {
 	public NetworkObjectData[] Items;
+    public HoleStatusResults Hole;
 }
 
 

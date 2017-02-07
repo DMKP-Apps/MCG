@@ -10,7 +10,8 @@ public enum RoomStatus
     New = 1,
     Waiting = 2,
     InProgress = 3,
-    Closed = 4
+    Closed = 4,
+    HoleCompleted = 5
 
 }
 

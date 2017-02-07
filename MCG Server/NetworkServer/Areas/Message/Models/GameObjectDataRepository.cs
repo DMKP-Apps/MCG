@@ -93,6 +93,7 @@ namespace NetworkServer.Areas.Message.Models
                     status = RoomStatus.New,
                     type = player.isRace ? GameType.Race : GameType.Traditional,
                     maxAttendance = player.isRace ? 4 : 2,
+                    course = "Course1",
                 };
             }
 
@@ -210,17 +211,8 @@ namespace NetworkServer.Areas.Message.Models
             {
                 item.uniqueId = Guid.NewGuid().ToString();
             }
-            //item.sessionId = item.sessionId.Replace("\\\"", string.Empty);
+            
             _messages[item.Key] = item;
-
-            //if (item is NetworkObjectData)
-            //{
-            //    _items.Add(item as NetworkObjectData);
-            //    using (System.IO.StreamWriter sw = new System.IO.StreamWriter(@"C:\Users\kyle.pearn\Source\Repos\MCG\data.txt", false))
-            //    {
-            //        sw.Write(Newtonsoft.Json.JsonConvert.SerializeObject(_items));
-            //    }
-            //}
 
             return item;
         }

@@ -12,7 +12,8 @@ namespace NetworkServer.Areas.Message.Models
         New = 1,
         Waiting = 2,
         InProgress = 3,
-        Closed = 4
+        Closed = 4,
+        HoleCompleted = 5
 
     }
 
@@ -62,6 +63,9 @@ namespace NetworkServer.Areas.Message.Models
             _workFlow.Add(RoomStatus.InProgress, () => {
                 nextPhaseOn = null;
                 currentHole++;
+            });
+            _workFlow.Add(RoomStatus.HoleCompleted, () => {
+                nextPhaseOn = DateTime.Now.AddSeconds(10);
             });
             _workFlow.Add(RoomStatus.Closed, () => {
                 nextPhaseOn = null;
@@ -126,6 +130,38 @@ namespace NetworkServer.Areas.Message.Models
             }
         }
 
+        public void PlayerCompletedHole(string UID)
+        {
+            var ranking = _attendees.Where(x => x.Value.rankings.ContainsKey(currentHole))
+                .Select(x => x.Value.rankings[currentHole]).OrderByDescending(x => x)
+                .FirstOrDefault();
+            ranking++;
+
+            if (_attendees.ContainsKey(UID) && !_attendees[UID].Removed) {
+                if (!_attendees[UID].rankings.ContainsKey(currentHole))
+                {
+                    _attendees[UID].rankings[currentHole] = ranking;
+                }
+            }
+
+            // now check to see how many player need to completed the hole that are currently active.
+            var numberOfIncompleted = _attendees.Where(x => !x.Value.Removed).Count(x => !x.Value.rankings.ContainsKey(currentHole));
+            if (numberOfIncompleted == 1)
+            {
+                // update the only player with the whole completed...
+                var playerId = _attendees.Where(x => !x.Value.Removed && !x.Value.rankings.ContainsKey(currentHole)).Select(x => x.Key).FirstOrDefault();
+                if (!string.IsNullOrWhiteSpace(playerId))
+                {
+                    PlayerCompletedHole(playerId);
+                }
+            }
+            else if (numberOfIncompleted == 0 && status == RoomStatus.InProgress)
+            {
+                status = RoomStatus.HoleCompleted;
+            }
+
+        }
+
         public void ProcessNextPhase()
         {
             if (status == RoomStatus.New && attendees.Count < minAttendance)
@@ -133,12 +169,18 @@ namespace NetworkServer.Areas.Message.Models
                 status = RoomStatus.Closed;
             }
             else if (status == RoomStatus.New && attendees.Count >= minAttendance)
-            {   // no users available... close room
-                status = RoomStatus.Waiting;
+            {   status = RoomStatus.Waiting;
             }
             else if (status == RoomStatus.Waiting && attendees.Count(x => !x.Value.Removed) >= minAttendance)
+            {   status = RoomStatus.InProgress;
+            }
+            else if (status == RoomStatus.HoleCompleted && attendees.Count(x => !x.Value.Removed) >= minAttendance)
+            {   status = RoomStatus.InProgress;
+            }
+            else if (attendees.Count(x => !x.Value.Removed) < minAttendance && 
+                (status != RoomStatus.New && status != RoomStatus.Closed))
             {   // no users available... close room
-                status = RoomStatus.InProgress;
+                status = RoomStatus.Closed;
             }
         }
 

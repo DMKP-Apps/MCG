@@ -262,36 +262,67 @@ public class GameController : MonoBehaviour {
 					checkEndingHole = true;
 					try
 					{
-						if(GameSettings.GameInfo != null && GameSettings.GameInfo.Items != null) {
-							var info = GameSettings.GameInfo.Items.ToList();
-							info = info.OrderByDescending(x => x.holeComplete).ThenBy(x => x.timeStamp).ToList();
-							if(info.Count < 2 && info.Any(x => !x.holeComplete)) {
-								return;
-							}
-							var index = info.FindIndex(x => x.objectId == NetworkClientManager.player.UID);
-							if(index > -1) {
+						if(GameSettings.GameInfo != null && GameSettings.GameInfo.Hole != null) {
+
+                            if (GameSettings.GameInfo.Hole.status != RoomStatus.InProgress)
+                            {   // hole is not current running...
+                                if (GameSettings.GameInfo.Hole.status == RoomStatus.Closed)
+                                {   // todo... show game closed window....
+                                    
+                                }
+                                else if (GameSettings.GameInfo.Hole.status == RoomStatus.HoleCompleted)
+                                {   // hole is over... continue to end match scene...
+                                    if (GameSettings.GameInfo.Hole._1st != null && GameSettings.GameInfo.Hole._1st.UID == NetworkClientManager.player.UID)
+                                    {
+                                        GameSettings.HoleStatus.playerRanking = 1;
+                                    }
+                                    else if (GameSettings.GameInfo.Hole._2nd != null && GameSettings.GameInfo.Hole._2nd.UID == NetworkClientManager.player.UID)
+                                    {
+                                        GameSettings.HoleStatus.playerRanking = 2;
+                                    }
+                                    else if (GameSettings.GameInfo.Hole._3rd != null && GameSettings.GameInfo.Hole._3rd.UID == NetworkClientManager.player.UID)
+                                    {
+                                        GameSettings.HoleStatus.playerRanking = 3;
+                                    }
+                                    else
+                                    {
+                                        GameSettings.HoleStatus.playerRanking = 4;
+                                    }
+
+                                    SceneManager.LoadScene(endMatchGameScene, LoadSceneMode.Single);
+                                }
+                            }
+
+
+       ////                     var info = GameSettings.GameInfo.Items.ToList();
+							////info = info.OrderByDescending(x => x.holeComplete).ThenBy(x => x.timeStamp).ToList();
+							////if(info.Count < 2 && info.Any(x => !x.holeComplete)) {
+							////	return;
+							////}
+							////var index = info.FindIndex(x => x.objectId == NetworkClientManager.player.UID);
+							////if(index > -1) {
 								
-								textController.SetHoleCompleteScore(0, (index+1).ToString());
-								GameSettings.HoleStatus.playerRanking = index+1;
+							////	textController.SetHoleCompleteScore(0, (index+1).ToString());
+							////	GameSettings.HoleStatus.playerRanking = index+1;
 							
-								if(info.Count(x => !x.holeComplete) < 2) {
-									//var holeController = hole.GetComponent<HoleController> ();
-									//if(!holeController.EndCamera.activeInHierarchy) {
-									//	holeController.EndCamera.SetActive(true);
-									//}
+							////	if(info.Count(x => !x.holeComplete) < 2) {
+							////		//var holeController = hole.GetComponent<HoleController> ();
+							////		//if(!holeController.EndCamera.activeInHierarchy) {
+							////		//	holeController.EndCamera.SetActive(true);
+							////		//}
 
-									CurrentHole++;
-									if (CurrentHole > holePrefabs.Count) {
-										CurrentHole = 1;
-									}
+							////		CurrentHole++;
+							////		if (CurrentHole > holePrefabs.Count) {
+							////			CurrentHole = 1;
+							////		}
 
-									GameSettings.HoleStatus.currentHoleIndex = CurrentHole;
-									SceneManager.LoadScene(endMatchGameScene, LoadSceneMode.Single);
+							////		GameSettings.HoleStatus.currentHoleIndex = CurrentHole;
+							////		SceneManager.LoadScene(endMatchGameScene, LoadSceneMode.Single);
 
 
 
-								}
-							}
+							////	}
+							////}
 						}
 					}
 					finally
