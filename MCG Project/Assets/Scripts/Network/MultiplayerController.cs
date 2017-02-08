@@ -45,9 +45,25 @@ public class MultiplayerController : MonoBehaviour {
 
         if (GameSettings.Room.status == RoomStatus.InProgress)
         {
-            GameSettings.HoleStatus.currentHoleIndex = 1;
+            lastCheckDate = DateTime.MaxValue;
+            GameSettings.HoleStatus.currentHoleIndex = GameSettings.Room.currentHole;
             SceneManager.LoadScene(gameScene, LoadSceneMode.Single);
         }
+        else if (GameSettings.Room.status == RoomStatus.Closed)
+        {
+            NetworkClientManager.Logoff();
+            SceneManager.LoadScene("GameClosed", LoadSceneMode.Single);
+        }
+        else if (GameSettings.Room.status == RoomStatus.Waiting)
+        {
+            //var seconds = DateTime.Now.AddMilliseconds(GameSettings.Room.nextPhaseOn).Subtract(DateTime.Now).TotalSeconds;
+            Info.text = string.Format("Game starting in {0} second(s).", Math.Floor(GameSettings.Room.nextPhaseOn / 1000));
+        }
+        else if (GameSettings.Room.status == RoomStatus.New)
+        {
+            Info.text = string.Format("{0} of {1} found", GameSettings.Room.getActiveAttendees().Count, GameSettings.Room.maxAttendance);
+        }
+
 
         //if (!GameSettings.NetworkPlayers.Any (x => !x.Ready) && GameSettings.NetworkPlayers.Count > 1) {
         //	// load the seen
@@ -63,15 +79,7 @@ public class MultiplayerController : MonoBehaviour {
 			GetNetworkPlayer ();
 		}
 
-        if (GameSettings.Room != null && GameSettings.Room.status == RoomStatus.Waiting)
-        {
-            //var seconds = DateTime.Now.AddMilliseconds(GameSettings.Room.nextPhaseOn).Subtract(DateTime.Now).TotalSeconds;
-            Info.text = string.Format("Game starting in {0} second(s).", Math.Floor(GameSettings.Room.nextPhaseOn / 1000));
-        }
-        else if (GameSettings.Room != null && GameSettings.Room.status == RoomStatus.New)
-        {
-            Info.text = string.Format("{0} of {1} found", GameSettings.Room.getActiveAttendees().Count, GameSettings.Room.maxAttendance);
-        }
+        
 
     }
 

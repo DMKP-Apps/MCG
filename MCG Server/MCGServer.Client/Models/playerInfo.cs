@@ -12,6 +12,7 @@ namespace MCGServer.Client.Models
         public string AccountName { get; set; }
         public bool isRace { get; set; }
         public bool DataLoaded = false;
+        public string sessionId { get; set; }
     }
 
     public enum RoomStatus

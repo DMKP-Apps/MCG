@@ -54,7 +54,11 @@ namespace NetworkServer.Areas.Message.Models
 
             _workFlow.Add(RoomStatus.None, () => { nextPhaseOn = null; });
             _workFlow.Add(RoomStatus.New, () => {
-                nextPhaseOn = DateTime.Now.AddSeconds(60);
+
+                Random rand = new Random();
+                _randomStartCount = rand.Next(15, 30);
+
+                nextPhaseOn = DateTime.Now.AddSeconds(_randomStartCount);
                 currentHole = 0;
             });
             _workFlow.Add(RoomStatus.Waiting, () => {
@@ -84,6 +88,8 @@ namespace NetworkServer.Areas.Message.Models
         public string course { get; set; }
         public int currentHole { get; set; }
         public DateTime? nextPhaseOn { get; set; }
+        private int? _processId = null;
+        private int _randomStartCount = 0;
 
         private ConcurrentDictionary<string, RoomAttendee> _attendees = new ConcurrentDictionary<string, RoomAttendee>();
         public ConcurrentDictionary<string, RoomAttendee> attendees
@@ -162,10 +168,32 @@ namespace NetworkServer.Areas.Message.Models
 
         }
 
+        protected string exePath { get { return System.Configuration.ConfigurationManager.AppSettings["autoPlayerExe"]; } }
+
+        //protected bool exeInBackground { get { return System.Configuration.ConfigurationManager.AppSettings["autoPlayerExe_background"] == "true"; } }
+
         public void ProcessNextPhase()
         {
-            if (status == RoomStatus.New && attendees.Count < minAttendance)
+            if (status == RoomStatus.New && attendees.Count < minAttendance && !_processId.HasValue)
             {   // no users available... close room
+
+                // run the auto similate client.
+                if (string.IsNullOrWhiteSpace(exePath))
+                {
+                    _processId = -1;
+                }
+                else
+                {
+                    var p = System.Diagnostics.Process.Start(exePath, string.Format("-r false -a true -s \"{0}\"", this.sessionId));
+                    _processId = p.Id;
+                    //p.
+                }
+
+                nextPhaseOn = DateTime.Now.AddSeconds(60 - _randomStartCount);
+            }
+            else if (status == RoomStatus.New && attendees.Count < minAttendance && _processId.HasValue)
+            {   // no users available... close room
+                
                 status = RoomStatus.Closed;
             }
             else if (status == RoomStatus.New && attendees.Count >= minAttendance)
@@ -192,7 +220,15 @@ namespace NetworkServer.Areas.Message.Models
         public string UID { get; set; }
         public string AccountName { get; set; }
         public bool isRace { get; set; }
+        public string sessionId { get; set; }
+
     }
+
+    //public class PlayerLoginModelWithSession : PlayerLoginModel
+    //{
+        
+
+    //}
     public abstract class NetworkData
     {
         public NetworkData()

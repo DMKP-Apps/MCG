@@ -1,4 +1,5 @@
 ﻿using MCGServer.Client.Models;
+using NDesk.Options;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -12,34 +13,42 @@ namespace MCGServer.Client
 {
     class Program
     {
-        private static string _url = "http://localhost:8321/";
+        //private static string _url = "http://localhost:8321/";
+        private static string _url = "http://mcg.moebull.com/";
 
         private static Dictionary<string, Action> _commands = new Dictionary<string, Action>();
 
-        private static bool _record = false;
-        private static bool _autoRun = true;
+        private static bool _record = true;
+        private static bool _autoRun = false;
+        private static string _fillRoomSessionId = string.Empty;
+
+        private static string _usernameKey = "FBC2B8D8-8F7B-41A8-99C6-9AD0E9C1806A";
 
         private static void runPlayerData() {
             Thread run = new Thread(new ParameterizedThreadStart((args => {
 
-                while (isLoaded) {
-                    if (_autoRun)
+                while (isLoaded && _autoRun) {
+                    
+                    var stamp = DateTime.Now;
+                    var items = _playerRunData.Where(y => y.timeStamp <= stamp).ToList();
+                    if (items.Count > 0)
                     {
-                        var stamp = DateTime.Now;
-                        var items = _playerRunData.Where(y => y.timeStamp <= stamp).ToList();
-                        if (items.Count > 0)
+                        lock(_playerRunData)
                         {
                             _playerRunData = _playerRunData.Where(y => y.timeStamp > stamp).ToList();
-
-
-                            // do stuff...
-                            Console.WriteLine(string.Format("{0} items to execute.", items.Count));
-                            Console.Write("> ");
-
-                            items.OrderBy(x => x.timeStamp).ToList()
-                            .ForEach(x => SendObjectData(x));
                         }
+
+
+                        // do stuff...
+                        Console.WriteLine(string.Format("{0} items to execute.", items.Count));
+                        Console.Write("> ");
+
+                        items.OrderBy(x => x.timeStamp).ToList()
+                        .ForEach(x => SendObjectData(x));
                     }
+
+                    Thread.Sleep(200);
+                    
                 }
 
             })));
@@ -62,37 +71,114 @@ namespace MCGServer.Client
 
         public static string PlayerDataDir { get { return System.Configuration.ConfigurationManager.AppSettings["PlayerDataDir"]; } }
 
+        static void parseArguments(string[] args)
+        {
+            var p = new OptionSet() {
+                { "r|record=", "Record the none simulated player.",
+                   v => _record = v.ToLower() == "true" },
+                { "a|autorun=","Simulate player actions",
+                    v => _autoRun = v.ToLower() == "true" },
+                { "s|sessionid=","Session id of the room to fill specifically",
+                    v => _fillRoomSessionId = v },
+            };
+
+            List<string> extra;
+            try
+            {
+                extra = p.Parse(args);
+            }
+            catch (OptionException e)
+            {
+                Console.Write("error: ");
+                Console.WriteLine(e.Message);
+                return;
+            }
+        }
+
         static void Main(string[] args)
         {
+            parseArguments(args);
             init();
             string cmd = string.Empty;
-            while (cmd != null && cmd.ToLower() != "exit")
+            if (string.IsNullOrWhiteSpace(_fillRoomSessionId))
             {
-                if (!string.IsNullOrWhiteSpace(cmd) && _commands.ContainsKey(cmd.ToLower()))
+                while (cmd != null && cmd.ToLower() != "exit")
                 {
+                    if (!string.IsNullOrWhiteSpace(cmd) && _commands.ContainsKey(cmd.ToLower()))
+                    {
 
-                    // execute command
-                    _commands[cmd.ToLower()]();
+                        // execute command
+                        _commands[cmd.ToLower()]();
 
-                }
-                else if (!string.IsNullOrWhiteSpace(cmd) && !_commands.ContainsKey(cmd.ToLower()))
-                {
-                    Console.WriteLine(string.Format("* Command '{0}' does not exist.", cmd));
-                }
-                else if (string.IsNullOrWhiteSpace(cmd))
-                {
-                    _commands["refresh"]();
-                }
+                    }
+                    else if (!string.IsNullOrWhiteSpace(cmd) && !_commands.ContainsKey(cmd.ToLower()))
+                    {
+                        Console.WriteLine(string.Format("* Command '{0}' does not exist.", cmd));
+                    }
+                    else if (string.IsNullOrWhiteSpace(cmd))
+                    {
+                        _commands["refresh"]();
+                    }
 
-                Console.Write("> ");
-                cmd = Console.ReadLine();
+                    Console.Write("> ");
+                    cmd = Console.ReadLine();
+                }
+            }
+            else
+            {
+                SetupAutoFillRoom();
             }
 
             _players.ForEach(x => Logout(x));
             isLoaded = false;
+        }
 
-            //var result = Login(Guid.NewGuid().ToString(), "Guest001", true);
-            //Console.WriteLine(result);
+        static void SetupAutoFillRoom()
+        {
+            try
+            {
+                var room = GetRequest<roomInfo>(string.Format("/Message/Request/GetRoomStatus?id={0}", _fillRoomSessionId));
+                while (room != null && room.status == RoomStatus.New)
+                {
+
+                    var player = new playerInfo()
+                    {
+                        UID = Guid.NewGuid().ToString(),
+                        AccountName = _usernameKey,
+                        isRace = false,
+                        sessionId = _fillRoomSessionId
+                    };
+
+                    var autoFillPlayer = Login(player);
+                    if (autoFillPlayer == null)
+                    {   // something has changed and the room is no longer available... break out.
+                        break;
+                    }
+
+                    Console.WriteLine(string.Format("User '{0}' is logged in.", autoFillPlayer.AccountName));
+                    _players.Add(autoFillPlayer);
+                    GetPlayerRoom(autoFillPlayer);
+
+                    Random rand = new Random();
+
+                    var sleep = rand.Next(Convert.ToInt32(room.nextPhaseOn * 0.2), Convert.ToInt32(room.nextPhaseOn * 0.8));
+                    /*if (sleep < 1000) {
+                        sleep = 1000;
+                    }*/
+
+                    Thread.Sleep(Convert.ToInt32(sleep));
+                    room = GetRequest<roomInfo>(string.Format("/Message/Request/GetRoomStatus?id={0}", _fillRoomSessionId));
+                }
+
+                // continue to loop as long as the _players has items and the room is not closed.
+                while (_players.OfType<playerInfoWithRoom>().Count() > 0 && !_players.OfType<playerInfoWithRoom>().Any(x => x.room == null || x.room.status == RoomStatus.Closed))
+                {
+                    Thread.Sleep(2000);
+                }
+
+            }
+            catch { }
+            
         }
 
         static List<playerInfo> _players = new List<playerInfo>();
@@ -117,12 +203,11 @@ namespace MCGServer.Client
 
         private static void PromptLogin()
         {
-            Console.Write("[1] Username: ");
-            var accountName = Console.ReadLine();
-            Console.Write("[2] is race (Y/N): ");
+            var accountName = _usernameKey;
+            Console.Write("[1] is race (Y/N): ");
             var isRace = Console.ReadKey();
             Console.WriteLine("");
-            Console.WriteLine(string.Format("Logging in as user '{0}'...", accountName));
+            
             var race = isRace.KeyChar.ToString().ToUpper() != "N";
 
             var player = new playerInfo()
@@ -133,6 +218,7 @@ namespace MCGServer.Client
             };
 
             player = Login(player);
+            Console.WriteLine(string.Format("User '{0}' is logged in.", player.AccountName));
             _players.Add(player);
             GetPlayerRoom(player);
 
@@ -331,6 +417,32 @@ namespace MCGServer.Client
             }
 
             var room = GetRoomStatus(sessionId);
+            // update each of the players in this room
+            lock(_players)
+            {
+                _players.OfType<playerInfoWithRoom>().Where(x => x.room != null && x.room.sessionId == sessionId)
+                    .ToList().ForEach(x => x.room = room);
+
+                var checkforPlayersList = room.attendees.Where(x => !x.Removed).Join(_players.OfType<playerInfoWithRoom>().Where(x => x.room.sessionId == sessionId), x => x.UID, y => y.UID, (x, y) => y).ToList();
+                if (checkforPlayersList.Count == room.attendees.Count(x => !x.Removed))
+                {
+                    checkforPlayersList.ForEach(x => {
+                        Logout(x);
+                        var index = _players.FindIndex(y => y.UID == x.UID);
+                        if (index > -1) {
+                            _players.RemoveAt(index);
+                        }
+                    });
+                    
+                }
+
+                if (!room.attendees.Any(a => _players.Any(x => a.UID != x.UID)))
+                {
+                    _players = new List<playerInfo>();
+                    return;
+                }
+                //if(_players.Any(x => ))
+            }
             if (room == null)
             {
                 Console.WriteLine(string.Format("ALERT: Room '{0}', does not exist.", sessionId));

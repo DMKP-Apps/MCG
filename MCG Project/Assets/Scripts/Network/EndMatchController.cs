@@ -8,49 +8,69 @@ using System.Linq;
 
 public class EndMatchController : MonoBehaviour {
 
-	public Text Message;
 	public Text Score;
-	public Button btnContinue;
+	
 
 	private DateTime lastCheckDate = DateTime.Now.AddMilliseconds(500);
-	private bool updateWaitStatusComplete = false;
 	public string gameScene = "Course";
+
+    public List<PlayerTab> playerTabs;
 
 	void Start() {
 
-		//GameSettings.NetworkPlayers.ForEach (x => x.Ready = false);
+        List<RoomAttendee> players = new List<RoomAttendee>();
+        if (playerTabs.Count == 4 && !playerTabs.Any(x => x == null))
+        {
+            if (GameSettings.GameInfo != null && GameSettings.GameInfo.Hole != null && GameSettings.Room != null)
+            {
+                if (GameSettings.GameInfo.Hole._1st != null)
+                {
+                    playerTabs[0].SetPlayerNumber(GameSettings.GameInfo.Hole._1st.playerNumber);
+                    playerTabs[0].gameObject.SetActive(true);
+                }
+                else
+                {
+                    playerTabs[0].gameObject.SetActive(false);
+                }
+                if (GameSettings.GameInfo.Hole._2nd != null)
+                {
+                    playerTabs[1].SetPlayerNumber(GameSettings.GameInfo.Hole._2nd.playerNumber);
+                    playerTabs[1].gameObject.SetActive(true);
+                }
+                else
+                {
+                    playerTabs[1].gameObject.SetActive(false);
+                }
 
-		//btnContinue.gameObject.SetActive (false);
+                if (GameSettings.GameInfo.Hole._3rd != null)
+                {
+                    playerTabs[2].SetPlayerNumber(GameSettings.GameInfo.Hole._3rd.playerNumber);
+                    playerTabs[2].gameObject.SetActive(true);
+                }
+                else
+                {
+                    playerTabs[2].gameObject.SetActive(false);
+                }
+                if (GameSettings.GameInfo.Hole._4th != null)
+                {
+                    playerTabs[3].SetPlayerNumber(GameSettings.GameInfo.Hole._4th.playerNumber);
+                    playerTabs[3].gameObject.SetActive(true);
+                }
+                else
+                {
+                    playerTabs[3].gameObject.SetActive(false);
+                }
+            }
+        }
 
-		//Dictionary<int, string> scoring = new Dictionary<int, string> ();
-		//scoring.Add (1, "1st");
-		//scoring.Add (2, "2nd");
-		//scoring.Add (3, "3rd");
-		//scoring.Add (4, "4th");
-		//Score.text = string.Format ("You scored: {0}", scoring.ContainsKey (GameSettings.HoleStatus.playerRanking) ? 
-		//	scoring[GameSettings.HoleStatus.playerRanking] : "Last");
-	}
-
-
-	public void OnClickContinue() {
-
-		NetworkClientManager.NetworkPlayerReady (this, () => { GetNetworkPlayer(); });
-		btnContinue.gameObject.SetActive (false);
-	}
-
-	void UpdatePlayerInfo() {
-
-		//string message = string.Empty;
-		//message = string.Join ("\r\n", GameSettings.NetworkPlayers.Select (x => string.Format ("{0} - {1}", x.accName, x.Ready ? "Ready" : "Waiting")).ToArray ());
-		//Message.text = message;
-
-		//if (!GameSettings.NetworkPlayers.Any (x => !x.Ready) && GameSettings.NetworkPlayers.Count > 1) {
-		//	// load the seen
-		//	GameSettings.HoleStatus.currentHoleIndex++;
-		//	SceneManager.LoadScene(gameScene, LoadSceneMode.Single);
-
-		//}
-	}
+        Dictionary<int, string> scoring = new Dictionary<int, string>();
+        scoring.Add(1, "1st");
+        scoring.Add(2, "2nd");
+        scoring.Add(3, "3rd");
+        scoring.Add(4, "4th");
+        Score.text = string.Format("You scored: {0}", scoring.ContainsKey(GameSettings.HoleStatus.playerRanking) ?
+            scoring[GameSettings.HoleStatus.playerRanking] : "Last");
+    }
 
 	// Update is called once per frame
 	void Update () {
@@ -59,20 +79,43 @@ public class EndMatchController : MonoBehaviour {
 		}
 	}
 
-	void GetNetworkPlayer()
-	{
-		lastCheckDate = DateTime.Now;
-		//if (updateWaitStatusComplete) {
-		//	NetworkClientManager.GetNetworkPlayers (this, () => UpdatePlayerInfo ());
-		//} else {
-		//	updateWaitStatusComplete = true;
-		//	GameSettings.NetworkPlayers.ForEach (x => {
-		//		NetworkClientManager.SendGameWaitingData (x, this);
-		//	});
+    void UpdatePlayerInfo()
+    {
 
-		//	btnContinue.gameObject.SetActive (true);
-		//}
+        if (GameSettings.Room == null)
+        {
+            return;
+        }
 
-	}
+        //Title.text = GameSettings.Room.status == RoomStatus.New ? "Locating Players..." : GameSettings.Room.status == RoomStatus.Waiting ? "Loading Course..."
+        //        : GameSettings.Room.status == RoomStatus.InProgress ? "Loading..." : GameSettings.Room.status == RoomStatus.Closed ? "Closed" : "...";
+
+        //string message = string.Empty;
+        //message = string.Join("\r\n", GameSettings.Room.attendees.OrderBy(x => x.position).Select(x => string.Format("{0} - {1}", x.AccountName, !x.Removed ? "Ready" : "Removed")).ToArray());
+        //Message.text = message;
+
+        if (GameSettings.Room.status == RoomStatus.InProgress)
+        {   // hole is now ready to go...
+            GameSettings.HoleStatus.currentHoleIndex = GameSettings.Room.currentHole;
+            SceneManager.LoadScene(gameScene, LoadSceneMode.Single);
+        }
+        else if (GameSettings.Room.status == RoomStatus.Closed)
+        {   // TODO... open the game closed
+            NetworkClientManager.Logoff();
+            SceneManager.LoadScene("GameClosed", LoadSceneMode.Single);
+        }
+        
+    }
+
+    void GetNetworkPlayer()
+    {
+        lastCheckDate = DateTime.Now;
+        NetworkClientManager.GetRoomStatus(this, () => UpdatePlayerInfo(), (data) => {
+            NetworkClientManager.Logoff();
+            SceneManager.LoadScene("GameClosed", LoadSceneMode.Single);
+        });
+        //NetworkClientManager.GetNetworkPlayers (this, () => UpdatePlayerInfo());
+    }
+
 
 }

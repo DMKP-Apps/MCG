@@ -134,6 +134,7 @@
     <Compile Include="Assets\Scripts\GameController.cs" />
     <Compile Include="Assets\Scripts\HoleController.cs" />
     <Compile Include="Assets\Scripts\InputController.cs" />
+    <Compile Include="Assets\Scripts\Menu Scripts\GameClosedController.cs" />
     <Compile Include="Assets\Scripts\Menu Scripts\GameSettings.cs" />
     <Compile Include="Assets\Scripts\Menu Scripts\StartMenuController.cs" />
     <Compile Include="Assets\Scripts\Network\EndMatchController.cs" />
@@ -153,6 +154,7 @@
     <Compile Include="Assets\Scripts\UIInputController.cs" />
     <Compile Include="Assets\Scripts\UIScripts\PlayerInfo.cs" />
     <Compile Include="Assets\Scripts\UIScripts\PlayerMarker.cs" />
+    <Compile Include="Assets\Scripts\UIScripts\PlayerTab.cs" />
     <Compile Include="Assets\Scripts\UIScripts\PointToPin.cs" />
     <Compile Include="Assets\Scripts\UIScripts\ScaleControls.cs" />
     <Compile Include="Assets\Scripts\UITextController.cs" />

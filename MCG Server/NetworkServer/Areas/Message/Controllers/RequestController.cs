@@ -14,11 +14,11 @@ namespace NetworkServer.Areas.Message.Controllers
     
     public class RequestController : Controller
     {
-        public INetworkDataRepository Repository { get; set; }
+        public IGameObjectDataRepository Repository { get; set; }
 
         public RequestController()
         {
-            this.Repository = DependencyResolver.Current.GetService<INetworkDataRepository>();
+            this.Repository = DependencyResolver.Current.GetService<IGameObjectDataRepository>();
         }
 
         public ActionResult Index()
@@ -294,7 +294,30 @@ namespace NetworkServer.Areas.Message.Controllers
         [HttpPost]
         public async Task<ActionResult> Login(PlayerLoginModel model)
         {
-            var data = await Task.Run<PlayerLoginModel>(() => { 
+            var data = await Task.Run<PlayerLoginModel>(() => {
+                return ExecuteLogin(model);
+
+            });
+            //var data = await Task.Run<MessageItem>(() => Repository.Add(model));
+            return Json(data, JsonRequestBehavior.AllowGet);
+        }
+
+        //[HttpPost]
+        //public async Task<ActionResult> LoginWithSession(PlayerLoginModelWithSession model)
+        //{
+        //    var data = await Task.Run<PlayerLoginModel>(() => {
+
+        //        return ExecuteLogin(model);
+
+        //    });
+        //    //var data = await Task.Run<MessageItem>(() => Repository.Add(model));
+        //    return Json(data, JsonRequestBehavior.AllowGet);
+        //}
+
+        private PlayerLoginModel ExecuteLogin(PlayerLoginModel model)
+        {
+            if (model.AccountName != GameObjectDataRepository.auto_usernameKey)
+            {
                 using (MCGDbContext context = new MCGDbContext())
                 {
                     var player = context.Players.FirstOrDefault(x => x.UID == model.UID);
@@ -316,7 +339,7 @@ namespace NetworkServer.Areas.Message.Controllers
                             }
                             model.AccountName = string.Format("{0}{1}", accountName, currentInterval.ToString("00"));
                         }
-                        else if(context.Players.Any(x => x.AccountName == model.AccountName))
+                        else if (context.Players.Any(x => x.AccountName == model.AccountName))
                         {
                             int currentInterval = 1;
                             string checkName = string.Format("{0}{1}", model.AccountName, currentInterval.ToString("00"));
@@ -332,31 +355,37 @@ namespace NetworkServer.Areas.Message.Controllers
                         context.SaveChanges();
                     }
                 }
-
-                var room = Repository.GetAvailableRoomForNewLogin(model);
-                if (room == null)
-                {
-                    throw new Exception("No rooms available.");
-                }
-                var sessionId = room.sessionId;
-
-                NetworkWaitingData clientInfo = new NetworkWaitingData() {
-                    accName = model.AccountName,
-                    objectId = model.UID,
-                    sessionId = sessionId,
-                    isRace = model.isRace,
-                    Ready = true
-                };
-
-                Repository.Add(clientInfo);
-
-                return model;
+            }
+            else
+            {
+                string accountName = string.Format("Guest{0}{1}{2}{3}", DateTime.Now.Year.ToString().Substring(2), DateTime.Now.Month.ToString("00"), DateTime.Now.Day.ToString("00"), DateTime.Now.Millisecond.ToString("00").Substring(0, 2));
+                model.AccountName = accountName;
+            }
 
 
-            });
-            //var data = await Task.Run<MessageItem>(() => Repository.Add(model));
-            return Json(data, JsonRequestBehavior.AllowGet);
+            var room = Repository.GetAvailableRoomForNewLogin(model);
+            if (room == null)
+            {
+                throw new Exception("No rooms available.");
+            }
+            var sessionId = room.sessionId;
+
+            NetworkWaitingData clientInfo = new NetworkWaitingData()
+            {
+                accName = model.AccountName,
+                objectId = model.UID,
+                sessionId = sessionId,
+                isRace = model.isRace,
+                Ready = true
+            };
+
+            model.isRace = room.type == GameType.Race;
+
+            Repository.Add(clientInfo);
+
+            return model;
         }
+
 
         [HttpGet]
         public async Task<ActionResult> Logout(string id)
