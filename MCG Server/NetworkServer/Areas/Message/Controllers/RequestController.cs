@@ -14,11 +14,11 @@ namespace NetworkServer.Areas.Message.Controllers
     
     public class RequestController : Controller
     {
-        public INetworkDataRepository Repository { get; set; }
+        public IGameObjectDataRepository Repository { get; set; }
 
         public RequestController()
         {
-            this.Repository = DependencyResolver.Current.GetService<INetworkDataRepository>();
+            this.Repository = DependencyResolver.Current.GetService<IGameObjectDataRepository>();
         }
 
         public ActionResult Index()
@@ -93,6 +93,13 @@ namespace NetworkServer.Areas.Message.Controllers
         {
             var data = await Task.Run<object>(() => {
                 var room = Repository.GetRoomByKey(id);
+                if (!string.IsNullOrWhiteSpace(id) && room == null)
+                {
+                    return null;
+                }
+                if (room == null) {
+                    return null;
+                }
                 return new
                 {
                     sessionId = room.sessionId,
@@ -104,7 +111,14 @@ namespace NetworkServer.Areas.Message.Controllers
                     currentHole = room.currentHole,
                     nextPhaseOn = room.nextPhaseOn.HasValue ? room.nextPhaseOn.Value.Subtract(DateTime.Now).TotalMilliseconds : -1,
                     status = room.status,
-                    attendees = room.attendees.Select(a => a.Value),
+                    attendees = room.attendees.Select(a => new
+                    {
+                        UID = a.Value.UID,
+                        AccountName = a.Value.AccountName,
+                        playerNumber = a.Value.playerNumber,
+                        position = a.Value.position,
+                        Removed = a.Value.Removed
+                    }).ToList(),
                 };
             });
             return Json(data, JsonRequestBehavior.AllowGet);
@@ -128,7 +142,13 @@ namespace NetworkServer.Areas.Message.Controllers
             var data = await Task.Run<string>(() => {
                 Repository.Add(model);
 
-                
+                if (model.holeComplete) {
+                    // need to get the room and update the players rank.
+                    var room = Repository.GetRoomByKey(model.sessionId);
+                    if (room != null) {
+                        room.PlayerCompletedHole(model.objectId);
+                    }
+                }
 
                 return "Success";
             });
@@ -208,23 +228,96 @@ namespace NetworkServer.Areas.Message.Controllers
             });
 
             List<NetworkObjectData> result = null;
+            Room room = null;
+            string sessionId = string.Empty;
             if (data != null) {
+                sessionId = data.sessionId;
                 // locate all other players...
                 result = Repository.GetAll<NetworkObjectData>()
-                    .Where(x => x.sessionId == data.sessionId).ToList();
+                    .Where(x => x.sessionId == sessionId).ToList();
                 result.ForEach(x => x.UpdateWaitMillieseconds());
-                    
+
+                room = Repository.GetRoomByKey(sessionId);
             }
 
 
-            return Json(result, JsonRequestBehavior.AllowGet);
+            var obj = result != null && room != null ? new
+            {
+                Items = result,
+                Hole = new {
+                    status = room.status,
+                    _1st = room.attendees.Where(x => !x.Value.Removed && x.Value.rankings.ContainsKey(room.currentHole) && x.Value.rankings[room.currentHole] == 1).Select(x => new {
+                        UID = x.Value.UID,
+                        playerNumber = x.Value.playerNumber
+                    }).FirstOrDefault(),
+                    _2nd = room.attendees.Where(x => !x.Value.Removed && x.Value.rankings.ContainsKey(room.currentHole) && x.Value.rankings[room.currentHole] == 2).Select(x => new {
+                        UID = x.Value.UID,
+                        playerNumber = x.Value.playerNumber
+                    }).FirstOrDefault(),
+                    _3rd = room.attendees.Where(x => !x.Value.Removed && x.Value.rankings.ContainsKey(room.currentHole) && x.Value.rankings[room.currentHole] == 3).Select(x => new {
+                        UID = x.Value.UID,
+                        playerNumber = x.Value.playerNumber
+                    }).FirstOrDefault(),
+                    _4th = room.attendees.Where(x => !x.Value.Removed && x.Value.rankings.ContainsKey(room.currentHole) && x.Value.rankings[room.currentHole] == 4).Select(x => new {
+                        UID = x.Value.UID,
+                        playerNumber = x.Value.playerNumber
+                    }).FirstOrDefault()
+
+                },
+            } : null;
+            return Json(obj, JsonRequestBehavior.AllowGet);
+        }
+
+        [HttpGet]
+        public async Task<ActionResult> GetGameInfoBySessionId(string id)
+        {
+            var data = await Task.Run<List<NetworkObjectData>>(() =>
+            {
+                List<NetworkObjectData> result = null;
+                
+                    // locate all other players...
+                    result = Repository.GetAll<NetworkObjectData>()
+                        .Where(x => x.sessionId == id).ToList();
+                    result.ForEach(x => x.UpdateWaitMillieseconds());
+
+                
+                return result;
+            });
+
+            
+
+
+            return Json(data, JsonRequestBehavior.AllowGet);
         }
 
 
         [HttpPost]
         public async Task<ActionResult> Login(PlayerLoginModel model)
         {
-            var data = await Task.Run<PlayerLoginModel>(() => { 
+            var data = await Task.Run<PlayerLoginModel>(() => {
+                return ExecuteLogin(model);
+
+            });
+            //var data = await Task.Run<MessageItem>(() => Repository.Add(model));
+            return Json(data, JsonRequestBehavior.AllowGet);
+        }
+
+        //[HttpPost]
+        //public async Task<ActionResult> LoginWithSession(PlayerLoginModelWithSession model)
+        //{
+        //    var data = await Task.Run<PlayerLoginModel>(() => {
+
+        //        return ExecuteLogin(model);
+
+        //    });
+        //    //var data = await Task.Run<MessageItem>(() => Repository.Add(model));
+        //    return Json(data, JsonRequestBehavior.AllowGet);
+        //}
+
+        private PlayerLoginModel ExecuteLogin(PlayerLoginModel model)
+        {
+            if (model.AccountName != GameObjectDataRepository.auto_usernameKey)
+            {
                 using (MCGDbContext context = new MCGDbContext())
                 {
                     var player = context.Players.FirstOrDefault(x => x.UID == model.UID);
@@ -246,7 +339,7 @@ namespace NetworkServer.Areas.Message.Controllers
                             }
                             model.AccountName = string.Format("{0}{1}", accountName, currentInterval.ToString("00"));
                         }
-                        else if(context.Players.Any(x => x.AccountName == model.AccountName))
+                        else if (context.Players.Any(x => x.AccountName == model.AccountName))
                         {
                             int currentInterval = 1;
                             string checkName = string.Format("{0}{1}", model.AccountName, currentInterval.ToString("00"));
@@ -262,31 +355,37 @@ namespace NetworkServer.Areas.Message.Controllers
                         context.SaveChanges();
                     }
                 }
-
-                var room = Repository.GetAvailableRoomForNewLogin(model);
-                if (room == null)
-                {
-                    throw new Exception("No rooms available.");
-                }
-                var sessionId = room.sessionId;
-
-                NetworkWaitingData clientInfo = new NetworkWaitingData() {
-                    accName = model.AccountName,
-                    objectId = model.UID,
-                    sessionId = sessionId,
-                    isRace = model.isRace,
-                    Ready = true
-                };
-
-                Repository.Add(clientInfo);
-
-                return model;
+            }
+            else
+            {
+                string accountName = string.Format("Guest{0}{1}{2}{3}", DateTime.Now.Year.ToString().Substring(2), DateTime.Now.Month.ToString("00"), DateTime.Now.Day.ToString("00"), DateTime.Now.Millisecond.ToString("00").Substring(0, 2));
+                model.AccountName = accountName;
+            }
 
 
-            });
-            //var data = await Task.Run<MessageItem>(() => Repository.Add(model));
-            return Json(data, JsonRequestBehavior.AllowGet);
+            var room = Repository.GetAvailableRoomForNewLogin(model);
+            if (room == null)
+            {
+                throw new Exception("No rooms available.");
+            }
+            var sessionId = room.sessionId;
+
+            NetworkWaitingData clientInfo = new NetworkWaitingData()
+            {
+                accName = model.AccountName,
+                objectId = model.UID,
+                sessionId = sessionId,
+                isRace = model.isRace,
+                Ready = true
+            };
+
+            model.isRace = room.type == GameType.Race;
+
+            Repository.Add(clientInfo);
+
+            return model;
         }
+
 
         [HttpGet]
         public async Task<ActionResult> Logout(string id)

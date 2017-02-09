@@ -37,7 +37,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44657844, g: 0.49641222, b: 0.57481694, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657844, g: 0.49641222, b: 0.5748171, a: 1}
 --- !u!157 &3
 LightmapSettings:
   m_ObjectHideFlags: 0
@@ -830,6 +830,11 @@ Prefab:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 114169261653605384, guid: 6c3139a6158094c04a4ec1fe33bc78f6,
+        type: 2}
+      propertyPath: holePrefabs.Array.size
+      value: 9
+      objectReference: {fileID: 0}
     - target: {fileID: 4530490379039050, guid: 6c3139a6158094c04a4ec1fe33bc78f6, type: 2}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -881,13 +886,55 @@ Prefab:
         type: 2}
       propertyPath: holePrefabs.Array.data[2]
       value: 
-      objectReference: {fileID: 1042327772381158, guid: 749c5dddf74cb4822a3fc291198582b6,
+      objectReference: {fileID: 1275496644774824, guid: 28008e44c820742b1846b708db448c49,
         type: 2}
     - target: {fileID: 114169261653605384, guid: 6c3139a6158094c04a4ec1fe33bc78f6,
         type: 2}
       propertyPath: CurrentHole
-      value: 3
+      value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 114169261653605384, guid: 6c3139a6158094c04a4ec1fe33bc78f6,
+        type: 2}
+      propertyPath: holePrefabs.Array.data[1]
+      value: 
+      objectReference: {fileID: 1275496644774824, guid: 28008e44c820742b1846b708db448c49,
+        type: 2}
+    - target: {fileID: 114169261653605384, guid: 6c3139a6158094c04a4ec1fe33bc78f6,
+        type: 2}
+      propertyPath: holePrefabs.Array.data[3]
+      value: 
+      objectReference: {fileID: 1275496644774824, guid: 28008e44c820742b1846b708db448c49,
+        type: 2}
+    - target: {fileID: 114169261653605384, guid: 6c3139a6158094c04a4ec1fe33bc78f6,
+        type: 2}
+      propertyPath: holePrefabs.Array.data[4]
+      value: 
+      objectReference: {fileID: 1275496644774824, guid: 28008e44c820742b1846b708db448c49,
+        type: 2}
+    - target: {fileID: 114169261653605384, guid: 6c3139a6158094c04a4ec1fe33bc78f6,
+        type: 2}
+      propertyPath: holePrefabs.Array.data[5]
+      value: 
+      objectReference: {fileID: 1275496644774824, guid: 28008e44c820742b1846b708db448c49,
+        type: 2}
+    - target: {fileID: 114169261653605384, guid: 6c3139a6158094c04a4ec1fe33bc78f6,
+        type: 2}
+      propertyPath: holePrefabs.Array.data[6]
+      value: 
+      objectReference: {fileID: 1275496644774824, guid: 28008e44c820742b1846b708db448c49,
+        type: 2}
+    - target: {fileID: 114169261653605384, guid: 6c3139a6158094c04a4ec1fe33bc78f6,
+        type: 2}
+      propertyPath: holePrefabs.Array.data[7]
+      value: 
+      objectReference: {fileID: 1275496644774824, guid: 28008e44c820742b1846b708db448c49,
+        type: 2}
+    - target: {fileID: 114169261653605384, guid: 6c3139a6158094c04a4ec1fe33bc78f6,
+        type: 2}
+      propertyPath: holePrefabs.Array.data[8]
+      value: 
+      objectReference: {fileID: 1275496644774824, guid: 28008e44c820742b1846b708db448c49,
+        type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 6c3139a6158094c04a4ec1fe33bc78f6, type: 2}
   m_IsPrefabParent: 0

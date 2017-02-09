@@ -14,7 +14,7 @@ namespace NetworkServer.Tests.Controllers
     [TestClass]
     public class HomeControllerTest
     {
-        private INetworkDataRepository _repository = null;
+        private IGameObjectDataRepository _repository = null;
 
 
         [TestMethod]
@@ -178,7 +178,7 @@ namespace NetworkServer.Tests.Controllers
         {
             try
             {
-                _repository = new NetworkDataRepository();
+                _repository = new GameObjectDataRepository();
                 action();
             }
             finally

@@ -165,7 +165,7 @@ public class GameController : MonoBehaviour {
                 NumberOfPlayers = GameSettings.LocalMultiplayerCount < 2 ? 2 : GameSettings.LocalMultiplayerCount;
                 break;
 		case PlayerMode.ServerMultiplayer:
-				NumberOfPlayers = GameSettings.NetworkPlayers.Count;
+				NumberOfPlayers = GameSettings.Room.attendees.Count;
 				CurrentHole = GameSettings.HoleStatus.currentHoleIndex;
                 break;
         }
@@ -241,7 +241,7 @@ public class GameController : MonoBehaviour {
 			var fireController = player.GetComponent<CannonFireController> ();
             setActive = !fireController.IsFiring();
 		}
-		if (cameraController.Mode == CameraController.CameraMode.Explore) {
+		if (cameraController != null && cameraController.Mode == CameraController.CameraMode.Explore) {
 			setActive = false;
 		}
 
@@ -262,36 +262,68 @@ public class GameController : MonoBehaviour {
 					checkEndingHole = true;
 					try
 					{
-						if(GameSettings.GameInfo != null && GameSettings.GameInfo.Items != null) {
-							var info = GameSettings.GameInfo.Items.ToList();
-							info = info.OrderByDescending(x => x.holeComplete).ThenBy(x => x.timeStamp).ToList();
-							if(info.Count < 2 && info.Any(x => !x.holeComplete)) {
-								return;
-							}
-							var index = info.FindIndex(x => x.objectId == NetworkClientManager.player.UID);
-							if(index > -1) {
+						if(GameSettings.GameInfo != null && GameSettings.GameInfo.Hole != null) {
+
+                            if (GameSettings.GameInfo.Hole.status != RoomStatus.InProgress)
+                            {   // hole is not current running...
+                                if (GameSettings.GameInfo.Hole.status == RoomStatus.Closed)
+                                {   // todo... show game closed window....
+                                    NetworkClientManager.Logoff();
+                                    SceneManager.LoadScene("GameClosed", LoadSceneMode.Single);
+                                }
+                                else if (GameSettings.GameInfo.Hole.status == RoomStatus.HoleCompleted)
+                                {   // hole is over... continue to end match scene...
+                                    if (GameSettings.GameInfo.Hole._1st != null && GameSettings.GameInfo.Hole._1st.UID == NetworkClientManager.player.UID)
+                                    {
+                                        GameSettings.HoleStatus.playerRanking = 1;
+                                    }
+                                    else if (GameSettings.GameInfo.Hole._2nd != null && GameSettings.GameInfo.Hole._2nd.UID == NetworkClientManager.player.UID)
+                                    {
+                                        GameSettings.HoleStatus.playerRanking = 2;
+                                    }
+                                    else if (GameSettings.GameInfo.Hole._3rd != null && GameSettings.GameInfo.Hole._3rd.UID == NetworkClientManager.player.UID)
+                                    {
+                                        GameSettings.HoleStatus.playerRanking = 3;
+                                    }
+                                    else
+                                    {
+                                        GameSettings.HoleStatus.playerRanking = 4;
+                                    }
+
+                                    SceneManager.LoadScene(endMatchGameScene, LoadSceneMode.Single);
+                                }
+                            }
+
+
+       ////                     var info = GameSettings.GameInfo.Items.ToList();
+							////info = info.OrderByDescending(x => x.holeComplete).ThenBy(x => x.timeStamp).ToList();
+							////if(info.Count < 2 && info.Any(x => !x.holeComplete)) {
+							////	return;
+							////}
+							////var index = info.FindIndex(x => x.objectId == NetworkClientManager.player.UID);
+							////if(index > -1) {
 								
-								textController.SetHoleCompleteScore(0, (index+1).ToString());
-								GameSettings.HoleStatus.playerRanking = index+1;
+							////	textController.SetHoleCompleteScore(0, (index+1).ToString());
+							////	GameSettings.HoleStatus.playerRanking = index+1;
 							
-								if(info.Count(x => !x.holeComplete) < 2) {
-									//var holeController = hole.GetComponent<HoleController> ();
-									//if(!holeController.EndCamera.activeInHierarchy) {
-									//	holeController.EndCamera.SetActive(true);
-									//}
+							////	if(info.Count(x => !x.holeComplete) < 2) {
+							////		//var holeController = hole.GetComponent<HoleController> ();
+							////		//if(!holeController.EndCamera.activeInHierarchy) {
+							////		//	holeController.EndCamera.SetActive(true);
+							////		//}
 
-									CurrentHole++;
-									if (CurrentHole > holePrefabs.Count) {
-										CurrentHole = 1;
-									}
+							////		CurrentHole++;
+							////		if (CurrentHole > holePrefabs.Count) {
+							////			CurrentHole = 1;
+							////		}
 
-									GameSettings.HoleStatus.currentHoleIndex = CurrentHole;
-									SceneManager.LoadScene(endMatchGameScene, LoadSceneMode.Single);
+							////		GameSettings.HoleStatus.currentHoleIndex = CurrentHole;
+							////		SceneManager.LoadScene(endMatchGameScene, LoadSceneMode.Single);
 
 
 
-								}
-							}
+							////	}
+							////}
 						}
 					}
 					finally
@@ -643,6 +675,10 @@ public class GameController : MonoBehaviour {
 			GameSettings.HoleStatus.currentHoleIndex = CurrentHole;
 			GameSettings.HoleStatus.currentHoleName = holeController.HoleTitle;
 
+            if (GameSettings.playerMode == PlayerMode.ServerMultiplayer && GameSettings.isRace) {
+                holeController.StartCamera.SetActive(false);
+            }
+
 			textController.SetPar (holeController.Par);
 			textController.SetHole (CurrentHole);
 
@@ -729,49 +765,59 @@ public class GameController : MonoBehaviour {
 				});
 
 			} else {
-				// create the player and de-activate them within the scene
-				for(int i = 0; i < NumberOfPlayers; i++) {
-					var isRacePlayer = false;
-					var playerKey = GameSettings.NetworkPlayers.Count >= NumberOfPlayers ? GameSettings.NetworkPlayers [i].objectId : string.Empty;
-					isRacePlayer = GameSettings.playerMode == PlayerMode.ServerMultiplayer && GameSettings.isRace && !string.IsNullOrEmpty(playerKey)
-						&& NetworkClientManager.player != null && NetworkClientManager.player.UID != playerKey;
 
-					if(GameSettings.playerMode == PlayerMode.ServerMultiplayer && GameSettings.isRace && !isRacePlayer) {
-						currentPlayer = i;
-					}
+                var activePlayers = GameSettings.Room != null ? GameSettings.Room.attendees.OrderBy(x => x.position).ToList() : new List<RoomAttendee>();
+                var isOnlineRace = GameSettings.Room != null && activePlayers.Count >= NumberOfPlayers && GameSettings.playerMode == PlayerMode.ServerMultiplayer && GameSettings.isRace;
+                // create the player and de-activate them within the scene
+                for (int i = 0; i < NumberOfPlayers; i++) {
+                    
+                    var isRacePlayer = false;
+                    var playerKey = GameSettings.Room != null && activePlayers.Count >= NumberOfPlayers ? activePlayers[i].UID : string.Empty;
+                    isRacePlayer = GameSettings.playerMode == PlayerMode.ServerMultiplayer && GameSettings.isRace && !string.IsNullOrEmpty(playerKey)
+                        && NetworkClientManager.player != null && NetworkClientManager.player.UID != playerKey;
 
-					GameObject currentPlayerObject;
-					Transform tee = holeController.tee;
-					if(GameSettings.playerMode == PlayerMode.ServerMultiplayer && GameSettings.isRace && holeController.raceTees.Count > i) {
-						tee = holeController.raceTees[i];
-					}
+                    
+                    if (GameSettings.playerMode == PlayerMode.ServerMultiplayer && GameSettings.isRace && !isRacePlayer)
+                    {
+                        currentPlayer = i;
+                    }
 
-					if(isRacePlayer) {
-						currentPlayerObject = (GameObject)Instantiate (playerOnlinePrefab, tee.position, tee.rotation);
-					}
-					else 
-					{
-						currentPlayerObject = (GameObject)Instantiate (playerPrefab, tee.position, tee.rotation);
-					}
+                    GameObject currentPlayerObject;
+                    Transform tee = holeController.tee;
+                    if (GameSettings.playerMode == PlayerMode.ServerMultiplayer && GameSettings.isRace && holeController.raceTees.Count > i)
+                    {
+                        tee = holeController.raceTees[i];
+                    }
 
-					var pController = currentPlayerObject.GetComponent<CannonPlayerState> ();
+                    if (isRacePlayer)
+                    {
+                        currentPlayerObject = (GameObject)Instantiate(playerOnlinePrefab, tee.position, tee.rotation);
+                    }
+                    else
+                    {
+                        currentPlayerObject = (GameObject)Instantiate(playerPrefab, tee.position, tee.rotation);
+                    }
 
-					if (GameSettings.playerMode == PlayerMode.ServerMultiplayer && GameSettings.NetworkPlayers.Count >= NumberOfPlayers)
-	                {
-						pController.SetPlayerInfo(playerKey);
-	                }
+                    var pController = currentPlayerObject.GetComponent<CannonPlayerState>();
 
-					pController.Stroke = 1;
-					pController.TotalScore = 0;
-					pController.playerNumber = i + 1;
-					pController.isHoleComplete = false;
-					pController.isHarzard = false;
-					// set the current object to in-active
-					currentPlayerObject.SetActive(GameSettings.playerMode == PlayerMode.ServerMultiplayer && GameSettings.isRace);
-	                // add the game object to the list
-					currentPlayerObject.name = string.Format("CannonPlayer{0}", i + 1);
-					players.Add(currentPlayerObject);
-				}
+                    if (GameSettings.playerMode == PlayerMode.ServerMultiplayer && GameSettings.Room != null && activePlayers.Count >= NumberOfPlayers)
+                    {
+                        pController.SetPlayerInfo(playerKey);
+                    }
+
+                    pController.Stroke = 1;
+                    pController.TotalScore = 0;
+                    pController.playerNumber = i + 1;
+                    pController.isHoleComplete = false;
+                    pController.isHarzard = false;
+                    // set the current object to in-active
+                    var isactive = (GameSettings.playerMode == PlayerMode.ServerMultiplayer && GameSettings.isRace && !isRacePlayer) || (isRacePlayer && !activePlayers[i].Removed);
+                    currentPlayerObject.SetActive(isactive);
+                    // add the game object to the list
+                    currentPlayerObject.name = string.Format("CannonPlayer{0}", i + 1);
+                    players.Add(currentPlayerObject);
+                }
+				
 			}
 
 			if(!(GameSettings.playerMode == PlayerMode.ServerMultiplayer && GameSettings.isRace)) {

@@ -6,7 +6,7 @@ using System.Collections.Concurrent;
 
 namespace NetworkServer.Areas.Message.Models
 {
-    public interface INetworkDataRepository
+    public interface IGameObjectDataRepository
     {
         Room GetAvailableRoomForNewLogin(PlayerLoginModel player);
         List<Room> GetActiveRooms();
@@ -24,7 +24,7 @@ namespace NetworkServer.Areas.Message.Models
         bool ShutDown { get; set; }
     }
 
-    public class NetworkDataRepository : INetworkDataRepository
+    public class GameObjectDataRepository : IGameObjectDataRepository
     {
         private static ConcurrentDictionary<string, NetworkData> _messages =
               new ConcurrentDictionary<string, NetworkData>();
@@ -32,9 +32,11 @@ namespace NetworkServer.Areas.Message.Models
         private static ConcurrentDictionary<string, Room> _rooms =
               new ConcurrentDictionary<string, Room>();
 
+        public static string auto_usernameKey = "FBC2B8D8-8F7B-41A8-99C6-9AD0E9C1806A";
+
         public bool ShutDown { get; set; }
         private DateTime _lastCheckTime = DateTime.Now;
-        public NetworkDataRepository()
+        public GameObjectDataRepository()
         {
             ShutDown = false;
             var thread = new System.Threading.Thread(new System.Threading.ParameterizedThreadStart((args) => {
@@ -80,19 +82,35 @@ namespace NetworkServer.Areas.Message.Models
                 }
             });
 
+            var useSessionId = player.sessionId;
+
             // get an available room based on the players isRace value
-            var key = _rooms.Where(x => x.Value.status == RoomStatus.New && x.Value.maxAttendance > x.Value.attendees.Count && ((player.isRace && x.Value.type == GameType.Race) || (!player.isRace && x.Value.type == GameType.Traditional)))
-                .OrderBy(x => x.Value.created).Select(x => x.Key).FirstOrDefault();
+            var key = _rooms.Where(x => x.Value.status == RoomStatus.New && x.Value.maxAttendance > x.Value.attendees.Count)
+                            .Where(x => !string.IsNullOrWhiteSpace(useSessionId) || ((player.isRace && x.Value.type == GameType.Race) || (!player.isRace && x.Value.type == GameType.Traditional)))
+                            .Where(x => (!string.IsNullOrWhiteSpace(useSessionId) && x.Value.sessionId == useSessionId) || string.IsNullOrWhiteSpace(useSessionId))
+                            .OrderBy(x => x.Value.created)
+                            .Select(x => x.Key)
+                            .FirstOrDefault();
+            //()
+            //&& ((string.IsNullOrWhiteSpace(player.useSessionId) || (!string.IsNullOrWhiteSpace(player.useSessionId) && x.Value.sessionId == player.useSessionId))))
+            //
+
+            if (!string.IsNullOrWhiteSpace(useSessionId) && string.IsNullOrWhiteSpace(key))
+            {   // can't find the requested room... return null
+                return null;
+            }
 
             if (string.IsNullOrWhiteSpace(key))
             {   // no room available... create new room and add the player.
-                key = Guid.NewGuid().ToString();
+
+                key = Guid.NewGuid().ToString(); //"5A505470-D241-4471-B439-161850E9C42C"; //
                 _rooms[key] = new Room()
                 {
                     sessionId = key,
                     status = RoomStatus.New,
                     type = player.isRace ? GameType.Race : GameType.Traditional,
                     maxAttendance = player.isRace ? 4 : 2,
+                    course = "Course1",
                 };
             }
 
@@ -100,6 +118,8 @@ namespace NetworkServer.Areas.Message.Models
             {
                 UID = player.UID,
                 AccountName = player.AccountName,
+                playerNumber = _rooms[key].attendees.Count + 1,
+                position = _rooms[key].attendees.Count + 1,
             };
 
             if (_rooms[key].attendees.Count >= _rooms[key].maxAttendance)
@@ -208,16 +228,8 @@ namespace NetworkServer.Areas.Message.Models
             {
                 item.uniqueId = Guid.NewGuid().ToString();
             }
+            
             _messages[item.Key] = item;
-
-            //if (item is NetworkObjectData)
-            //{
-            //    _items.Add(item as NetworkObjectData);
-            //    using (System.IO.StreamWriter sw = new System.IO.StreamWriter(@"C:\Users\kyle.pearn\Source\Repos\MCG\data.txt", false))
-            //    {
-            //        sw.Write(Newtonsoft.Json.JsonConvert.SerializeObject(_items));
-            //    }
-            //}
 
             return item;
         }
