@@ -271,7 +271,7 @@ public class CannonFireController : MonoBehaviour {
 
 			var constantForce = bullet.GetComponent<ConstantForce>();
 			if(constantForce != null) {
-				constantForce.relativeForce = new Vector3(accuracy * bulletData.MaxAccuracy,0f, (accuracy * bulletData.MaxAccuracy) * 0.5f * -1);
+				constantForce.relativeForce = new Vector3(accuracy * bulletData.MaxAccuracy,0f, accuracy > 0 ? (accuracy * bulletData.MaxAccuracy) * 0.5f * -1 : (accuracy * bulletData.MaxAccuracy) * 0.5f);
 				constantForce.relativeTorque = new Vector3(bulletData.MaxTorque * accuracy, bulletData.MaxTorque * accuracy,0f);
 
 			}

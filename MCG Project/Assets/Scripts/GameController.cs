@@ -16,14 +16,56 @@ public class GameController : MonoBehaviour {
 
 	private string endMatchGameScene = "EndMatch";
 
-	//private bool isHoleComplete = false;
-	//private bool isHazardPoint = false;
+    //private bool isHoleComplete = false;
+    //private bool isHazardPoint = false;
 
-	//var playerController = player.GetComponent<CannonPlayerState> ();
-	//playerController.isHoleComplete = false;
-	//playerController.isHarzard = false;
+    //var playerController = player.GetComponent<CannonPlayerState> ();
+    //playerController.isHoleComplete = false;
+    //playerController.isHarzard = false;
 
-	void OnApplicationFocus( bool hasFocus )
+    public PowerControl speedControl;
+    public PowerControl accuracyControl;
+
+    void Start()
+    {
+
+
+        BulletCamera = GameObject.Find("BulletCamera");
+        BulletCamera.SetActive(false);
+
+        scoring.Add(-3, "Albatross");
+        scoring.Add(-2, "Eagle");
+        scoring.Add(-1, "Birdie");
+        scoring.Add(0, "Par");
+        scoring.Add(1, "Bogey");
+        scoring.Add(2, "Double Bogey");
+        scoring.Add(3, "Triple Bogey");
+
+        var tcam = GameObject.FindObjectOfType<TopographicCamera>();
+        if (tcam != null)
+        {
+            topographicCamera = tcam.gameObject;
+        }
+
+        switch (GameSettings.playerMode)
+        {
+            case PlayerMode.Single:
+                NumberOfPlayers = 1;
+                break;
+            case PlayerMode.LocalMultiplayer:
+                NumberOfPlayers = GameSettings.LocalMultiplayerCount < 2 ? 2 : GameSettings.LocalMultiplayerCount;
+                break;
+            case PlayerMode.ServerMultiplayer:
+                NumberOfPlayers = GameSettings.Room.attendees.Count;
+                CurrentHole = GameSettings.HoleStatus.currentHoleIndex;
+                break;
+        }
+
+        BeginHole();
+        CurrentBullet = 1;
+    }
+
+    void OnApplicationFocus( bool hasFocus )
 	{
 		if (!hasFocus && NetworkClientManager.IsOnline) {
 			//this.EndGame ();
@@ -94,7 +136,16 @@ public class GameController : MonoBehaviour {
 		set { 
 			var playerController = player.GetComponent<CannonPlayerState> ();
 			playerController.currentBullet = value;
-		}
+            var bullet = GetCurrentBullet().GetComponent<BulletData>();
+            if (speedControl != null && bullet != null)
+            {
+                speedControl.Speed = speedControl.BaseSpeed * bullet.PowerMeterSpeedMultiplier;
+            }
+            if (accuracyControl != null && bullet != null)
+            {
+                accuracyControl.Speed = speedControl.BaseSpeed * bullet.AccuracyMeterSpeedMultiplier;
+            }
+        }
 	}
 
 	public int NumberOfPlayers = 1;
@@ -138,41 +189,6 @@ public class GameController : MonoBehaviour {
         return BulletCamera;
     }
 
-	void Start() {
-
-
-        BulletCamera = GameObject.Find("BulletCamera");
-        BulletCamera.SetActive(false);
-
-        scoring.Add (-3, "Albatross");
-		scoring.Add (-2, "Eagle");
-		scoring.Add (-1, "Birdie");
-		scoring.Add (0, "Par");
-		scoring.Add (1, "Bogey");
-		scoring.Add (2, "Double Bogey");
-		scoring.Add (3, "Triple Bogey");
-
-        var tcam = GameObject.FindObjectOfType<TopographicCamera>();
-        if (tcam != null) {
-            topographicCamera = tcam.gameObject;
-        }
-
-        switch (GameSettings.playerMode) {
-            case PlayerMode.Single:
-                NumberOfPlayers = 1;
-                break;
-            case PlayerMode.LocalMultiplayer:
-                NumberOfPlayers = GameSettings.LocalMultiplayerCount < 2 ? 2 : GameSettings.LocalMultiplayerCount;
-                break;
-		case PlayerMode.ServerMultiplayer:
-				NumberOfPlayers = GameSettings.Room.attendees.Count;
-				CurrentHole = GameSettings.HoleStatus.currentHoleIndex;
-                break;
-        }
-
-        BeginHole ();
-
-	}
 
 	public bool IsShooting()
 	{
@@ -251,7 +267,7 @@ public class GameController : MonoBehaviour {
             topographicCamera.SetActive(setActive);
         }
 
-        if (1 == 1) {
+        if (1 == 2) {
             var holeController = hole.GetComponent<HoleController>();
             holeController.hole.position = GameSettings.EstimatedShotLocation;
             //GameSettings.EstimatedShotLocation
