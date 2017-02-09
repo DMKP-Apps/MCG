@@ -128,7 +128,7 @@ Rigidbody:
   serializedVersion: 2
   m_Mass: 6
   m_Drag: 0
-  m_AngularDrag: 0.05
+  m_AngularDrag: 1
   m_UseGravity: 1
   m_IsKinematic: 0
   m_Interpolate: 0
@@ -237,10 +237,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dc2cc0f994366448daec5160f1c0942d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Power: 46
+  Power: 33
   BasePower: 5
-  MaxAccuracy: 50
-  MaxTorque: 10
+  MaxAccuracy: 20
+  MaxTorque: 5
+  PowerMeterSpeedMultiplier: 1.5
+  AccuracyMeterSpeedMultiplier: 1.5
   Image: {fileID: 21300002, guid: cbb30e6e7927e44b987aa9ad4a893727, type: 3}
 --- !u!198 &198164406165475006
 ParticleSystem:
@@ -250,7 +252,7 @@ ParticleSystem:
   m_GameObject: {fileID: 1973770665755260}
   serializedVersion: 5
   lengthInSec: 10
-  speed: 1
+  simulationSpeed: 1
   looping: 0
   prewarm: 0
   playOnAwake: 1
