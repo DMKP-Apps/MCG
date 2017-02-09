@@ -137,6 +137,7 @@
     <None Include="Assets\Packages\Animated Flags\Shaders\Mobile-Bump-1DirectionalLight-NoCull.shader" />
     <None Include="Assets\Packages\Animated Flags\Shaders\Mobile-BumpSpec-1DirectionalLight-NoCull.shader" />
     <None Include="Assets\Packages\Baker House\Readme.txt" />
+    <None Include="Assets\Packages\BrokenVector\FreeLowPolyPack\readme.txt" />
     <None Include="Assets\Packages\Lowpoly_forest_ruins\Readme.txt" />
     <None Include="Assets\Standard Assets\CrossPlatformInput\CrossPlatformInputGuidelines.txt" />
     <None Include="Assets\Standard Assets\ParticleSystems\ParticleSystemsGuidelines.txt" />
