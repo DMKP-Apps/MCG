@@ -8,6 +8,6 @@ PhysicMaterial:
   m_Name: Meat - Ribs
   dynamicFriction: 1
   staticFriction: 1
-  bounciness: 0.08
+  bounciness: 0.03
   frictionCombine: 3
   bounceCombine: 0
