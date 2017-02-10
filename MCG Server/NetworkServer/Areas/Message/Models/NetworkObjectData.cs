@@ -57,6 +57,7 @@ namespace NetworkServer.Areas.Message.Models
 
                 Random rand = new Random();
                 _randomStartCount = rand.Next(15, 30);
+                _randomStartCount = 10;
 
                 nextPhaseOn = DateTime.Now.AddSeconds(_randomStartCount);
                 currentHole = 0;
@@ -170,7 +171,7 @@ namespace NetworkServer.Areas.Message.Models
 
         protected string exePath { get { return System.Configuration.ConfigurationManager.AppSettings["autoPlayerExe"]; } }
 
-        //protected bool exeInBackground { get { return System.Configuration.ConfigurationManager.AppSettings["autoPlayerExe_background"] == "true"; } }
+        protected bool autoPlayer { get { return System.Configuration.ConfigurationManager.AppSettings["autoPlayer"] == "true"; } }
 
         public void ProcessNextPhase()
         {
@@ -178,7 +179,7 @@ namespace NetworkServer.Areas.Message.Models
             {   // no users available... close room
 
                 // run the auto similate client.
-                if (string.IsNullOrWhiteSpace(exePath))
+                if (!autoPlayer || string.IsNullOrWhiteSpace(exePath))
                 {
                     _processId = -1;
                 }
@@ -186,10 +187,9 @@ namespace NetworkServer.Areas.Message.Models
                 {
                     var p = System.Diagnostics.Process.Start(exePath, string.Format("-r false -a true -s \"{0}\"", this.sessionId));
                     _processId = p.Id;
-                    //p.
                 }
 
-                nextPhaseOn = DateTime.Now.AddSeconds(60 - _randomStartCount);
+                nextPhaseOn = DateTime.Now.AddSeconds(1);// DateTime.Now.AddSeconds(60 - _randomStartCount);
             }
             else if (status == RoomStatus.New && attendees.Count < minAttendance && _processId.HasValue)
             {   // no users available... close room

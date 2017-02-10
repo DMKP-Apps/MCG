@@ -48,8 +48,10 @@ public class CannonFireController : MonoBehaviour {
 		}
 
         var shotPower = GameSettings.ShotPower.HasValue ? GameSettings.ShotPower.Value : 1;
+
         
-        if (!IsFiring() && lines != null && (previousShotPower != shotPower || previousBulletFirePosition != BulletPosition.transform.position || previousBulletIndex != GameController.CurrentBullet)) {
+
+        if (cannonPlayerState != null && !cannonPlayerState.isOnlinePlayer && !IsFiring() && lines != null && (previousShotPower != shotPower || previousBulletFirePosition != BulletPosition.transform.position || previousBulletIndex != GameController.CurrentBullet)) {
             previousBulletIndex = GameController.CurrentBullet;
             previousBulletFirePosition = BulletPosition.transform.position;
             previousShotPower = shotPower;
