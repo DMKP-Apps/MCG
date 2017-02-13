@@ -92,7 +92,7 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_Materials:
-  - {fileID: 2100000, guid: b8587caf9ad6b1540b227f39c9c061f6, type: 2}
+  - {fileID: 2100000, guid: 3de304d0fc2cfe44b95e41851e99c8aa, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -172,9 +172,9 @@ MonoBehaviour:
   BasePower: 5
   MaxAccuracy: 5
   MaxTorque: 0
-  PowerMeterSpeedMultiplier: 1
-  AccuracyMeterSpeedMultiplier: 1
-  Image: {fileID: 21300010, guid: cbb30e6e7927e44b987aa9ad4a893727, type: 3}
+  PowerMeterSpeedMultiplier: 1.5
+  AccuracyMeterSpeedMultiplier: 1.5
+  Image: {fileID: 21300018, guid: cbb30e6e7927e44b987aa9ad4a893727, type: 3}
 --- !u!114 &114475125011023394
 MonoBehaviour:
   m_ObjectHideFlags: 1
