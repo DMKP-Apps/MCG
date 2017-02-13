@@ -6,8 +6,8 @@ PhysicMaterial:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_Name: Meat - Ribs
-  dynamicFriction: 0.7
-  staticFriction: 0.65
-  bounciness: 0.3
+  dynamicFriction: 1
+  staticFriction: 1
+  bounciness: 0.03
   frictionCombine: 3
-  bounceCombine: 3
+  bounceCombine: 0

@@ -18,6 +18,8 @@ public class PowerControl : MonoBehaviour {
     public float Speed = 5.0f;
     private float direction = -1;
 
+    public float BaseSpeed = 120f;
+
     public float startValue = 155;
     public float endValue = 0;
     public MeterState state = MeterState.Paused;

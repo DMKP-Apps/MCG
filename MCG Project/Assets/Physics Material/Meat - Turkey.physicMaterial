@@ -8,6 +8,6 @@ PhysicMaterial:
   m_Name: Meat - Turkey
   dynamicFriction: 1
   staticFriction: 1
-  bounciness: 0
+  bounciness: 0.08
   frictionCombine: 3
-  bounceCombine: 1
+  bounceCombine: 0
