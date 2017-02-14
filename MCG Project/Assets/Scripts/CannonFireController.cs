@@ -25,11 +25,16 @@ public class CannonFireController : MonoBehaviour {
 		GameController = GameObject.Find ("GameController").GetComponent<GameController> ();
         cannonPlayerState = this.GetComponent<CannonPlayerState>();
 		lines = this.gameObject.GetComponentsInChildren<LineRenderer> ();
+        if (lines != null)
+        {
+            lines.ToList().ForEach(line => line.gameObject.SetActive(false));
+        }
     }
 
 	private Vector3 previousBulletFirePosition;
     private int previousBulletIndex = -1;
     private float previousShotPower = 0;
+    private bool previousHasShotPower = false;
 
 	void Update()
 	{
@@ -51,13 +56,18 @@ public class CannonFireController : MonoBehaviour {
 
         
 
-        if (cannonPlayerState != null && !cannonPlayerState.isOnlinePlayer && !IsFiring() && lines != null && (previousShotPower != shotPower || previousBulletFirePosition != BulletPosition.transform.position || previousBulletIndex != GameController.CurrentBullet)) {
+        if (cannonPlayerState != null && !cannonPlayerState.isOnlinePlayer && !IsFiring() && lines != null && (previousHasShotPower != GameSettings.ShotPower.HasValue || previousShotPower != shotPower || previousBulletFirePosition != BulletPosition.transform.position || previousBulletIndex != GameController.CurrentBullet)) {
             previousBulletIndex = GameController.CurrentBullet;
             previousBulletFirePosition = BulletPosition.transform.position;
             previousShotPower = shotPower;
+            previousHasShotPower = GameSettings.ShotPower.HasValue;
 
             lines.ToList().ForEach(line => {
-                if (!line.gameObject.activeInHierarchy)
+                if (!line.gameObject.activeInHierarchy && GameSettings.ShotPower.HasValue)
+                {
+                    line.gameObject.SetActive(true);
+                }
+                else if (!line.gameObject.activeInHierarchy && line.gameObject.name.Contains("Topographic"))
                 {
                     line.gameObject.SetActive(true);
                 }
@@ -68,13 +78,14 @@ public class CannonFireController : MonoBehaviour {
 			Vector3 startVelocity = BulletPosition.transform.forward * ((bulletData.Power + bulletData.BasePower) * shotPower);
 			//Debug.Log(PlotTrajectoryAtTime(BulletPosition.transform.position, startVelocity, Time.deltaTime));
 			PlotTrajectory (BulletPosition.transform.position, startVelocity, Time.deltaTime, 20);
-		} else if (lines != null && bullet != null && lines.Select(x => x.gameObject.activeInHierarchy).Any(x => x)) {
+		} else if (lines != null && (bullet != null || IsFiring()) && lines.Select(x => x.gameObject.activeInHierarchy).Any(x => x)) {
             lines.ToList().ForEach(line => {
                 line.gameObject.SetActive(false);
             });
             
             previousBulletIndex = -1;
             previousShotPower = 0;
+            previousHasShotPower = false;
         }
 	}
 
@@ -109,7 +120,7 @@ public class CannonFireController : MonoBehaviour {
                 line.startWidth = 10f;
             }
             else {
-                line.endWidth = 10f;
+                line.endWidth = 5f;
                 line.startWidth = 1f;
             }
             
