@@ -30,7 +30,7 @@ GameObject:
   - component: {fileID: 114371407253003470}
   m_Layer: 0
   m_Name: Ribs
-  m_TagString: Untagged
+  m_TagString: Bullet
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 4294967295
@@ -208,6 +208,7 @@ MonoBehaviour:
   splash: {fileID: 1603515697510202, guid: ad787bccff37c4d6db6afb956ae9c8c8, type: 2}
   velocitySqrMagThreshold: 1
   maxDrag: 1
+  collidingIds: 
 --- !u!114 &114328732168136582
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -254,7 +255,7 @@ ParticleSystem:
   m_GameObject: {fileID: 1334745152295508}
   serializedVersion: 5
   lengthInSec: 10
-  speed: 1
+  simulationSpeed: 1
   looping: 0
   prewarm: 0
   playOnAwake: 1

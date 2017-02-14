@@ -30,7 +30,7 @@ GameObject:
   - component: {fileID: 114758520764674640}
   m_Layer: 0
   m_Name: Steak
-  m_TagString: Untagged
+  m_TagString: Bullet
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 4294967295
@@ -255,7 +255,7 @@ ParticleSystem:
   m_GameObject: {fileID: 1492973162749122}
   serializedVersion: 5
   lengthInSec: 10
-  speed: 1
+  simulationSpeed: 1
   looping: 0
   prewarm: 0
   playOnAwake: 1
