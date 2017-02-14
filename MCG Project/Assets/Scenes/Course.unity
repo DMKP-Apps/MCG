@@ -3497,7 +3497,7 @@ Prefab:
     - target: {fileID: 114169261653605384, guid: 6c3139a6158094c04a4ec1fe33bc78f6,
         type: 2}
       propertyPath: holePrefabs.Array.size
-      value: 3
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 114169261653605384, guid: 6c3139a6158094c04a4ec1fe33bc78f6,
         type: 2}
@@ -3555,8 +3555,7 @@ Prefab:
         type: 2}
       propertyPath: holePrefabs.Array.data[2]
       value: 
-      objectReference: {fileID: 1042327772381158, guid: e3584268a292f432a94d216f3baf4744,
-        type: 2}
+      objectReference: {fileID: 0}
     - target: {fileID: 114169261653605384, guid: 6c3139a6158094c04a4ec1fe33bc78f6,
         type: 2}
       propertyPath: CurrentHole
@@ -3566,8 +3565,7 @@ Prefab:
         type: 2}
       propertyPath: holePrefabs.Array.data[1]
       value: 
-      objectReference: {fileID: 1042327772381158, guid: c7ba3daa8f5e143e592e81f5b79c974e,
-        type: 2}
+      objectReference: {fileID: 0}
     - target: {fileID: 114169261653605384, guid: 6c3139a6158094c04a4ec1fe33bc78f6,
         type: 2}
       propertyPath: holePrefabs.Array.data[3]
@@ -3603,11 +3601,7 @@ Prefab:
         type: 2}
       propertyPath: holePrefabs.Array.data[0]
       value: 
-<<<<<<< Updated upstream
       objectReference: {fileID: 1945203357895160, guid: affed36a783f6b74ab6fb8a5cc25c9f1,
-=======
-      objectReference: {fileID: 1042327772381158, guid: ebd3e761f7604486cbd2f1b6e8f4c955,
->>>>>>> Stashed changes
         type: 2}
     - target: {fileID: 114169261653605384, guid: 6c3139a6158094c04a4ec1fe33bc78f6,
         type: 2}
