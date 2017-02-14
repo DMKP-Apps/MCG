@@ -138,6 +138,12 @@ public class CannonPlayerState : MonoBehaviour {
         }
     }
 
+    class SmoothLookAtRotation
+    {
+        public Vector3 Destination;       
+    }
+
+    SmoothLookAtRotation _rotateDirection;
 
     public void OnUpdateRemoteData(NetworkObjectData objectData)
     {
@@ -153,15 +159,23 @@ public class CannonPlayerState : MonoBehaviour {
         //gameObject.transform.rotation = Quaternion.Euler(new Vector3(objectData.root_rotation_x, objectData.root_rotation_y, objectData.root_rotation_z));
         gameObject.transform.eulerAngles = new Vector3(objectData.root_rotation_x, objectData.root_rotation_y, objectData.root_rotation_z);
 
+        if (_rotateDirection == null)
+        {
+            _rotateDirection = new SmoothLookAtRotation();
+        }
+
         //rotate us over time according to speed until we are in the required rotation
-        CannonBarrow.transform.localEulerAngles = new Vector3(objectData.cannon_rotation_x, objectData.cannon_rotation_y, objectData.cannon_rotation_z);
+        _rotateDirection.Destination = new Vector3(objectData.cannon_rotation_x, objectData.cannon_rotation_y, objectData.cannon_rotation_z);
 
         currentBullet = objectData.currentBullet;
 
         if (objectData.fire)
         {
-			cannonFireController.Fire(objectData.fire_power, objectData.fire_accurracy, objectData.fire_torque, objectData.fire_turn, objectData.waitMilliseconds, objectData.currentBullet);
+            CannonBarrow.transform.localEulerAngles = new Vector3(objectData.cannon_rotation_x, objectData.cannon_rotation_y, objectData.cannon_rotation_z);
+            cannonFireController.Fire(objectData.fire_power, objectData.fire_accurracy, objectData.fire_torque, objectData.fire_turn, objectData.waitMilliseconds, objectData.currentBullet);
+
         }
+        
 
 
     }
@@ -177,8 +191,13 @@ public class CannonPlayerState : MonoBehaviour {
             return;
         }
 
-        
-		if (isOnlinePlayer)
+        if (_rotateDirection != null)
+        {
+            var quat = Quaternion.Euler(_rotateDirection.Destination);
+            CannonBarrow.transform.localRotation = Quaternion.Slerp(CannonBarrow.transform.localRotation, quat, Time.deltaTime * 8);
+        }
+
+        if (isOnlinePlayer)
 		{
 			if (GameSettings.playerMode == PlayerMode.ServerMultiplayer && GameSettings.GameInfo != null && GameSettings.GameInfo.Items != null) {
 				var data = GameSettings.GameInfo.Items.FirstOrDefault (x => x.objectId == playerKey);

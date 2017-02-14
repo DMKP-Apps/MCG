@@ -13,8 +13,8 @@ namespace MCGServer.Client
 {
     class Program
     {
-        //private static string _url = "http://localhost:8321/";
-        private static string _url = "http://mcg.moebull.com/";
+        
+        private static string _url { get { return System.Configuration.ConfigurationManager.AppSettings["MCGUrl"]; } }
 
         private static Dictionary<string, Action> _commands = new Dictionary<string, Action>();
 
@@ -422,25 +422,29 @@ namespace MCGServer.Client
             {
                 _players.OfType<playerInfoWithRoom>().Where(x => x.room != null && x.room.sessionId == sessionId)
                     .ToList().ForEach(x => x.room = room);
-
-                var checkforPlayersList = room.attendees.Where(x => !x.Removed).Join(_players.OfType<playerInfoWithRoom>().Where(x => x.room.sessionId == sessionId), x => x.UID, y => y.UID, (x, y) => y).ToList();
-                if (checkforPlayersList.Count == room.attendees.Count(x => !x.Removed))
+                if (!_record && _autoRun)
                 {
-                    checkforPlayersList.ForEach(x => {
-                        Logout(x);
-                        var index = _players.FindIndex(y => y.UID == x.UID);
-                        if (index > -1) {
-                            _players.RemoveAt(index);
-                        }
-                    });
-                    
+                    var checkforPlayersList = room.attendees.Where(x => !x.Removed).Join(_players.OfType<playerInfoWithRoom>().Where(x => x.room.sessionId == sessionId), x => x.UID, y => y.UID, (x, y) => y).ToList();
+                    if (checkforPlayersList.Count == room.attendees.Count(x => !x.Removed))
+                    {
+                        checkforPlayersList.ForEach(x =>
+                        {
+                            Logout(x);
+                            var index = _players.FindIndex(y => y.UID == x.UID);
+                            if (index > -1)
+                            {
+                                _players.RemoveAt(index);
+                            }
+                        });
+
+                    }
                 }
 
-                if (!room.attendees.Any(a => _players.Any(x => a.UID != x.UID)))
+                /*if (!room.attendees.Any(a => _players.Any(x => a.UID != x.UID)))
                 {
                     _players = new List<playerInfo>();
                     return;
-                }
+                }*/
                 //if(_players.Any(x => ))
             }
             if (room == null)
