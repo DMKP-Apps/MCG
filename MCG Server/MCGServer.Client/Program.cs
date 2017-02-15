@@ -440,11 +440,11 @@ namespace MCGServer.Client
                     }
                 }
 
-                /*if (!room.attendees.Any(a => _players.Any(x => a.UID != x.UID)))
+                if (!room.attendees.Any(a => _players.Any(x => a.UID != x.UID)))
                 {
                     _players = new List<playerInfo>();
                     return;
-                }*/
+                }
                 //if(_players.Any(x => ))
             }
             if (room == null)
@@ -509,6 +509,15 @@ namespace MCGServer.Client
                             }
 
                         }
+                        //else
+                        //{
+                        //    Logout(x.player);
+                        //    var index = _players.FindIndex(y => y.UID == x.player.UID);
+                        //    if (index > -1)
+                        //    {
+                        //        _players.RemoveAt(index);
+                        //    }
+                        //}
                     });
             }
 

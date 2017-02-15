@@ -13,8 +13,9 @@ public class GameController : MonoBehaviour {
 	public List<GameObject> bulletPrefabs = new List<GameObject> ();
     //public int CurrentBullet = 1;
     private GameObject BulletCamera;
+    private TestController testController;
 
-	private string endMatchGameScene = "EndMatch";
+    private string endMatchGameScene = "EndMatch";
 
     //private bool isHoleComplete = false;
     //private bool isHazardPoint = false;
@@ -29,7 +30,7 @@ public class GameController : MonoBehaviour {
     void Start()
     {
 
-
+        testController = GameObject.FindObjectOfType<TestController>();
         BulletCamera = GameObject.Find("BulletCamera");
         BulletCamera.SetActive(false);
 
@@ -365,7 +366,8 @@ public class GameController : MonoBehaviour {
 	private void MoveToNextPlayer() {
 		if (GameSettings.playerMode != PlayerMode.ServerMultiplayer || (GameSettings.playerMode == PlayerMode.ServerMultiplayer && !GameSettings.isRace)) {
 			if (currentPlayer > -1) {
-				player.SetActive (false);
+                player.GetComponent<CannonPlayerState>().SetPlayerActive(false);
+                player.SetActive (false);
 			}
 			currentPlayer++;
 			if (currentPlayer >= players.Count) {
@@ -388,10 +390,11 @@ public class GameController : MonoBehaviour {
 			}
 
 			player.SetActive (true);
-		}
+        }
 			
 		var playerController = player.GetComponent<CannonPlayerState> ();
-		playerController.isHoleComplete = false;
+        playerController.SetPlayerActive(true);
+        playerController.isHoleComplete = false;
 		playerController.isHarzard = false;
 
 		textController.SetStroke (playerController.Stroke);
@@ -683,12 +686,22 @@ public class GameController : MonoBehaviour {
 				CurrentHole = 1;
 			}
 
+            if (testController != null)
+            {
+                testController.SetCurrentHole(CurrentHole);
+            }
+
 
 			hole = (GameObject)Instantiate (holePrefabs [CurrentHole - 1]);
 			var holeController = hole.GetComponent<HoleController> ();
 			holeController.allPlayersComplete = false;
 			var watchActivate = HoleCompleteAlert.GetComponent<ActivateWithGameObject> ();
 			watchActivate.WatchObject = holeController.EndCamera;
+
+            if (GameSettings.playerMode == PlayerMode.ServerMultiplayer && GameSettings.isRace)
+            {
+                watchActivate.WatchObject = null;
+            }
 
 			if(GameSettings.HoleStatus == null) {
 				GameSettings.HoleStatus = new HoleStatus() {
@@ -749,9 +762,15 @@ public class GameController : MonoBehaviour {
 
 					GameObject currentPlayerObject;
 					Transform tee = holeController.tee;
-					if(GameSettings.playerMode == PlayerMode.ServerMultiplayer && GameSettings.isRace && holeController.raceTees.Count > i) {
-						tee = holeController.raceTees[i];
-					}
+                    if (GameSettings.playerMode == PlayerMode.ServerMultiplayer && GameSettings.isRace && holeController.raceTees.Count > i)
+                    {
+                        tee = holeController.raceTees[i];
+                    }
+                    else if (GameSettings.playerMode == PlayerMode.LocalMultiplayer && p.PlayerNumber - 1 < holeController.raceTees.Count)
+                    {
+                        tee = holeController.raceTees[p.PlayerNumber - 1];
+                    }
+                    
 
 					i++;
 
@@ -788,7 +807,7 @@ public class GameController : MonoBehaviour {
 
 			} else {
 
-                var activePlayers = GameSettings.Room != null ? GameSettings.Room.attendees.OrderBy(x => x.position).ToList() : new List<RoomAttendee>();
+                var activePlayers = GameSettings.Room != null ? GameSettings.isRace ? GameSettings.Room.attendees.OrderBy(x => x.playerNumber).ToList() : GameSettings.Room.attendees.OrderBy(x => x.position).ToList() : new List<RoomAttendee>();
                 var isOnlineRace = GameSettings.Room != null && activePlayers.Count >= NumberOfPlayers && GameSettings.playerMode == PlayerMode.ServerMultiplayer && GameSettings.isRace;
                 // create the player and de-activate them within the scene
                 for (int i = 0; i < NumberOfPlayers; i++) {
@@ -810,6 +829,11 @@ public class GameController : MonoBehaviour {
                     {
                         tee = holeController.raceTees[i];
                     }
+                    else if (GameSettings.playerMode == PlayerMode.LocalMultiplayer && i < holeController.raceTees.Count)
+                    {
+                        tee = holeController.raceTees[i];
+                    }
+
 
                     if (isRacePlayer)
                     {

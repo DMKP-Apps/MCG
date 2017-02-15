@@ -26,11 +26,35 @@ public class CannonPlayerState : MonoBehaviour {
 
     public Transform MoveToParent = null;
 
+    private Guid playerId = Guid.NewGuid();
+    public Guid GetPlayerId()
+    {
+        return playerId;
+    }
+
+    private TestController testController;
+    private double elapsedTime = 0;
+    private DateTime? elapsedTimeOffset = null;
+
     void Start()
 	{
 		CannonBarrow = transform.FindChild ("Cannon").gameObject;
         GameController = GameObject.Find("GameController").GetComponent<GameController>();
         cannonFireController = this.GetComponent<CannonFireController>();
+        testController = GameObject.FindObjectOfType<TestController>();
+    }
+
+    public void SetPlayerActive(bool isActive)
+    {
+        if (isActive && elapsedTimeOffset.HasValue)
+        {
+            elapsedTime += DateTime.Now.Subtract(elapsedTimeOffset.Value).TotalMilliseconds;
+        }
+        else if (!isActive)
+        {
+            elapsedTimeOffset = DateTime.Now;
+        }
+
     }
 
     public bool isFiring()
@@ -49,11 +73,11 @@ public class CannonPlayerState : MonoBehaviour {
 
         if (isOnlinePlayer)
         {
-            var rigidBody = this.GetComponent<Rigidbody>();
-            if (!rigidBody.isKinematic)
-            {
-                rigidBody.isKinematic = true;
-            }
+            //var rigidBody = this.GetComponent<Rigidbody>();
+            //if (!rigidBody.isKinematic)
+            //{
+            //    rigidBody.isKinematic = true;
+            //}
 
             var inputController = CannonBarrow.GetComponent<InputController>();
 			if (inputController != null) {
@@ -98,14 +122,11 @@ public class CannonPlayerState : MonoBehaviour {
     private NetworkObjectData _previousObjectData = new NetworkObjectData();
 
 	public void SendNetworkObjectData(bool fired = false, float power = 0f, float accuracy = 0f, float torque = 0f, float turn = 0f, double wait = 0f) {
-        if (!NetworkClientManager.IsOnline)
-        {
-            return;
-        }
-                
+
+
         NetworkObjectData data = new NetworkObjectData()
         {
-			uniqueId = Guid.NewGuid().ToString(),
+            uniqueId = Guid.NewGuid().ToString(),
             objectName = gameObject.name,
             fire = fired,
             holeId = GameController.GetHoleId(),
@@ -125,11 +146,27 @@ public class CannonPlayerState : MonoBehaviour {
             fire_power = power,
             fire_torque = torque,
             fire_turn = turn,
-			fire_accurracy = accuracy,
-			stroke = Stroke,
-			holeComplete = isHoleComplete,
-			waitMilliseconds = wait
+            fire_accurracy = accuracy,
+            stroke = Stroke,
+            holeComplete = isHoleComplete,
+            waitMilliseconds = wait,
+            timeStamp = DateTime.Now.AddMilliseconds(elapsedTime * -1)
         };
+
+        if (testController != null && !data.Compare(_previousObjectData)) {
+            testController.logPlayerData(this, data);
+        }
+
+        if (data.holeComplete)
+        {
+            elapsedTime = 0;
+        }
+
+        if (!NetworkClientManager.IsOnline)
+        {
+            return;
+        }
+
         if (!data.Compare(_previousObjectData))
         {
             _previousObjectData = data;
@@ -175,6 +212,11 @@ public class CannonPlayerState : MonoBehaviour {
             cannonFireController.Fire(objectData.fire_power, objectData.fire_accurracy, objectData.fire_torque, objectData.fire_turn, objectData.waitMilliseconds, objectData.currentBullet);
 
         }
+
+        if (objectData.holeComplete)
+        {
+            //gameObject.SetActive(false);
+        }
         
 
 
@@ -182,10 +224,10 @@ public class CannonPlayerState : MonoBehaviour {
 
     // Update is called once per frame
     void Update () {
-        if (!NetworkClientManager.IsOnline)
-        {
-           return;
-        }	
+        //if (!NetworkClientManager.IsOnline)
+        //{
+        //   return;
+        //}	
 
         if (!this.gameObject.activeInHierarchy) {
             return;

@@ -1,6 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
+using System;
 
 public enum PlayerMode {
     Single,
@@ -51,5 +53,59 @@ public static class GameSettings {
 
     public static roomInfo Room;
 
+    public static UserPreferences preferences = new UserPreferences();
 
+
+}
+
+public class UserPreferences
+{
+    private void load()
+    {
+        isInitialized = true;
+        if (!string.IsNullOrEmpty(PlayerPrefs.GetString("item1")))
+        {
+            var values = PlayerPrefs.GetString("item1").Split(',').Select(x =>
+            {
+                int i = 0;
+                if (!int.TryParse(x.Trim(), out i))
+                {
+                    return null;
+                }
+                return new Nullable<int>(i);
+            }).Where(x => x.HasValue).Select(x => x.Value).ToList();
+
+            if (values.Count > 0)
+            {
+                coins = values[0];
+            }
+
+        }
+    }
+
+    private int _coins = 0;
+    public int coins
+    {
+        get
+        {
+            if (!isInitialized) {
+                load();
+            }
+            return _coins;
+        }
+        set
+        {
+            _coins = value;
+        }
+    }
+
+    private bool isInitialized = false;
+
+    public void Save()
+    {
+        var int_items = string.Join(",", new string[] { coins.ToString() });
+        PlayerPrefs.SetString("item1", int_items);
+        PlayerPrefs.Save();
+
+    }
 }
