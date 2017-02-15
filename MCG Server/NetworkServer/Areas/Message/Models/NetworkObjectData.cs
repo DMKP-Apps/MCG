@@ -56,18 +56,28 @@ namespace NetworkServer.Areas.Message.Models
             _workFlow.Add(RoomStatus.New, () => {
 
                 Random rand = new Random();
-                _randomStartCount = rand.Next(15, 30);
-                _randomStartCount = 10;
+                _randomStartCount = rand.Next(11, 20);
+                //_randomStartCount = 10;
 
                 nextPhaseOn = DateTime.Now.AddSeconds(_randomStartCount);
                 currentHole = 0;
             });
             _workFlow.Add(RoomStatus.Waiting, () => {
                 nextPhaseOn = DateTime.Now.AddSeconds(10);
+                int i = 1;
+                attendees.OrderBy(x => Guid.NewGuid())
+                    .ToList().ForEach(x => {
+                        attendees[x.Key].playerNumber = i;
+                        attendees[x.Key].position = i;
+                        i++;
+                    });
             });
             _workFlow.Add(RoomStatus.InProgress, () => {
                 nextPhaseOn = null;
                 currentHole++;
+                if (currentHole > 9) {
+                    currentHole = 1;
+                }
             });
             _workFlow.Add(RoomStatus.HoleCompleted, () => {
                 nextPhaseOn = DateTime.Now.AddSeconds(10);
@@ -189,7 +199,7 @@ namespace NetworkServer.Areas.Message.Models
                     _processId = p.Id;
                 }
 
-                nextPhaseOn = DateTime.Now.AddSeconds(1);// DateTime.Now.AddSeconds(60 - _randomStartCount);
+                nextPhaseOn = DateTime.Now.AddSeconds(40 - _randomStartCount);
             }
             else if (status == RoomStatus.New && attendees.Count < minAttendance && _processId.HasValue)
             {   // no users available... close room
@@ -198,6 +208,7 @@ namespace NetworkServer.Areas.Message.Models
             }
             else if (status == RoomStatus.New && attendees.Count >= minAttendance)
             {   status = RoomStatus.Waiting;
+                //this.attendees = 
             }
             else if (status == RoomStatus.Waiting && attendees.Count(x => !x.Value.Removed) >= minAttendance)
             {   status = RoomStatus.InProgress;

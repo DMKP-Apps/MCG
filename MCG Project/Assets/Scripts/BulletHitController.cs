@@ -11,9 +11,11 @@ public class BulletHitController : MonoBehaviour {
 
 	private const string tagWater = "Water";
 	private const string tagHole = "Hole";
-    
+    private const string tagCollectableItem = "CollectableItem";
 
-	private System.DateTime time = System.DateTime.Now;
+
+
+    private System.DateTime time = System.DateTime.Now;
 
     private Rigidbody bulletRigidbody;
     float angularDrag = 0.05f;
@@ -67,6 +69,13 @@ public class BulletHitController : MonoBehaviour {
 
             bulletRigidbody.drag = maxDrag * veldiff;
             bulletRigidbody.angularDrag = maxDrag;
+
+            var constantForce = this.GetComponent<ConstantForce>();
+            if (constantForce != null)
+            {
+                constantForce.relativeForce = new Vector3(0, 0, 0);
+                constantForce.relativeTorque = new Vector3(0, 0, 0);
+            }
         }
         else
         {
@@ -80,7 +89,8 @@ public class BulletHitController : MonoBehaviour {
 
     void OnCollisionEnter(Collision collision)
     {
-        collidingIds = collision.contacts.Select(x => x.otherCollider.gameObject.GetInstanceID()).ToList();
+        collidingIds = collision.contacts.Where(x => x.otherCollider.tag != tagCollectableItem).Select(x => x.otherCollider.gameObject.GetInstanceID()).ToList();
+        
         foreach (ContactPoint contact in collision.contacts)
         {              
 			if (contact.otherCollider.gameObject.tag == tagHole && HitDetected != tagHole)
@@ -102,6 +112,8 @@ public class BulletHitController : MonoBehaviour {
 				Destroy(this.gameObject, 3f);
 			}
         }
+
+        
         
 
     }
