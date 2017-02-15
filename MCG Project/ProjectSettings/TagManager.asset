@@ -11,6 +11,7 @@ TagManager:
   - OutOfBounds
   - Terrain
   - TeeRace
+  - CollectableItem
   layers:
   - Default
   - TransparentFX

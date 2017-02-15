@@ -27,7 +27,11 @@ public class MultiplayerController : MonoBehaviour {
 	void Start () {
 		NetworkClientManager.NetworkPlayerReady (this, () => { });
 		GameSettings.HoleStatus = new HoleStatus ();
-	}
+        gameStartsIn = null;
+
+    }
+
+    private DateTime? gameStartsIn = null;
 
 	void UpdatePlayerInfo() {
 
@@ -43,6 +47,12 @@ public class MultiplayerController : MonoBehaviour {
         message = string.Join ("\r\n", GameSettings.Room.attendees.OrderBy(x => x.position).Select (x => string.Format ("{0} - {1}", x.AccountName, !x.Removed ? "Ready" : "Removed")).ToArray ());
         Message.text = message;
 
+        if (GameSettings.Room.status != RoomStatus.Waiting)
+        {
+            //var seconds = DateTime.Now.AddMilliseconds(GameSettings.Room.nextPhaseOn).Subtract(DateTime.Now).TotalSeconds;
+            gameStartsIn = null;
+        }
+
         if (GameSettings.Room.status == RoomStatus.InProgress)
         {
             lastCheckDate = DateTime.MaxValue;
@@ -57,25 +67,29 @@ public class MultiplayerController : MonoBehaviour {
         else if (GameSettings.Room.status == RoomStatus.Waiting)
         {
             //var seconds = DateTime.Now.AddMilliseconds(GameSettings.Room.nextPhaseOn).Subtract(DateTime.Now).TotalSeconds;
-            Info.text = string.Format("Game starting in {0} second(s).", Math.Floor(GameSettings.Room.nextPhaseOn / 1000));
+            gameStartsIn = DateTime.Now.AddMilliseconds(GameSettings.Room.nextPhaseOn);
+            
         }
         else if (GameSettings.Room.status == RoomStatus.New)
         {
             Info.text = string.Format("{0} of {1} found", GameSettings.Room.getActiveAttendees().Count, GameSettings.Room.maxAttendance);
+            gameStartsIn = null;
         }
 
 
-        //if (!GameSettings.NetworkPlayers.Any (x => !x.Ready) && GameSettings.NetworkPlayers.Count > 1) {
-        //	// load the seen
-
-
-        //}
     }
 	
 	// Update is called once per frame
     
 	void Update () {
-		if (DateTime.Now.Subtract (lastCheckDate).TotalMilliseconds > 1000) {
+
+        if (gameStartsIn.HasValue && gameStartsIn.Value > DateTime.Now)
+        {
+            var secondsToGame = Math.Floor(gameStartsIn.Value.Subtract(DateTime.Now).TotalSeconds);
+            Info.text = string.Format("Game starting in {0} second(s).", secondsToGame);
+
+        }
+        else if (DateTime.Now.Subtract (lastCheckDate).TotalMilliseconds > 1000) {
 			GetNetworkPlayer ();
 		}
 
