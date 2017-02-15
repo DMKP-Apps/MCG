@@ -1159,7 +1159,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!1 &1609591861504772
 GameObject:
   m_ObjectHideFlags: 0
@@ -8277,7 +8277,7 @@ MonoBehaviour:
   normalisedPercentage: 0.31472522
 --- !u!114 &114083707503370146
 MonoBehaviour:
-  m_ObjectHideFlags: 1
+  m_ObjectHideFlags: 2
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1871530265080426}
@@ -8431,7 +8431,7 @@ MonoBehaviour:
   lookAt: {fileID: 0}
 --- !u!114 &114156131043768818
 MonoBehaviour:
-  m_ObjectHideFlags: 1
+  m_ObjectHideFlags: 2
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1767492047644262}
@@ -8718,7 +8718,7 @@ MonoBehaviour:
     m_RotationOrder: 4
 --- !u!114 &114242030207137600
 MonoBehaviour:
-  m_ObjectHideFlags: 1
+  m_ObjectHideFlags: 2
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1767492047644262}
@@ -8782,7 +8782,7 @@ MonoBehaviour:
   tilt: 0
 --- !u!114 &114254506801088036
 MonoBehaviour:
-  m_ObjectHideFlags: 1
+  m_ObjectHideFlags: 2
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1871530265080426}
@@ -8828,7 +8828,7 @@ MonoBehaviour:
   Size: 5
 --- !u!114 &114257408375612680
 MonoBehaviour:
-  m_ObjectHideFlags: 1
+  m_ObjectHideFlags: 2
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1871530265080426}
@@ -9052,7 +9052,7 @@ MonoBehaviour:
   Size: 5
 --- !u!114 &114353700513517446
 MonoBehaviour:
-  m_ObjectHideFlags: 1
+  m_ObjectHideFlags: 2
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1767492047644262}
@@ -9703,7 +9703,7 @@ MonoBehaviour:
   Enabled: 1
 --- !u!114 &114500835933909506
 MonoBehaviour:
-  m_ObjectHideFlags: 1
+  m_ObjectHideFlags: 2
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1871530265080426}
@@ -9995,7 +9995,7 @@ MonoBehaviour:
   tilt: 0
 --- !u!114 &114576440703899026
 MonoBehaviour:
-  m_ObjectHideFlags: 1
+  m_ObjectHideFlags: 2
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1871530265080426}
@@ -10107,7 +10107,7 @@ MonoBehaviour:
   tilt: 0
 --- !u!114 &114623437420149382
 MonoBehaviour:
-  m_ObjectHideFlags: 1
+  m_ObjectHideFlags: 2
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1871530265080426}
@@ -16403,7 +16403,7 @@ MonoBehaviour:
   argumentType: 0
 --- !u!114 &114824817712303528
 MonoBehaviour:
-  m_ObjectHideFlags: 1
+  m_ObjectHideFlags: 2
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1767492047644262}
@@ -21998,7 +21998,7 @@ MonoBehaviour:
   argumentType: 0
 --- !u!114 &114930566797000242
 MonoBehaviour:
-  m_ObjectHideFlags: 1
+  m_ObjectHideFlags: 2
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1767492047644262}
@@ -22067,7 +22067,7 @@ MonoBehaviour:
   Size: 5
 --- !u!114 &114973416791373124
 MonoBehaviour:
-  m_ObjectHideFlags: 1
+  m_ObjectHideFlags: 2
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1767492047644262}
