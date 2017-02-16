@@ -56,17 +56,28 @@ namespace NetworkServer.Areas.Message.Models
             _workFlow.Add(RoomStatus.New, () => {
 
                 Random rand = new Random();
-                _randomStartCount = rand.Next(15, 30);
+                _randomStartCount = rand.Next(11, 20);
+                //_randomStartCount = 10;
 
                 nextPhaseOn = DateTime.Now.AddSeconds(_randomStartCount);
                 currentHole = 0;
             });
             _workFlow.Add(RoomStatus.Waiting, () => {
                 nextPhaseOn = DateTime.Now.AddSeconds(10);
+                int i = 1;
+                attendees.OrderBy(x => Guid.NewGuid())
+                    .ToList().ForEach(x => {
+                        attendees[x.Key].playerNumber = i;
+                        attendees[x.Key].position = i;
+                        i++;
+                    });
             });
             _workFlow.Add(RoomStatus.InProgress, () => {
                 nextPhaseOn = null;
                 currentHole++;
+                if (currentHole > 9) {
+                    currentHole = 1;
+                }
             });
             _workFlow.Add(RoomStatus.HoleCompleted, () => {
                 nextPhaseOn = DateTime.Now.AddSeconds(10);
@@ -170,7 +181,7 @@ namespace NetworkServer.Areas.Message.Models
 
         protected string exePath { get { return System.Configuration.ConfigurationManager.AppSettings["autoPlayerExe"]; } }
 
-        //protected bool exeInBackground { get { return System.Configuration.ConfigurationManager.AppSettings["autoPlayerExe_background"] == "true"; } }
+        protected bool autoPlayer { get { return System.Configuration.ConfigurationManager.AppSettings["autoPlayer"] == "true"; } }
 
         public void ProcessNextPhase()
         {
@@ -178,7 +189,7 @@ namespace NetworkServer.Areas.Message.Models
             {   // no users available... close room
 
                 // run the auto similate client.
-                if (string.IsNullOrWhiteSpace(exePath))
+                if (!autoPlayer || string.IsNullOrWhiteSpace(exePath))
                 {
                     _processId = -1;
                 }
@@ -186,10 +197,9 @@ namespace NetworkServer.Areas.Message.Models
                 {
                     var p = System.Diagnostics.Process.Start(exePath, string.Format("-r false -a true -s \"{0}\"", this.sessionId));
                     _processId = p.Id;
-                    //p.
                 }
 
-                nextPhaseOn = DateTime.Now.AddSeconds(60 - _randomStartCount);
+                nextPhaseOn = DateTime.Now.AddSeconds(40 - _randomStartCount);
             }
             else if (status == RoomStatus.New && attendees.Count < minAttendance && _processId.HasValue)
             {   // no users available... close room
@@ -198,6 +208,7 @@ namespace NetworkServer.Areas.Message.Models
             }
             else if (status == RoomStatus.New && attendees.Count >= minAttendance)
             {   status = RoomStatus.Waiting;
+                //this.attendees = 
             }
             else if (status == RoomStatus.Waiting && attendees.Count(x => !x.Value.Removed) >= minAttendance)
             {   status = RoomStatus.InProgress;

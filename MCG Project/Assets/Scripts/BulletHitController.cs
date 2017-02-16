@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 public class BulletHitController : MonoBehaviour {
 
@@ -10,67 +11,88 @@ public class BulletHitController : MonoBehaviour {
 
 	private const string tagWater = "Water";
 	private const string tagHole = "Hole";
+    private const string tagCollectableItem = "CollectableItem";
 
-	private Vector3 lastPosition;
-	private Vector3 lastRotation;
 
-	//private System.DateTime time = System.DateTime.Now;
+
+    private System.DateTime time = System.DateTime.Now;
 
     private Rigidbody bulletRigidbody;
+    float angularDrag = 0.05f;
+
+    public float velocitySqrMagThreshold = 1f;
+    public float maxDrag = 10f;
     void Start()
     {
         bulletRigidbody = transform.GetComponent<Rigidbody>();
         GameController = GameObject.Find("GameController").GetComponent<GameController>();
+        angularDrag = bulletRigidbody.angularDrag;
     }
 
 	void LateUpdate()
 	{
-        //if (System.DateTime.Now.Subtract (time).TotalMilliseconds > 300) {
+        if (System.DateTime.Now.Subtract (time).TotalMilliseconds > 500) {
 
-        //	time = System.DateTime.Now;
-        Debug.Log(bulletRigidbody.velocity.magnitude);
-        if (bulletRigidbody != null && bulletRigidbody.velocity.magnitude < 0.5f)
+        	time = System.DateTime.Now;
+        
+             if (bulletRigidbody != null && bulletRigidbody.velocity.magnitude < 0.3f)
             {
                 
                 Destroy(this.gameObject);
             }
 
-			/*var destroyObject = false;
-			if (!DetectMovement (lastPosition, transform.position) && !DetectMovement (lastRotation, transform.rotation.eulerAngles)) {
-				destroyObject = true;
-			}
-			lastPosition = transform.position;
-			lastRotation = transform.rotation.eulerAngles;
-			if (destroyObject) {
-				Destroy (this.gameObject);
-			}*/
-		//}
+
+		}
 	}
 
-	/*private bool DetectMovement(Vector3 previous, Vector3 current) {
-		var multiplier = 10f;
-		var px = float.Parse((System.Math.Floor (previous.x * multiplier) / multiplier).ToString());
-		var py = float.Parse((System.Math.Floor (previous.y * multiplier) / multiplier).ToString());
-		var pz = float.Parse((System.Math.Floor (previous.z * multiplier) / multiplier).ToString());
+    void Update()
+    {
+        float rBVelocitySqrMag = bulletRigidbody.velocity.sqrMagnitude;
+        bool canActivateDragDamping = false;
 
-		var cx = float.Parse((System.Math.Floor (current.x * multiplier) / multiplier).ToString());
-		var cy = float.Parse((System.Math.Floor (current.y * multiplier) / multiplier).ToString());
-		var cz = float.Parse((System.Math.Floor (current.z * multiplier) / multiplier).ToString());
+        //Vector3.
 
-		var distance = Vector3.Distance (new Vector3 (px, py, px), new Vector3 (cx, cy, cx));
+        //Debug.Log(string.Join(",", collidingIds.Select(x => x.ToString()).ToArray()));
 
-		return !(distance < 1f);
-		//Debug.Log(string.Format("Distance: {0}", distance));
+        if (rBVelocitySqrMag < velocitySqrMagThreshold)
+        {
+            canActivateDragDamping = true;
+        }
+        else
+        {
+            canActivateDragDamping = false;
+        }
 
-		//return new Vector3 (px, py, px) != new Vector3 (cx, cy, cx);
-	
-	}*/
+        if (canActivateDragDamping && collidingIds.Count > 0)
+        {
+            var veldiff = (velocitySqrMagThreshold - rBVelocitySqrMag) / velocitySqrMagThreshold;
 
+            bulletRigidbody.drag = maxDrag * veldiff;
+            bulletRigidbody.angularDrag = maxDrag;
+
+            var constantForce = this.GetComponent<ConstantForce>();
+            if (constantForce != null)
+            {
+                constantForce.relativeForce = new Vector3(0, 0, 0);
+                constantForce.relativeTorque = new Vector3(0, 0, 0);
+            }
+        }
+        else
+        {
+            bulletRigidbody.drag = 0;
+            bulletRigidbody.angularDrag = angularDrag;
+        }
+    }
+
+
+    public List<int> collidingIds = new List<int>();
 
     void OnCollisionEnter(Collision collision)
     {
+        collidingIds = collision.contacts.Where(x => x.otherCollider.tag != tagCollectableItem).Select(x => x.otherCollider.gameObject.GetInstanceID()).ToList();
+        
         foreach (ContactPoint contact in collision.contacts)
-        {
+        {              
 			if (contact.otherCollider.gameObject.tag == tagHole && HitDetected != tagHole)
             {
 				GameController.HoleOver (this.gameObject);
@@ -90,6 +112,14 @@ public class BulletHitController : MonoBehaviour {
 				Destroy(this.gameObject, 3f);
 			}
         }
+
+        
+        
+
+    }
+    void OnCollisionExit(Collision collision)
+    {
+        collidingIds = collision.contacts.Select(x => x.otherCollider.gameObject.GetInstanceID()).ToList();
         
 
     }
