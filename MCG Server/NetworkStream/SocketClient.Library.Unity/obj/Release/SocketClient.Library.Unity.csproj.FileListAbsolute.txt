@@ -1,0 +1,5 @@
+C:\Users\kyle.pearn\Documents\GitHub\Misc-Repo\NetworkStream\SocketClient.Library.Unity\bin\Release\SocketClient.Library.Unity.dll
+C:\Users\kyle.pearn\Documents\GitHub\Misc-Repo\NetworkStream\SocketClient.Library.Unity\bin\Release\SocketClient.Library.Unity.pdb
+C:\Users\kyle.pearn\Documents\GitHub\Misc-Repo\NetworkStream\SocketClient.Library.Unity\obj\Release\SocketClient.Library.Unity.csprojResolveAssemblyReference.cache
+C:\Users\kyle.pearn\Documents\GitHub\Misc-Repo\NetworkStream\SocketClient.Library.Unity\obj\Release\SocketClient.Library.Unity.dll
+C:\Users\kyle.pearn\Documents\GitHub\Misc-Repo\NetworkStream\SocketClient.Library.Unity\obj\Release\SocketClient.Library.Unity.pdb

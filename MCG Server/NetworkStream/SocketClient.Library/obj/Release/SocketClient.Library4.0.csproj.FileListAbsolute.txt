@@ -1,0 +1,5 @@
+C:\Users\kyle.pearn\Documents\GitHub\Misc-Repo\NetworkStream\SocketClient.Library\bin\Release\SocketClient.Library4.0.dll
+C:\Users\kyle.pearn\Documents\GitHub\Misc-Repo\NetworkStream\SocketClient.Library\bin\Release\SocketClient.Library4.0.pdb
+C:\Users\kyle.pearn\Documents\GitHub\Misc-Repo\NetworkStream\SocketClient.Library\obj\Release\SocketClient.Library4.0.csprojResolveAssemblyReference.cache
+C:\Users\kyle.pearn\Documents\GitHub\Misc-Repo\NetworkStream\SocketClient.Library\obj\Release\SocketClient.Library4.0.dll
+C:\Users\kyle.pearn\Documents\GitHub\Misc-Repo\NetworkStream\SocketClient.Library\obj\Release\SocketClient.Library4.0.pdb

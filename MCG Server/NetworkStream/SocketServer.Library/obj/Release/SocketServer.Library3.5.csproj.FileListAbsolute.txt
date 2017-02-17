@@ -1,0 +1,4 @@
+C:\Users\kyle.pearn\Documents\GitHub\Misc-Repo\NetworkStream\SocketServer.Library\bin\Release\SocketServer.Library3.5.dll
+C:\Users\kyle.pearn\Documents\GitHub\Misc-Repo\NetworkStream\SocketServer.Library\bin\Release\SocketServer.Library3.5.pdb
+C:\Users\kyle.pearn\Documents\GitHub\Misc-Repo\NetworkStream\SocketServer.Library\obj\Release\SocketServer.Library3.5.dll
+C:\Users\kyle.pearn\Documents\GitHub\Misc-Repo\NetworkStream\SocketServer.Library\obj\Release\SocketServer.Library3.5.pdb

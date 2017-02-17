@@ -1,0 +1,17 @@
+C:\Users\kyle.pearn\Documents\GitHub\Misc-Repo\NetworkStream\MultiplayerServices\bin\Release\MultiplayerServices.dll
+C:\Users\kyle.pearn\Documents\GitHub\Misc-Repo\NetworkStream\MultiplayerServices\bin\Release\MultiplayerServices.pdb
+C:\Users\kyle.pearn\Documents\GitHub\Misc-Repo\NetworkStream\MultiplayerServices\bin\Release\SocketServer.Library4.5.dll
+C:\Users\kyle.pearn\Documents\GitHub\Misc-Repo\NetworkStream\MultiplayerServices\bin\Release\SocketServer.Library4.5.pdb
+C:\Users\kyle.pearn\Documents\GitHub\Misc-Repo\NetworkStream\MultiplayerServices\obj\Release\MultiplayerServices.csprojResolveAssemblyReference.cache
+C:\Users\kyle.pearn\Documents\GitHub\Misc-Repo\NetworkStream\MultiplayerServices\obj\Release\MultiplayerServices.dll
+C:\Users\kyle.pearn\Documents\GitHub\Misc-Repo\NetworkStream\MultiplayerServices\obj\Release\MultiplayerServices.pdb
+C:\Users\kyle.pearn\Documents\GitHub\Misc-Repo\NetworkStream\MultiplayerServices\bin\Release\MultiplayerServices.dll.config
+C:\Users\kyle.pearn\Documents\GitHub\Misc-Repo\NetworkStream\MultiplayerServices\bin\Release\EntityFramework.dll
+C:\Users\kyle.pearn\Documents\GitHub\Misc-Repo\NetworkStream\MultiplayerServices\bin\Release\EntityFramework.SqlServer.dll
+C:\Users\kyle.pearn\Documents\GitHub\Misc-Repo\NetworkStream\MultiplayerServices\bin\Release\EntityFramework.xml
+C:\Users\kyle.pearn\Documents\GitHub\Misc-Repo\NetworkStream\MultiplayerServices\bin\Release\EntityFramework.SqlServer.xml
+C:\Users\kyle.pearn\Documents\GitHub\Misc-Repo\NetworkStream\MultiplayerServices\obj\Release\MultiplayerServices.Migrations.InitialCreate.resources
+C:\Users\kyle.pearn\Documents\GitHub\Misc-Repo\NetworkStream\MultiplayerServices\obj\Release\MultiplayerServices.Migrations.CreatePrizetable.resources
+C:\Users\kyle.pearn\Documents\GitHub\Misc-Repo\NetworkStream\MultiplayerServices\obj\Release\MultiplayerServices.Migrations.CreateGameStatusTable.resources
+C:\Users\kyle.pearn\Documents\GitHub\Misc-Repo\NetworkStream\MultiplayerServices\obj\Release\MultiplayerServices.Migrations.AddGameStatetoGameStatus.resources
+C:\Users\kyle.pearn\Documents\GitHub\Misc-Repo\NetworkStream\MultiplayerServices\obj\Release\MultiplayerServices.csproj.GenerateResource.Cache

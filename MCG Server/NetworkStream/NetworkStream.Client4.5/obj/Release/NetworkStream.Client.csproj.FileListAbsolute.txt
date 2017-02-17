@@ -1,0 +1,8 @@
+C:\Users\kyle.pearn\Documents\GitHub\Misc-Repo\NetworkStream\NetworkStream.Client4.5\bin\Release\NetworkStream.Client.exe.config
+C:\Users\kyle.pearn\Documents\GitHub\Misc-Repo\NetworkStream\NetworkStream.Client4.5\bin\Release\NetworkStream.Client.exe
+C:\Users\kyle.pearn\Documents\GitHub\Misc-Repo\NetworkStream\NetworkStream.Client4.5\bin\Release\NetworkStream.Client.pdb
+C:\Users\kyle.pearn\Documents\GitHub\Misc-Repo\NetworkStream\NetworkStream.Client4.5\bin\Release\SocketClient.Library4.5.dll
+C:\Users\kyle.pearn\Documents\GitHub\Misc-Repo\NetworkStream\NetworkStream.Client4.5\bin\Release\SocketClient.Library4.5.pdb
+C:\Users\kyle.pearn\Documents\GitHub\Misc-Repo\NetworkStream\NetworkStream.Client4.5\obj\Release\NetworkStream.Client.csprojResolveAssemblyReference.cache
+C:\Users\kyle.pearn\Documents\GitHub\Misc-Repo\NetworkStream\NetworkStream.Client4.5\obj\Release\NetworkStream.Client.exe
+C:\Users\kyle.pearn\Documents\GitHub\Misc-Repo\NetworkStream\NetworkStream.Client4.5\obj\Release\NetworkStream.Client.pdb

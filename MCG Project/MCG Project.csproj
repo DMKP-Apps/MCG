@@ -116,6 +116,11 @@
     <Compile Include="Assets\Controls\WindMeter\Scripts\WindControl.cs" />
     <Compile Include="Assets\Scripts\ActivateWithGameObject.cs" />
     <Compile Include="Assets\Scripts\ActiveForTime.cs" />
+    <Compile Include="Assets\Scripts\Assemblies\SocketClient.Library\AsynchronousClient.cs" />
+    <Compile Include="Assets\Scripts\Assemblies\SocketClient.Library\Client.cs" />
+    <Compile Include="Assets\Scripts\Assemblies\SocketClient.Library\Extensions.cs" />
+    <Compile Include="Assets\Scripts\Assemblies\SocketClient.Library\Requests\SocketRequest.cs" />
+    <Compile Include="Assets\Scripts\Assemblies\SocketClient.Library\Responses\SocketReponse.cs" />
     <Compile Include="Assets\Scripts\AssociatedPlayerState.cs" />
     <Compile Include="Assets\Scripts\AttachToObject.cs" />
     <Compile Include="Assets\Scripts\BoundaryController.cs" />
@@ -145,6 +150,7 @@
     <Compile Include="Assets\Scripts\Network\NetworkObjectData.cs" />
     <Compile Include="Assets\Scripts\Network\NetworkPlayerInfo.cs" />
     <Compile Include="Assets\Scripts\Network\RoomData.cs" />
+    <Compile Include="Assets\Scripts\Network\WebSocketController.cs" />
     <Compile Include="Assets\Scripts\Obstacles\CollectItem.cs" />
     <Compile Include="Assets\Scripts\Obstacles\MoveAroundObject.cs" />
     <Compile Include="Assets\Scripts\Obstacles\MoveObject.cs" />
