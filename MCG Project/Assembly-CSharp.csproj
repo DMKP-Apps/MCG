@@ -111,6 +111,7 @@
      <Compile Include="Assets\Scripts\Obstacles\SpawnItem.cs" />
      <Compile Include="Assets\Scripts\SmoothLookAt.cs" />
      <Compile Include="Assets\Scripts\SmoothRotator.cs" />
+     <Compile Include="Assets\Scripts\Tests\TestController.cs" />
      <Compile Include="Assets\Scripts\TopographicBulletController.cs" />
      <Compile Include="Assets\Scripts\TopographicCamera.cs" />
      <Compile Include="Assets\Scripts\UIInputController.cs" />
