@@ -187,7 +187,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dc2cc0f994366448daec5160f1c0942d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Power: 37
+  Power: 35
   BasePower: 5
   MaxAccuracy: 50
   MaxTorque: 10
