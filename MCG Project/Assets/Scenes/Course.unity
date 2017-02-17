@@ -12775,7 +12775,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fd9f4c9f6346c49f786501022ea5c6fa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  camera: {fileID: 1222889630}
+  sceneCamera: {fileID: 0}
   rotationRange: {x: 70, y: 360, z: 0}
   rotationSpeed: 0.35
   dampingTime: 0.1
@@ -21487,20 +21487,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a25c8ad187f7d4cecbe3cec97ce49b06, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  PositionOffset: {x: 0, y: 8.5, z: -11}
-  Position: {x: 19.204052, y: -54.435997, z: -275.2433}
-  Rotation: {x: 1.574819, y: 63.453693, z: 0.072455294}
-  Cannon: {fileID: 981759895}
-  LookAtTarget: {fileID: 1450579551}
-  CameraPosition: {fileID: 16665967}
-  Camera2Position: {fileID: 536519149}
+  PositionOffset: {x: 0, y: 0, z: 0}
+  Position: {x: 0, y: 0, z: 0}
+  Rotation: {x: 0, y: 0, z: 0}
+  Cannon: {fileID: 0}
+  LookAtTarget: {fileID: 0}
+  CameraPosition: {fileID: 0}
+  Camera2Position: {fileID: 0}
   explorePosition: {x: 0, y: 0, z: 0}
-  fireController: {fileID: 181312145}
-  MoveSpeed: 45
+  fireController: {fileID: 0}
+  MoveSpeed: 1
   DirectionModifier: 1
   EnableRotation: 1
   Mode: 0
-  cameraHomePostion: {fileID: 101896579}
+  cameraHomePostion: {fileID: 0}
   canInputMovement: 0
   RunActionCamera: 1
   followSpeed: 1

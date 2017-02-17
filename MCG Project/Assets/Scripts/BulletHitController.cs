@@ -13,7 +13,28 @@ public class BulletHitController : MonoBehaviour {
 	private const string tagHole = "Hole";
     private const string tagCollectableItem = "CollectableItem";
 
+    private Vector2? _addSpin = null;
 
+    public void AddSpin(Vector2 input)
+    {
+        //if (_addSpin.HasValue || bulletRigidbody == null)
+        //{
+        //    return;
+        //}
+        //input.y = 0;
+        _addSpin = input;
+        var force = Vector3.forward * input.y * 0.4f;
+        bulletRigidbody.AddRelativeForce(force, ForceMode.Acceleration);
+        //bulletRigidbody.AddRelativeTorque(Vector3.forward * input.y * 10);
+        //bulletRigidbody..Rotate(new Vector3(input.y * 1000, input.x * 1000 * -1));
+        //bulletRigidbody.AddRelativeTorque(new Vector3(input.y * 1000, input.x * 1000 * -1), ForceMode.VelocityChange);
+        //bulletRigidbody.AddRelativeTorque(transform.right * (input.y * 100), ForceMode.VelocityChange);
+        bulletRigidbody.AddRelativeTorque(new Vector3(input.y, input.x, 0f) * 1000, ForceMode.Acceleration);
+        // bulletRigidbody.AddRelativeForce(new Vector3(input.x / 10 * Time.deltaTime, 0f, -0.5f), ForceMode.VelocityChange);//* Time.deltaTime
+
+        //new Vector3(accuracy * bulletData.MaxAccuracy, 0f, accuracy > 0 ? (accuracy * bulletData.MaxAccuracy) * 0.5f * -1 : (accuracy * bulletData.MaxAccuracy) * 0.5f)
+        Debug.Log(string.Format("touch: {0}, {1}", input.x, input.y));
+    }
 
     private System.DateTime time = System.DateTime.Now;
 
