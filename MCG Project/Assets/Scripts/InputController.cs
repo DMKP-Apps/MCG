@@ -60,6 +60,7 @@ public class InputController : MonoBehaviour {
 	public float perspectiveZoomSpeed = 0.5f;        // The rate of change of the field of view in perspective mode.
 	public float orthoZoomSpeed = 0.5f;        // The rate of change of the orthographic size in orthographic mode.
 
+    private List<Vector2> dragInput = new List<Vector2>();
 
 	// Update is called once per frame
 	void Update () {
@@ -97,55 +98,26 @@ public class InputController : MonoBehaviour {
 			// Find the difference in the distances between each frame.
 			float deltaMagnitudeDiff = prevTouchDeltaMag - touchDeltaMag;
 
-			if (deltaMagnitudeDiff > 0 && cameraController.Mode != MainCameraController.CameraMode.Explore) {
-				// zoom out.
-				cameraController.Mode = MainCameraController.CameraMode.Explore;
-				cameraController.canInputMovement = false;
-			} else if(deltaMagnitudeDiff < 0 && cameraController.Mode == MainCameraController.CameraMode.Explore && cameraController.canInputMovement) {
-				// zoom in.
-				cameraController.Mode = MainCameraController.CameraMode.FollowCannon;
-
-				//camera.transform.r
-
-				/*camera.transform.localRotation = Quaternion.Euler(new Vector3(camera.transform.localRotation.eulerAngles.x
-					,camera.transform.localRotation.y + (touchZero.deltaPosition.x * -1), 
-					camera.transform.localRotation.z));*/
-
-			}
+            // disable this function for now
+            if (1 == 2)
+            {
+                if (deltaMagnitudeDiff > 0 && cameraController.Mode != MainCameraController.CameraMode.Explore)
+                {
+                    // zoom out.
+                    cameraController.Mode = MainCameraController.CameraMode.Explore;
+                    cameraController.canInputMovement = false;
+                }
+                else if (deltaMagnitudeDiff < 0 && cameraController.Mode == MainCameraController.CameraMode.Explore && cameraController.canInputMovement)
+                {
+                    // zoom in.
+                    cameraController.Mode = MainCameraController.CameraMode.FollowCannon;
 
 
-			//Vector3 target = camera.transform.localPosition;
-			//target.y += (deltaMagnitudeDiff * perspectiveZoomSpeed) * Time.deltaTime;
-			//target.z -= (deltaMagnitudeDiff * (perspectiveZoomSpeed * 0.8f)) * Time.deltaTime;
+                }
+            }
 
-
-
-
-			//if (!(target.y < 8f || target.y > 50f)) {
-			//	camera.transform.localPosition = target;
-			//}
-
-			//camera.transform.localPosition = target;
-
-			/*// If the camera is orthographic...
-			if (camera.orthographic)
-			{
-				// ... change the orthographic size based on the change in distance between the touches.
-				camera.orthographicSize += deltaMagnitudeDiff * orthoZoomSpeed;
-
-				// Make sure the orthographic size never drops below zero.
-				camera.orthographicSize = Mathf.Max(camera.orthographicSize, 0.1f);
-			}
-			else
-			{
-				// Otherwise change the field of view based on the change in distance between the touches.
-				camera.fieldOfView += deltaMagnitudeDiff * perspectiveZoomSpeed;
-
-				// Clamp the field of view to make sure it's between 0 and 180.
-				camera.fieldOfView = Mathf.Clamp(camera.fieldOfView, 0.1f, 179.9f);
-			}*/
-
-
+			
+            
 		
 		} 
 
@@ -243,18 +215,37 @@ public class InputController : MonoBehaviour {
                     hasTouch = true;
 
                     
-                    var currentBullet = GameController.GetCurrentShotBullet();
-                    if (currentBullet != null)
-                    {
-                        var bulletController = currentBullet.GetComponent<BulletHitController>();
-                        if (bulletController != null)
-                        {
-                            bulletController.AddSpin(touch.deltaPosition);
-                        }
-                    }
+                    dragInput.Add(touch.deltaPosition);
 
                 }
             });
+
+            if (touches.Count == 0 && dragInput.Count > 0)
+            {
+                //var maxForce = 30f;
+                var currentBullet = GameController.GetCurrentShotBullet();
+                if (currentBullet != null)
+                {
+                    Vector2 input = new Vector2();
+                    input = dragInput.OrderByDescending(x => x.sqrMagnitude).FirstOrDefault();
+                    //dragInput.ForEach(x => input += x);
+                    dragInput = new List<Vector2>();
+                    //if (input.sqrMagnitude > 100)
+                    //{
+                    //    input = input * (100 / input.sqrMagnitude);
+                    //    input *= 5000f;
+                    //}
+
+                    //if(input.x > maxForce)
+                    //input = input * 0.4f;
+
+                    var bulletController = currentBullet.GetComponent<BulletHitController>();
+                    if (bulletController != null)
+                    {
+                        bulletController.AddSpin(input);
+                    }
+                }
+            }
 
         }
 

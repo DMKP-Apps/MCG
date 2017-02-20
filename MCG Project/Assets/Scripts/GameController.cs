@@ -268,11 +268,11 @@ public class GameController : MonoBehaviour {
             topographicCamera.SetActive(setActive);
         }
 
-        if (1 == 1) {
-            var holeController = hole.GetComponent<HoleController>();
-            holeController.hole.position = GameSettings.EstimatedShotLocation;
-            //GameSettings.EstimatedShotLocation
-        }
+        //if (1 == 1) {
+        //    var holeController = hole.GetComponent<HoleController>();
+        //    holeController.hole.position = GameSettings.EstimatedShotLocation;
+        //    //GameSettings.EstimatedShotLocation
+        //}
 
         if (GameSettings.playerMode == PlayerMode.ServerMultiplayer && !buildingHole) {
 			if (System.DateTime.Now.Subtract (lastPlayerInfoRequest).TotalMilliseconds > 1000 && !checkEndingHole) {

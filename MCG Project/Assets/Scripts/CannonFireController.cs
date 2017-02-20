@@ -283,13 +283,13 @@ public class CannonFireController : MonoBehaviour {
             //bullet.GetComponent<Rigidbody>().AddTorque(transform.right * turn);
 
 			var constantForce = bullet.GetComponent<ConstantForce>();
-            bullet.GetComponent<Rigidbody>().AddRelativeTorque(new Vector3(bulletData.MaxTorque * accuracy, bulletData.MaxTorque * accuracy, 0f), ForceMode.VelocityChange);
+            //bullet.GetComponent<Rigidbody>().AddRelativeTorque(new Vector3(bulletData.MaxTorque * accuracy, bulletData.MaxTorque * accuracy, 0f), ForceMode.VelocityChange);
             //bulletRigidbody.AddRelativeTorque(transform.right * (input.y * 100), ForceMode.VelocityChange);
-            bullet.GetComponent<Rigidbody>().AddRelativeForce(new Vector3(accuracy * bulletData.MaxAccuracy, 0f, accuracy > 0 ? (accuracy * bulletData.MaxAccuracy) * 0.5f * -1 : (accuracy * bulletData.MaxAccuracy) * 0.5f), ForceMode.VelocityChange);//* Time.deltaTime
+            //bullet.GetComponent<Rigidbody>().AddRelativeForce(new Vector3(accuracy * bulletData.MaxAccuracy, 0f, accuracy > 0 ? (accuracy * bulletData.MaxAccuracy) * 0.5f * -1 : (accuracy * bulletData.MaxAccuracy) * 0.5f), ForceMode.VelocityChange);//* Time.deltaTime
 
             if (constantForce != null) {
-				//constantForce.relativeForce = new Vector3(accuracy * bulletData.MaxAccuracy,0f, accuracy > 0 ? (accuracy * bulletData.MaxAccuracy) * 0.5f * -1 : (accuracy * bulletData.MaxAccuracy) * 0.5f);
-				//constantForce.relativeTorque = new Vector3(bulletData.MaxTorque * accuracy, bulletData.MaxTorque * accuracy,0f);
+				constantForce.relativeForce = new Vector3(accuracy * bulletData.MaxAccuracy,0f, accuracy > 0 ? (accuracy * bulletData.MaxAccuracy) * 0.5f * -1 : (accuracy * bulletData.MaxAccuracy) * 0.5f);
+				constantForce.relativeTorque = new Vector3(bulletData.MaxTorque * accuracy, bulletData.MaxTorque * accuracy,0f);
 
 			}
 
