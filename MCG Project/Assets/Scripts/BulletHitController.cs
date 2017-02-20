@@ -13,7 +13,54 @@ public class BulletHitController : MonoBehaviour {
 	private const string tagHole = "Hole";
     private const string tagCollectableItem = "CollectableItem";
 
+    private Vector3? _addSpin = null;
+    private Vector3 _forward;
+    private Vector3 _right;
 
+    public void AddSpin(Vector2 input)
+    {
+        if (_addSpin.HasValue || bulletRigidbody == null)
+        {
+            return;
+        }
+        bulletRigidbody.maxAngularVelocity = 18;
+        bulletRigidbody.AddRelativeTorque(new Vector3(input.y * 2f, input.x * 2f, 0f), ForceMode.VelocityChange);
+        //input.y = 0;
+        //_addSpin = input;
+        if (input.y > 0) {
+            input.y = 1;
+        }
+        var y = input.y / 8.5f;
+        var x = input.x / 50;
+
+        //if (y < 0)
+        //{
+        //    y *= -1;
+        //}
+        //if (x < 0)
+        //{
+        //    x *= -1;
+        //}
+        //if (y > x)
+        //{
+        //    y = input.y / 8.5f;
+        //    x = input.x / 50;
+        //}
+        //else {
+        //    y = input.y / 8;
+        //    x = input.x / 50;
+        //}
+        _addSpin = _forward * (y) + _right * (x);// new Vector3(input.x, 0f, input.y);
+        //bulletRigidbody.AddRelativeForce(force, ForceMode.Acceleration);
+        //bulletRigidbody.AddRelativeTorque(Vector3.forward * input.y * 10);
+        //bulletRigidbody..Rotate(new Vector3(input.y * 1000, input.x * 1000 * -1));
+        //bulletRigidbody.AddRelativeTorque(new Vector3(input.y * 1000, input.x * 1000 * -1), ForceMode.VelocityChange);
+        //bulletRigidbody.AddRelativeTorque(transform.right * (input.y * 100), ForceMode.VelocityChange);
+        // bulletRigidbody.AddRelativeForce(new Vector3(input.x / 10 * Time.deltaTime, 0f, -0.5f), ForceMode.VelocityChange);//* Time.deltaTime
+
+        //new Vector3(accuracy * bulletData.MaxAccuracy, 0f, accuracy > 0 ? (accuracy * bulletData.MaxAccuracy) * 0.5f * -1 : (accuracy * bulletData.MaxAccuracy) * 0.5f)
+        Debug.Log(string.Format("touch: {0}, {1}, {2}", input.x, input.y, bulletRigidbody.velocity.sqrMagnitude));
+    }
 
     private System.DateTime time = System.DateTime.Now;
 
@@ -27,6 +74,10 @@ public class BulletHitController : MonoBehaviour {
         bulletRigidbody = transform.GetComponent<Rigidbody>();
         GameController = GameObject.Find("GameController").GetComponent<GameController>();
         angularDrag = bulletRigidbody.angularDrag;
+        _forward = transform.forward;
+        _right = transform.right;
+
+
     }
 
 	void LateUpdate()
@@ -113,6 +164,18 @@ public class BulletHitController : MonoBehaviour {
 			}
         }
 
+        if (collidingIds.Count > 0 && bulletRigidbody.maxAngularVelocity > 7)
+        {
+            bulletRigidbody.maxAngularVelocity = 7;
+            if (_addSpin.HasValue)
+            {
+               bulletRigidbody.AddForce(_addSpin.Value, ForceMode.VelocityChange);
+                Debug.Log("");
+                Debug.Log(string.Format("ADD FORCE: {0}, {1}, {2}", _addSpin.Value.x, _addSpin.Value.y, _addSpin.Value.z));
+            }
+        }
+
+        
         
         
 

@@ -122,7 +122,6 @@
     <Compile Include="Assets\Scripts\BulletController.cs" />
     <Compile Include="Assets\Scripts\BulletData.cs" />
     <Compile Include="Assets\Scripts\BulletHitController.cs" />
-    <Compile Include="Assets\Scripts\CameraController.cs" />
     <Compile Include="Assets\Scripts\CameraFollow.cs" />
     <Compile Include="Assets\Scripts\CameraLookAt.cs" />
     <Compile Include="Assets\Scripts\CannonBodyAnimate.cs" />
@@ -135,6 +134,7 @@
     <Compile Include="Assets\Scripts\GameController.cs" />
     <Compile Include="Assets\Scripts\HoleController.cs" />
     <Compile Include="Assets\Scripts\InputController.cs" />
+    <Compile Include="Assets\Scripts\MainCameraController.cs" />
     <Compile Include="Assets\Scripts\Menu Scripts\GameClosedController.cs" />
     <Compile Include="Assets\Scripts\Menu Scripts\GameSettings.cs" />
     <Compile Include="Assets\Scripts\Menu Scripts\StartMenuController.cs" />
