@@ -1416,7 +1416,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   sceneCamera: {fileID: 20781413833749496}
   rotationRange: {x: 70, y: 360, z: 0}
-  rotationSpeed: 8
+  rotationSpeed: 20
   dampingTime: 0.1
   InputPosition: {x: 0, y: 0}
   AllowInput: 1

@@ -23,7 +23,7 @@ public class BulletHitController : MonoBehaviour {
         {
             return;
         }
-        bulletRigidbody.maxAngularVelocity = 18;
+        bulletRigidbody.maxAngularVelocity = 13;
         bulletRigidbody.AddRelativeTorque(new Vector3(input.y * 2f, input.x * 2f, 0f), ForceMode.VelocityChange);
         //input.y = 0;
         //_addSpin = input;
