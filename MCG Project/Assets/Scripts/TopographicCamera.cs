@@ -47,7 +47,7 @@ public class TopographicCamera : MonoBehaviour {
             {
                 var newRect = originalRect;
                 newRect.width = 0.15f;
-                newRect.height = 0.3f;
+                newRect.height = 0.35f;
                 tcamera.rect = newRect;
             }
             else

@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-public class CameraController : MonoBehaviour {
+public class MainCameraController : MonoBehaviour {
 
 	public Vector3 PositionOffset = new Vector3 (0.0f, 0.0f, 0.0f);
 	public Vector3 Position = new Vector3(0.0f,0.0f,0.0f);
 	public Vector3 Rotation;
-	private float previousXRotation = 0.0f;
-	public GameObject Cannon;
+	
+    public GameObject Cannon;
 	public GameObject LookAtTarget;
 	private GameObject CameraShot1;
 	public GameObject CameraPosition;
@@ -34,12 +34,15 @@ public class CameraController : MonoBehaviour {
 	public GameObject cameraHomePostion;
 	public bool canInputMovement = false;
 
+	private Vector3 cameraTargetOffset;
+
 	//private SmoothLookAt lookAtController;
 
 	void Start () 
 	{
-		
-		PositionOffset = transform.localPosition;
+        cameraTargetOffset = CameraPosition.transform.localPosition;
+
+        PositionOffset = transform.localPosition;
 		Mode = CameraMode.FollowCannon;
 
 		GameController = GameObject.Find ("GameController").GetComponent<GameController> ();
@@ -84,28 +87,57 @@ public class CameraController : MonoBehaviour {
 
 	}
 
-	void LateUpdate () 
+	public float cameraHeightOffset = 4f;
+    public float cameraDistancetOffset = 15f;
+
+    void LateUpdate () 
 	{
 		var bullet = fireController.GetBullet ();
 
 
 		if (bullet == null && (Mode == CameraMode.FollowBullet || Mode == CameraMode.FollowCannon)) {
-			
 
+
+			var rotation = CameraPosition.transform.rotation.eulerAngles.x;
+			if (rotation < 0) {
+				rotation *= -1;
+			}
+			if (rotation > 180) {
+				rotation -= 360;
+			
+			}
+			rotation *= -1;
+
+			var offset = rotation / 35;
+			if (offset < 0) {
+				offset *= -1 * 0.5f;
+			}
+            
 			Mode = CameraMode.FollowCannon;
 
-			var followPosition = CameraPosition.transform.position;				
-			followPosition.y = cameraHomePostion.transform.position.y;
+			var localPosition = CameraPosition.transform.localPosition;
+			localPosition.z = cameraTargetOffset.z - (cameraDistancetOffset * offset);
+			CameraPosition.transform.localPosition = localPosition;
+
+			var followPosition = CameraPosition.transform.position;	
+			//followPosition = LookAtTarget.transform.position - cameraTargetOffset;
+			followPosition.y = LookAtTarget.transform.position.y + (cameraHeightOffset * offset);
+			//followPosition.z = LookAtTarget.transform.position.z - (cameraHeightOffset * offset);
+			//followPosition += cameraTargetOffset; 
+			//var distance = LookAtTarget.transform
 
 			var minStep = 2f * Time.deltaTime;
-			var step = (Vector3.Distance (followPosition, transform.position) * 0.8f) * Time.deltaTime;
+			var step = (Vector3.Distance (followPosition, transform.position) * 0.75f) * Time.deltaTime;
 			if (step < minStep) {
 				step = minStep;
 			}
 
 			transform.position = Vector3.MoveTowards (transform.position, followPosition, step);
+			//followPosition = transform.localPosition;
+			//followPosition.z -= (cameraHeightOffset * offset);
+			//transform.localPosition = followPosition;
 
-			transform.LookAt (LookAtTarget.transform);
+			//transform.LookAt (GameSettings.EstimatedShotLocation);
 
 
 

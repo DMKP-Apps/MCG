@@ -15,8 +15,9 @@ public class PlayerInfo : MonoBehaviour {
 	public Text ParText;
 	public Text YRDSToPINText;
 	public Text ShotDistanceText;
+    public Text CoinsText;
 
-	public Image SelectedBullet;
+    public Image SelectedBullet;
 	public Image NextBullet;
 
 	private GameController gameController;
@@ -30,6 +31,7 @@ public class PlayerInfo : MonoBehaviour {
 		if(BulletIndex != gameController.CurrentBullet) {
 			BulletIndex = gameController.CurrentBullet;
 		}
+        CoinsText.text = GameSettings.preferences.coins.ToString();
 
 	}
 

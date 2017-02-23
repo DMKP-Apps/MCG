@@ -8,7 +8,7 @@ public class InputController : MonoBehaviour {
 	private GameController GameController;
     private CannonPlayerState playerState = null;
 
-	public Camera camera;
+	public Camera sceneCamera;
 
     private CannonPlayerState GetPlayerState()
     {
@@ -60,6 +60,7 @@ public class InputController : MonoBehaviour {
 	public float perspectiveZoomSpeed = 0.5f;        // The rate of change of the field of view in perspective mode.
 	public float orthoZoomSpeed = 0.5f;        // The rate of change of the orthographic size in orthographic mode.
 
+    private List<Vector2> dragInput = new List<Vector2>();
 
 	// Update is called once per frame
 	void Update () {
@@ -75,8 +76,8 @@ public class InputController : MonoBehaviour {
 
 		}
 
-		var cameraController = camera.gameObject.GetComponent<CameraController> ();
-		if (touches.Count == 2 && camera != null && !touches.Any(x => !(x.phase == TouchPhase.Moved || x.phase == TouchPhase.Stationary))) {
+		var cameraController = sceneCamera.gameObject.GetComponent<MainCameraController> ();
+		if (touches.Count == 2 && sceneCamera != null && !touches.Any(x => !(x.phase == TouchPhase.Moved || x.phase == TouchPhase.Stationary))) {
 
 			if (!AllowInput) {
 				return;
@@ -97,59 +98,30 @@ public class InputController : MonoBehaviour {
 			// Find the difference in the distances between each frame.
 			float deltaMagnitudeDiff = prevTouchDeltaMag - touchDeltaMag;
 
-			if (deltaMagnitudeDiff > 0 && cameraController.Mode != CameraController.CameraMode.Explore) {
-				// zoom out.
-				cameraController.Mode = CameraController.CameraMode.Explore;
-				cameraController.canInputMovement = false;
-			} else if(deltaMagnitudeDiff < 0 && cameraController.Mode == CameraController.CameraMode.Explore && cameraController.canInputMovement) {
-				// zoom in.
-				cameraController.Mode = CameraController.CameraMode.FollowCannon;
-
-				//camera.transform.r
-
-				/*camera.transform.localRotation = Quaternion.Euler(new Vector3(camera.transform.localRotation.eulerAngles.x
-					,camera.transform.localRotation.y + (touchZero.deltaPosition.x * -1), 
-					camera.transform.localRotation.z));*/
-
-			}
+            // disable this function for now
+            if (1 == 2)
+            {
+                if (deltaMagnitudeDiff > 0 && cameraController.Mode != MainCameraController.CameraMode.Explore)
+                {
+                    // zoom out.
+                    cameraController.Mode = MainCameraController.CameraMode.Explore;
+                    cameraController.canInputMovement = false;
+                }
+                else if (deltaMagnitudeDiff < 0 && cameraController.Mode == MainCameraController.CameraMode.Explore && cameraController.canInputMovement)
+                {
+                    // zoom in.
+                    cameraController.Mode = MainCameraController.CameraMode.FollowCannon;
 
 
-			//Vector3 target = camera.transform.localPosition;
-			//target.y += (deltaMagnitudeDiff * perspectiveZoomSpeed) * Time.deltaTime;
-			//target.z -= (deltaMagnitudeDiff * (perspectiveZoomSpeed * 0.8f)) * Time.deltaTime;
+                }
+            }
 
-
-
-
-			//if (!(target.y < 8f || target.y > 50f)) {
-			//	camera.transform.localPosition = target;
-			//}
-
-			//camera.transform.localPosition = target;
-
-			/*// If the camera is orthographic...
-			if (camera.orthographic)
-			{
-				// ... change the orthographic size based on the change in distance between the touches.
-				camera.orthographicSize += deltaMagnitudeDiff * orthoZoomSpeed;
-
-				// Make sure the orthographic size never drops below zero.
-				camera.orthographicSize = Mathf.Max(camera.orthographicSize, 0.1f);
-			}
-			else
-			{
-				// Otherwise change the field of view based on the change in distance between the touches.
-				camera.fieldOfView += deltaMagnitudeDiff * perspectiveZoomSpeed;
-
-				// Clamp the field of view to make sure it's between 0 and 180.
-				camera.fieldOfView = Mathf.Clamp(camera.fieldOfView, 0.1f, 179.9f);
-			}*/
-
-
+			
+            
 		
 		} 
 
-		if(cameraController.Mode == CameraController.CameraMode.Explore && cameraController.canInputMovement && touches.Count == 1)
+		if(cameraController.Mode == MainCameraController.CameraMode.Explore && cameraController.canInputMovement && touches.Count == 1)
 		{
 			touches.Where(x => x.phase == TouchPhase.Moved).Take(1).ToList().ForEach (touch => {
 
@@ -163,7 +135,7 @@ public class InputController : MonoBehaviour {
 
 					var followPosition = (new Vector3(touch.deltaPosition.x * 1.5f, 0f, touch.deltaPosition.y * 5f));
 
-					cameraController.explorePosition = camera.transform.position + followPosition;
+					cameraController.explorePosition = sceneCamera.transform.position + followPosition;
 
 					/*var minStep = 2f * Time.deltaTime;
 					var step = (Vector3.Distance (followPosition, camera.transform.position) * 0.8f) * Time.deltaTime;
@@ -180,49 +152,102 @@ public class InputController : MonoBehaviour {
 		}
 
 
-		if(cameraController.Mode == CameraController.CameraMode.FollowCannon)
-		{
-			
+        if (cameraController.Mode == MainCameraController.CameraMode.FollowCannon)
+        {
 
-			touches.Where(x => x.phase == TouchPhase.Moved).Take(1).ToList().ForEach (touch => {
-				
 
-				if (touch.phase == TouchPhase.Moved) {
-					if (!AllowInput) {
-						return;
-					}
+            touches.Where(x => x.phase == TouchPhase.Moved).Take(1).ToList().ForEach(touch =>
+            {
 
-					hasTouch = true;
-                
-					if (!playerState.isFiring ()) {
-						transform.localRotation = SmoothRotator.Rotate (transform.localRotation, ref m_OriginalRotation,
-							ref m_TargetAngles, ref m_FollowAngles,
-							ref m_FollowVelocity, rotationRange, rotationSpeed,
-							dampingTime, touch.deltaPosition.x, touch.deltaPosition.y);
+
+                if (touch.phase == TouchPhase.Moved)
+                {
+                    if (!AllowInput)
+                    {
+                        return;
+                    }
+
+                    hasTouch = true;
+
+                    if (!playerState.isFiring())
+                    {
+                        transform.localRotation = SmoothRotator.Rotate(transform.localRotation, ref m_OriginalRotation,
+                            ref m_TargetAngles, ref m_FollowAngles,
+                            ref m_FollowVelocity, rotationRange, rotationSpeed,
+                            dampingTime, touch.deltaPosition.x, touch.deltaPosition.y);
+
+
+                        //m_OriginalRotation = transform.localRotation;
+
+                        var currentRotation = string.Format("{0},{1},{2}",
+                                                                transform.localRotation.x.ToString("0000.0000"),
+                                                                transform.localRotation.y.ToString("0000.0000"),
+                                                                transform.localRotation.z.ToString("0000.0000"));
+
+
+
+                        if (previousPosition != currentRotation)
+                        {
+                            previousPosition = currentRotation;
+                            InputPosition.x = touch.deltaPosition.x;
+                            InputPosition.y = touch.deltaPosition.y;
+
+                        }
+
+                    }
+
+
+                }
+            });
+        }
+
+        if (cameraController.Mode == MainCameraController.CameraMode.FollowBullet)
+        {
+            touches.Where(x => x.phase == TouchPhase.Moved).Take(1).ToList().ForEach(touch =>
+            {
+                if (touch.phase == TouchPhase.Moved)
+                {
+                    if (!AllowInput)
+                    {
+                        return;
+                    }
+
+                    hasTouch = true;
 
                     
-						//m_OriginalRotation = transform.localRotation;
+                    dragInput.Add(touch.deltaPosition);
 
-						var currentRotation = string.Format ("{0},{1},{2}", 
-							                                    transform.localRotation.x.ToString ("0000.0000"),
-							                                    transform.localRotation.y.ToString ("0000.0000"),
-							                                    transform.localRotation.z.ToString ("0000.0000"));
+                }
+            });
 
+            if (touches.Count == 0 && dragInput.Count > 0)
+            {
+                //var maxForce = 30f;
+                var currentBullet = GameController.GetCurrentShotBullet();
+                if (currentBullet != null)
+                {
+                    Vector2 input = new Vector2();
+                    input = dragInput.OrderByDescending(x => x.sqrMagnitude).FirstOrDefault();
+                    //dragInput.ForEach(x => input += x);
+                    dragInput = new List<Vector2>();
+                    //if (input.sqrMagnitude > 100)
+                    //{
+                    //    input = input * (100 / input.sqrMagnitude);
+                    //    input *= 5000f;
+                    //}
 
+                    //if(input.x > maxForce)
+                    //input = input * 0.4f;
 
-						if (previousPosition != currentRotation) {
-							previousPosition = currentRotation;
-							InputPosition.x = touch.deltaPosition.x;
-							InputPosition.y = touch.deltaPosition.y;
+                    var bulletController = currentBullet.GetComponent<BulletHitController>();
+                    if (bulletController != null)
+                    {
+                        bulletController.AddSpin(input);
+                    }
+                }
+            }
 
-						}
-
-					}
-
-
-				}
-			});
-		}
+        }
 
         if (!hasTouch)
         {
@@ -238,9 +263,9 @@ public class InputController : MonoBehaviour {
 
             if (isMoving)
             {
-                var y = Input.GetAxis("Mouse Y");
-                var x = Input.GetAxis("Mouse X");
-                
+                var y = Input.GetAxis("Mouse Y") * 10;
+                var x = Input.GetAxis("Mouse X") * 10;
+                //Debug.Log(string.Format("{0}.{1}", y, x));
                 if (!playerState.isFiring())
                 {
                     transform.localRotation = SmoothRotator.Rotate(transform.localRotation, ref m_OriginalRotation,

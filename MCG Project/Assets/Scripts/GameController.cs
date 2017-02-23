@@ -13,8 +13,9 @@ public class GameController : MonoBehaviour {
 	public List<GameObject> bulletPrefabs = new List<GameObject> ();
     //public int CurrentBullet = 1;
     private GameObject BulletCamera;
+    private TestController testController;
 
-	private string endMatchGameScene = "EndMatch";
+    private string endMatchGameScene = "EndMatch";
 
     //private bool isHoleComplete = false;
     //private bool isHazardPoint = false;
@@ -29,7 +30,7 @@ public class GameController : MonoBehaviour {
     void Start()
     {
 
-
+        testController = GameObject.FindObjectOfType<TestController>();
         BulletCamera = GameObject.Find("BulletCamera");
         BulletCamera.SetActive(false);
 
@@ -165,9 +166,9 @@ public class GameController : MonoBehaviour {
 
 	public float powerRate = 0f;
 
-	private CameraController cameraController;
+	private MainCameraController cameraController;
 
-	public void RegisterCameraController(CameraController camera)
+	public void RegisterCameraController(MainCameraController camera)
 	{
 		cameraController = camera;
 	}
@@ -234,7 +235,7 @@ public class GameController : MonoBehaviour {
 
 			if (IsShooting () && cameraController != null) {
 				// route camera back to cannon.
-				cameraController.FollowAlternate();
+				//cameraController.FollowAlternate();
 			}
 		}
 
@@ -257,7 +258,7 @@ public class GameController : MonoBehaviour {
 			var fireController = player.GetComponent<CannonFireController> ();
             setActive = !fireController.IsFiring();
 		}
-		if (cameraController != null && cameraController.Mode == CameraController.CameraMode.Explore) {
+		if (cameraController != null && cameraController.Mode == MainCameraController.CameraMode.Explore) {
 			setActive = false;
 		}
 
@@ -267,11 +268,11 @@ public class GameController : MonoBehaviour {
             topographicCamera.SetActive(setActive);
         }
 
-        if (1 == 2) {
-            var holeController = hole.GetComponent<HoleController>();
-            holeController.hole.position = GameSettings.EstimatedShotLocation;
-            //GameSettings.EstimatedShotLocation
-        }
+        //if (1 == 1) {
+        //    var holeController = hole.GetComponent<HoleController>();
+        //    holeController.hole.position = GameSettings.EstimatedShotLocation;
+        //    //GameSettings.EstimatedShotLocation
+        //}
 
         if (GameSettings.playerMode == PlayerMode.ServerMultiplayer && !buildingHole) {
 			if (System.DateTime.Now.Subtract (lastPlayerInfoRequest).TotalMilliseconds > 1000 && !checkEndingHole) {
@@ -365,7 +366,8 @@ public class GameController : MonoBehaviour {
 	private void MoveToNextPlayer() {
 		if (GameSettings.playerMode != PlayerMode.ServerMultiplayer || (GameSettings.playerMode == PlayerMode.ServerMultiplayer && !GameSettings.isRace)) {
 			if (currentPlayer > -1) {
-				player.SetActive (false);
+                player.GetComponent<CannonPlayerState>().SetPlayerActive(false);
+                player.SetActive (false);
 			}
 			currentPlayer++;
 			if (currentPlayer >= players.Count) {
@@ -388,10 +390,11 @@ public class GameController : MonoBehaviour {
 			}
 
 			player.SetActive (true);
-		}
+        }
 			
 		var playerController = player.GetComponent<CannonPlayerState> ();
-		playerController.isHoleComplete = false;
+        playerController.SetPlayerActive(true);
+        playerController.isHoleComplete = false;
 		playerController.isHarzard = false;
 
 		textController.SetStroke (playerController.Stroke);
@@ -683,12 +686,22 @@ public class GameController : MonoBehaviour {
 				CurrentHole = 1;
 			}
 
+            if (testController != null)
+            {
+                testController.SetCurrentHole(CurrentHole);
+            }
+
 
 			hole = (GameObject)Instantiate (holePrefabs [CurrentHole - 1]);
 			var holeController = hole.GetComponent<HoleController> ();
 			holeController.allPlayersComplete = false;
 			var watchActivate = HoleCompleteAlert.GetComponent<ActivateWithGameObject> ();
 			watchActivate.WatchObject = holeController.EndCamera;
+
+            if (GameSettings.playerMode == PlayerMode.ServerMultiplayer && GameSettings.isRace)
+            {
+                watchActivate.WatchObject = null;
+            }
 
 			if(GameSettings.HoleStatus == null) {
 				GameSettings.HoleStatus = new HoleStatus() {
@@ -749,9 +762,15 @@ public class GameController : MonoBehaviour {
 
 					GameObject currentPlayerObject;
 					Transform tee = holeController.tee;
-					if(GameSettings.playerMode == PlayerMode.ServerMultiplayer && GameSettings.isRace && holeController.raceTees.Count > i) {
-						tee = holeController.raceTees[i];
-					}
+                    if (GameSettings.playerMode == PlayerMode.ServerMultiplayer && GameSettings.isRace && holeController.raceTees.Count > i)
+                    {
+                        tee = holeController.raceTees[i];
+                    }
+                    else if (GameSettings.playerMode == PlayerMode.LocalMultiplayer && p.PlayerNumber - 1 < holeController.raceTees.Count)
+                    {
+                        tee = holeController.raceTees[p.PlayerNumber - 1];
+                    }
+                    
 
 					i++;
 
@@ -788,7 +807,7 @@ public class GameController : MonoBehaviour {
 
 			} else {
 
-                var activePlayers = GameSettings.Room != null ? GameSettings.Room.attendees.OrderBy(x => x.position).ToList() : new List<RoomAttendee>();
+                var activePlayers = GameSettings.Room != null ? GameSettings.isRace ? GameSettings.Room.attendees.OrderBy(x => x.playerNumber).ToList() : GameSettings.Room.attendees.OrderBy(x => x.position).ToList() : new List<RoomAttendee>();
                 var isOnlineRace = GameSettings.Room != null && activePlayers.Count >= NumberOfPlayers && GameSettings.playerMode == PlayerMode.ServerMultiplayer && GameSettings.isRace;
                 // create the player and de-activate them within the scene
                 for (int i = 0; i < NumberOfPlayers; i++) {
@@ -810,6 +829,11 @@ public class GameController : MonoBehaviour {
                     {
                         tee = holeController.raceTees[i];
                     }
+                    else if (GameSettings.playerMode == PlayerMode.LocalMultiplayer && i < holeController.raceTees.Count)
+                    {
+                        tee = holeController.raceTees[i];
+                    }
+
 
                     if (isRacePlayer)
                     {
@@ -891,97 +915,3 @@ public class GameController : MonoBehaviour {
 
 }
 
-/*
-public class GameController : MonoBehaviour {
-
-	public Vector2 Wind = new Vector2 (0.0f, 0.0f);
-
-	public GameObject MainCamera;
-	public GameObject Cannon;
-	public GameObject Hole;
-	private CameraController CameraController;
-	private CannonController CannonController;
-
-	public Transform weatherVane;
-
-	public Text WindCaption;
-	public Text HoleCaption;
-	public Text ParCaption;
-	public Text StrokeCaption;
-	public Text ScoreCaption;
-
-	private int currentPar;
-
-	public CameraController GetCameraController()
-	{
-		return CameraController;
-	}
-
-	// Use this for initialization
-	void Start () {
-		CameraController = MainCamera.GetComponent<CameraController> ();
-		CannonController = Cannon.GetComponent<CannonController> ();
-		currentPar = Hole.gameObject.GetComponent<HoleController> ().Par;
-		//Wind = new Vector2 (Random.Range(-1.5f,1.5f), Random.Range(-1.5f,1.5f));
-	}
-	
-	// Update is called once per frame
-	void Update () {
-		
-		var force = new Vector3 (Wind.x, 0.0f, Wind.y);
-		weatherVane.forward = force.normalized;
-		WindCaption.text = string.Format ("Wind: {0} mph", force.magnitude.ToString("0.00"));
-		StrokeCaption.text = string.Format ("Stroke: {0}", CannonController.StrokeCount);
-		ParCaption.text = string.Format ("Par: {0}", currentPar);
-
-	}
-
-	public void Reset ()
-	{
-		ScoreCaption.text = string.Format ("Score: {0}", currentPar > CannonController.StrokeCount ? "-" + (currentPar - CannonController.StrokeCount).ToString() : currentPar < CannonController.StrokeCount ? "+" + (CannonController.StrokeCount - currentPar).ToString() : "E" );
-		var camera = Hole.transform.FindChild ("HoleCamera");
-		if (camera != null) {
-		
-			var cameraActivate = camera.gameObject.GetComponent<ActiveForTime> ();
-			if (cameraActivate != null) {
-				cameraActivate.Show ();			
-			}
-		
-		}
-		currentPar = Hole.gameObject.GetComponent<HoleController> ().Par;
-		CannonController.StrokeCount = 0;
-		CannonController.MoveToPosition (CannonController.StartPosition.position);
-		//Wind = new Vector2 (Random.Range(-1.5f,1.5f), Random.Range(-1.5f,1.5f));
-	}
-
-	/\*public void WaterHazard (GameObject water, Vector3 target)
-	{
-		CannonController.StrokeCount++;
-		CameraController.RunActionCamera = false;
-		// check if the water has a camera
-		var camera = water.transform.FindChild("WaterCamera");
-
-		if (camera != null) {
-			var waterCamera = camera.GetComponent<WaterCamera> ();
-			if (waterCamera != null) {
-			
-				waterCamera.SetFocus (target);
-			}
-
-		}
-
-		//var respawnTarget = water.transform.FindChild("Respawn");
-		Transform respawnPoint = null;
-		foreach(Transform child in water.transform){
-			if (child.tag == "Respawn") {
-				respawnPoint = child.gameObject.transform;
-				break;
-			}
-		}
-		if (respawnPoint != null) {
-			CannonController.SetRespawnPoint (respawnPoint);
-		}
-	}/\*
-
- 
-}*/

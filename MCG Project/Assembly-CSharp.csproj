@@ -90,6 +90,7 @@
      <Compile Include="Assets\Scripts\CannonPlayerState.cs" />
      <Compile Include="Assets\Scripts\CannonWheelController.cs" />
      <Compile Include="Assets\Scripts\CanvasController.cs" />
+     <Compile Include="Assets\Scripts\FollowEstimatedTarget.cs" />
      <Compile Include="Assets\Scripts\GameController.cs" />
      <Compile Include="Assets\Scripts\HoleController.cs" />
      <Compile Include="Assets\Scripts\InputController.cs" />
@@ -103,11 +104,14 @@
      <Compile Include="Assets\Scripts\Network\NetworkObjectData.cs" />
      <Compile Include="Assets\Scripts\Network\NetworkPlayerInfo.cs" />
      <Compile Include="Assets\Scripts\Network\RoomData.cs" />
+     <Compile Include="Assets\Scripts\Obstacles\CollectItem.cs" />
      <Compile Include="Assets\Scripts\Obstacles\MoveAroundObject.cs" />
      <Compile Include="Assets\Scripts\Obstacles\MoveObject.cs" />
      <Compile Include="Assets\Scripts\Obstacles\RotateObject.cs" />
+     <Compile Include="Assets\Scripts\Obstacles\SpawnItem.cs" />
      <Compile Include="Assets\Scripts\SmoothLookAt.cs" />
      <Compile Include="Assets\Scripts\SmoothRotator.cs" />
+     <Compile Include="Assets\Scripts\Tests\TestController.cs" />
      <Compile Include="Assets\Scripts\TopographicBulletController.cs" />
      <Compile Include="Assets\Scripts\TopographicCamera.cs" />
      <Compile Include="Assets\Scripts\UIInputController.cs" />

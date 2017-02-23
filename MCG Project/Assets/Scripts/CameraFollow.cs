@@ -30,14 +30,14 @@ public class CameraFollow : MonoBehaviour {
 			} else {
 				followAlternateTarget ();
 			}
-			transform.LookAt(target.transform);
+            transform.LookAt(target.transform);
 
 
-
-		}
+        }
 	}
+    
 
-	public void FollowAlternate() {
+    public void FollowAlternate() {
 		followSource = !followSource;
 	}
 
