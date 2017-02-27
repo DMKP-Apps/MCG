@@ -270,7 +270,7 @@ public class InputController : MonoBehaviour {
                 {
                     transform.localRotation = SmoothRotator.Rotate(transform.localRotation, ref m_OriginalRotation,
                                 ref m_TargetAngles, ref m_FollowAngles,
-                                ref m_FollowVelocity, rotationRange, rotationSpeed * 2,
+                                ref m_FollowVelocity, rotationRange, rotationSpeed,
                                 dampingTime, x, y);
                     
                     var currentRotation = string.Format("{0},{1},{2}",

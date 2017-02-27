@@ -7,8 +7,12 @@ public class CannonBodyAnimate : MonoBehaviour {
 
     public int currentState = 0;
     private Vector3 originalScale;
+    //private Vector3 scaleToUp = new Vector3(0.11f, 0.1f, 0.06f) * 10;
+    //private Vector3 speedUp = new Vector3(0.0001f, 0, 0.0001f) * 10;
+
     private Vector3 scaleToUp = new Vector3(0.11f, 0.1f, 0.06f);
-    private Vector3 speedUp = new Vector3(0.0001f, 0, 0.0001f);
+    private Vector3 speedUp = new Vector3(0.0001f, 0, 0.0001f) * 10;
+
     public bool animate = false;
     private DateTime startTime = DateTime.MaxValue;
 
@@ -41,8 +45,8 @@ public class CannonBodyAnimate : MonoBehaviour {
         {
             if (currentState == 0)
             {
-                transform.localScale = new Vector3(transform.localScale.x + speedUp.x, transform.localScale.y - speedUp.y, transform.localScale.z - speedUp.z);
-                if (transform.localScale.x >= scaleToUp.x)
+                transform.localScale = new Vector3(transform.localScale.x, transform.localScale.y, transform.localScale.z - (0.15f * Time.deltaTime));
+                if (transform.localScale.z <= 0.7f)
                 {
                     currentState = 1;
                 }
