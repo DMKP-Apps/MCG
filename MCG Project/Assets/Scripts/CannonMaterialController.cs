@@ -10,14 +10,24 @@ public class CannonMaterialController : MonoBehaviour {
 
     public void SetMaterial(Material materialBarrel, Material materialWheel)
     {
-        var rendCannon = CannonBarrel.GetComponent<Renderer>();
-        rendCannon.material = materialBarrel;
+        if (materialBarrel != null && CannonBarrel != null)
+        {
+            var rendCannon = CannonBarrel.GetComponent<Renderer>();
+            rendCannon.material = materialBarrel;
+        }
 
-        var rendWheelL = CannonWheelLeft.GetComponent<Renderer>();
-        rendWheelL.material = materialWheel;
+        if (materialWheel != null && CannonWheelLeft != null)
+        {
+            var rendWheelL = CannonWheelLeft.GetComponent<Renderer>();
+            rendWheelL.material = materialWheel;
+        }
 
-        var rendWheelR = CannonWheelRight.GetComponent<Renderer>();
-        rendWheelR.material = materialWheel;
+        if (materialWheel != null && CannonWheelRight != null)
+        {
+            var rendWheelR = CannonWheelRight.GetComponent<Renderer>();
+            rendWheelR.material = materialWheel;
+        }
+
     }
 
 }
