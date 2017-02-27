@@ -1,16 +1,16 @@
 ﻿<Properties StartupItem="Assembly-CSharp.csproj">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="Unity.Instance.Unity Editor" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/CannonFireController.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/CameraController.cs">
     <Files>
+      <File FileName="Assets/Scripts/CameraController.cs" Line="112" Column="21" />
       <File FileName="Assets/Scripts/HoleController.cs" Line="1" Column="1" />
       <File FileName="Assets/Scripts/Obstacles/MoveObject.cs" Line="1" Column="1" />
-      <File FileName="Assets/Scripts/CameraController.cs" Line="1" Column="1" />
       <File FileName="Assets/Scripts/Obstacles/RotateObject.cs" Line="1" Column="1" />
       <File FileName="Assets/Controls/PowerMeter/Scripts/PowerControl.cs" Line="1" Column="1" />
       <File FileName="Assets/Scripts/Obstacles/MoveAroundObject.cs" Line="1" Column="1" />
       <File FileName="Assets/Controls/PowerMeter/Scripts/GuageController.cs" Line="1" Column="1" />
       <File FileName="Assets/Scripts/TopographicCamera.cs" Line="1" Column="1" />
-      <File FileName="Assets/Scripts/CannonFireController.cs" Line="227" Column="69" />
+      <File FileName="Assets/Scripts/CannonFireController.cs" Line="227" Column="6" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
