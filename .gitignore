@@ -21,3 +21,5 @@
 *.pidb.meta
 sysinfo.txt
 
+Debug
+bin

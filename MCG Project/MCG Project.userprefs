@@ -1,35 +1,17 @@
 ﻿<Properties StartupItem="Assembly-CSharp.csproj">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="Unity.Instance.Unity Editor" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/CannonFireController.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/CameraController.cs">
     <Files>
+      <File FileName="Assets/Scripts/CameraController.cs" Line="112" Column="21" />
       <File FileName="Assets/Scripts/HoleController.cs" Line="1" Column="1" />
       <File FileName="Assets/Scripts/Obstacles/MoveObject.cs" Line="1" Column="1" />
-      <File FileName="Assets/Scripts/CameraController.cs" Line="18" Column="40" />
       <File FileName="Assets/Scripts/Obstacles/RotateObject.cs" Line="1" Column="1" />
       <File FileName="Assets/Controls/PowerMeter/Scripts/PowerControl.cs" Line="1" Column="1" />
       <File FileName="Assets/Scripts/Obstacles/MoveAroundObject.cs" Line="1" Column="1" />
       <File FileName="Assets/Controls/PowerMeter/Scripts/GuageController.cs" Line="1" Column="1" />
-      <File FileName="Assets/Scripts/TopographicCamera.cs" Line="81" Column="14" />
-      <File FileName="Assets/Scripts/CannonFireController.cs" Line="227" Column="69" />
+      <File FileName="Assets/Scripts/TopographicCamera.cs" Line="1" Column="1" />
+      <File FileName="Assets/Scripts/CannonFireController.cs" Line="227" Column="6" />
     </Files>
-    <Pads>
-      <Pad Id="ProjectPad">
-        <State name="__root__">
-          <Node name="MCG Project" expanded="True">
-            <Node name="Assembly-CSharp" expanded="True">
-              <Node name="Scripts" expanded="True">
-                <Node name="CannonFireController.cs" selected="True" />
-              </Node>
-            </Node>
-          </Node>
-        </State>
-      </Pad>
-      <Pad Id="MonoDevelop.NUnit.TestPad">
-        <State name="__root__">
-          <Node name="MCG Project" expanded="True" selected="True" />
-        </State>
-      </Pad>
-    </Pads>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
     <BreakpointStore />

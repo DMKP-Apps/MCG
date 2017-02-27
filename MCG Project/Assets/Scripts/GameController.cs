@@ -11,18 +11,68 @@ public class GameController : MonoBehaviour {
 	public List<GameObject> holePrefabs = new List<GameObject> ();
 	public int CurrentHole = 1;
 	public List<GameObject> bulletPrefabs = new List<GameObject> ();
-	//public int CurrentBullet = 1;
+    //public int CurrentBullet = 1;
+    private GameObject BulletCamera;
+    private TestController testController;
 
-	private string endMatchGameScene = "EndMatch";
+    private string endMatchGameScene = "EndMatch";
 
-	//private bool isHoleComplete = false;
-	//private bool isHazardPoint = false;
+    //private bool isHoleComplete = false;
+    //private bool isHazardPoint = false;
 
-	//var playerController = player.GetComponent<CannonPlayerState> ();
-	//playerController.isHoleComplete = false;
-	//playerController.isHarzard = false;
+    //var playerController = player.GetComponent<CannonPlayerState> ();
+    //playerController.isHoleComplete = false;
+    //playerController.isHarzard = false;
 
-	void OnApplicationFocus( bool hasFocus )
+    public List<Material> CannonBarrelMaterials = new List<Material>();
+    public List<Material> CannonWheelMaterials = new List<Material>();
+
+    public int currentCannonBarrelMaterial = 1;
+    public int currentCannonWheelMaterial = 1;
+
+    public PowerControl speedControl;
+    public PowerControl accuracyControl;
+
+    void Start()
+    {
+
+        testController = GameObject.FindObjectOfType<TestController>();
+        BulletCamera = GameObject.Find("BulletCamera");
+        BulletCamera.SetActive(false);
+
+        scoring.Add(-3, "Albatross");
+        scoring.Add(-2, "Eagle");
+        scoring.Add(-1, "Birdie");
+        scoring.Add(0, "Par");
+        scoring.Add(1, "Bogey");
+        scoring.Add(2, "Double Bogey");
+        scoring.Add(3, "Triple Bogey");
+
+        var tcam = GameObject.FindObjectOfType<TopographicCamera>();
+        if (tcam != null)
+        {
+            topographicCamera = tcam.gameObject;
+        }
+
+        switch (GameSettings.playerMode)
+        {
+            case PlayerMode.Single:
+                NumberOfPlayers = 1;
+                break;
+            case PlayerMode.LocalMultiplayer:
+                NumberOfPlayers = GameSettings.LocalMultiplayerCount < 2 ? 2 : GameSettings.LocalMultiplayerCount;
+                break;
+            case PlayerMode.ServerMultiplayer:
+                NumberOfPlayers = GameSettings.Room.attendees.Count;
+                CurrentHole = GameSettings.HoleStatus.currentHoleIndex;
+                break;
+        }
+
+        BeginHole();
+        CurrentBullet = 1;
+    }
+
+    void OnApplicationFocus( bool hasFocus )
 	{
 		if (!hasFocus && NetworkClientManager.IsOnline) {
 			//this.EndGame ();
@@ -93,7 +143,16 @@ public class GameController : MonoBehaviour {
 		set { 
 			var playerController = player.GetComponent<CannonPlayerState> ();
 			playerController.currentBullet = value;
-		}
+            var bullet = GetCurrentBullet().GetComponent<BulletData>();
+            if (speedControl != null && bullet != null)
+            {
+                speedControl.Speed = speedControl.BaseSpeed * bullet.PowerMeterSpeedMultiplier;
+            }
+            if (accuracyControl != null && bullet != null)
+            {
+                accuracyControl.Speed = speedControl.BaseSpeed * bullet.AccuracyMeterSpeedMultiplier;
+            }
+        }
 	}
 
 	public int NumberOfPlayers = 1;
@@ -113,9 +172,9 @@ public class GameController : MonoBehaviour {
 
 	public float powerRate = 0f;
 
-	private CameraController cameraController;
+	private MainCameraController cameraController;
 
-	public void RegisterCameraController(CameraController camera)
+	public void RegisterCameraController(MainCameraController camera)
 	{
 		cameraController = camera;
 	}
@@ -132,38 +191,11 @@ public class GameController : MonoBehaviour {
         
 	}
 
+    public GameObject GetBulletCamera()
+    {
+        return BulletCamera;
+    }
 
-	void Start() {
-	
-		scoring.Add (-3, "Albatross");
-		scoring.Add (-2, "Eagle");
-		scoring.Add (-1, "Birdie");
-		scoring.Add (0, "Par");
-		scoring.Add (1, "Bogey");
-		scoring.Add (2, "Double Bogey");
-		scoring.Add (3, "Triple Bogey");
-
-        var tcam = GameObject.FindObjectOfType<TopographicCamera>();
-        if (tcam != null) {
-            topographicCamera = tcam.gameObject;
-        }
-
-        switch (GameSettings.playerMode) {
-            case PlayerMode.Single:
-                NumberOfPlayers = 1;
-                break;
-            case PlayerMode.LocalMultiplayer:
-                NumberOfPlayers = GameSettings.LocalMultiplayerCount < 2 ? 2 : GameSettings.LocalMultiplayerCount;
-                break;
-		case PlayerMode.ServerMultiplayer:
-				NumberOfPlayers = GameSettings.NetworkPlayers.Count;
-				CurrentHole = GameSettings.HoleStatus.currentHoleIndex;
-                break;
-        }
-
-        BeginHole ();
-
-	}
 
 	public bool IsShooting()
 	{
@@ -209,7 +241,7 @@ public class GameController : MonoBehaviour {
 
 			if (IsShooting () && cameraController != null) {
 				// route camera back to cannon.
-				cameraController.CameraShot1.GetComponent<CameraFollow>().FollowAlternate();
+				//cameraController.FollowAlternate();
 			}
 		}
 
@@ -225,11 +257,15 @@ public class GameController : MonoBehaviour {
 		if(hole != null) {
 			var holeController = hole.GetComponent<HoleController> ();
 			setActive = !holeController.IsHoleCameraActive ();
-            
-		}
+            textController.playerInfo.gameObject.SetActive(setActive);
+
+        }
 		if (setActive && player != null) {
 			var fireController = player.GetComponent<CannonFireController> ();
             setActive = !fireController.IsFiring();
+		}
+		if (cameraController != null && cameraController.Mode == MainCameraController.CameraMode.Explore) {
+			setActive = false;
 		}
 
 		ControlsContainer.SetActive (setActive);
@@ -237,6 +273,12 @@ public class GameController : MonoBehaviour {
         {
             topographicCamera.SetActive(setActive);
         }
+
+        //if (1 == 1) {
+        //    var holeController = hole.GetComponent<HoleController>();
+        //    holeController.hole.position = GameSettings.EstimatedShotLocation;
+        //    //GameSettings.EstimatedShotLocation
+        //}
 
         if (GameSettings.playerMode == PlayerMode.ServerMultiplayer && !buildingHole) {
 			if (System.DateTime.Now.Subtract (lastPlayerInfoRequest).TotalMilliseconds > 1000 && !checkEndingHole) {
@@ -249,36 +291,68 @@ public class GameController : MonoBehaviour {
 					checkEndingHole = true;
 					try
 					{
-						if(GameSettings.GameInfo != null && GameSettings.GameInfo.Items != null) {
-							var info = GameSettings.GameInfo.Items.ToList();
-							info = info.OrderByDescending(x => x.holeComplete).ThenBy(x => x.timeStamp).ToList();
-							if(info.Count < 2 && info.Any(x => !x.holeComplete)) {
-								return;
-							}
-							var index = info.FindIndex(x => x.objectId == NetworkClientManager.player.UID);
-							if(index > -1) {
+						if(GameSettings.GameInfo != null && GameSettings.GameInfo.Hole != null) {
+
+                            if (GameSettings.GameInfo.Hole.status != RoomStatus.InProgress)
+                            {   // hole is not current running...
+                                if (GameSettings.GameInfo.Hole.status == RoomStatus.Closed)
+                                {   // todo... show game closed window....
+                                    NetworkClientManager.Logoff();
+                                    SceneManager.LoadScene("GameClosed", LoadSceneMode.Single);
+                                }
+                                else if (GameSettings.GameInfo.Hole.status == RoomStatus.HoleCompleted)
+                                {   // hole is over... continue to end match scene...
+                                    if (GameSettings.GameInfo.Hole._1st != null && GameSettings.GameInfo.Hole._1st.UID == NetworkClientManager.player.UID)
+                                    {
+                                        GameSettings.HoleStatus.playerRanking = 1;
+                                    }
+                                    else if (GameSettings.GameInfo.Hole._2nd != null && GameSettings.GameInfo.Hole._2nd.UID == NetworkClientManager.player.UID)
+                                    {
+                                        GameSettings.HoleStatus.playerRanking = 2;
+                                    }
+                                    else if (GameSettings.GameInfo.Hole._3rd != null && GameSettings.GameInfo.Hole._3rd.UID == NetworkClientManager.player.UID)
+                                    {
+                                        GameSettings.HoleStatus.playerRanking = 3;
+                                    }
+                                    else
+                                    {
+                                        GameSettings.HoleStatus.playerRanking = 4;
+                                    }
+
+                                    SceneManager.LoadScene(endMatchGameScene, LoadSceneMode.Single);
+                                }
+                            }
+
+
+       ////                     var info = GameSettings.GameInfo.Items.ToList();
+							////info = info.OrderByDescending(x => x.holeComplete).ThenBy(x => x.timeStamp).ToList();
+							////if(info.Count < 2 && info.Any(x => !x.holeComplete)) {
+							////	return;
+							////}
+							////var index = info.FindIndex(x => x.objectId == NetworkClientManager.player.UID);
+							////if(index > -1) {
 								
-								textController.SetHoleCompleteScore(0, (index+1).ToString());
-								GameSettings.HoleStatus.playerRanking = index+1;
+							////	textController.SetHoleCompleteScore(0, (index+1).ToString());
+							////	GameSettings.HoleStatus.playerRanking = index+1;
 							
-								if(info.Count(x => !x.holeComplete) < 2) {
-									//var holeController = hole.GetComponent<HoleController> ();
-									//if(!holeController.EndCamera.activeInHierarchy) {
-									//	holeController.EndCamera.SetActive(true);
-									//}
+							////	if(info.Count(x => !x.holeComplete) < 2) {
+							////		//var holeController = hole.GetComponent<HoleController> ();
+							////		//if(!holeController.EndCamera.activeInHierarchy) {
+							////		//	holeController.EndCamera.SetActive(true);
+							////		//}
 
-									CurrentHole++;
-									if (CurrentHole > holePrefabs.Count) {
-										CurrentHole = 1;
-									}
+							////		CurrentHole++;
+							////		if (CurrentHole > holePrefabs.Count) {
+							////			CurrentHole = 1;
+							////		}
 
-									GameSettings.HoleStatus.currentHoleIndex = CurrentHole;
-									SceneManager.LoadScene(endMatchGameScene, LoadSceneMode.Single);
+							////		GameSettings.HoleStatus.currentHoleIndex = CurrentHole;
+							////		SceneManager.LoadScene(endMatchGameScene, LoadSceneMode.Single);
 
 
 
-								}
-							}
+							////	}
+							////}
 						}
 					}
 					finally
@@ -298,7 +372,8 @@ public class GameController : MonoBehaviour {
 	private void MoveToNextPlayer() {
 		if (GameSettings.playerMode != PlayerMode.ServerMultiplayer || (GameSettings.playerMode == PlayerMode.ServerMultiplayer && !GameSettings.isRace)) {
 			if (currentPlayer > -1) {
-				player.SetActive (false);
+                player.GetComponent<CannonPlayerState>().SetPlayerActive(false);
+                player.SetActive (false);
 			}
 			currentPlayer++;
 			if (currentPlayer >= players.Count) {
@@ -321,10 +396,11 @@ public class GameController : MonoBehaviour {
 			}
 
 			player.SetActive (true);
-		}
+        }
 			
 		var playerController = player.GetComponent<CannonPlayerState> ();
-		playerController.isHoleComplete = false;
+        playerController.SetPlayerActive(true);
+        playerController.isHoleComplete = false;
 		playerController.isHarzard = false;
 
 		textController.SetStroke (playerController.Stroke);
@@ -333,8 +409,10 @@ public class GameController : MonoBehaviour {
 	}
 
 	private void MoveToPosition(Vector3 position) {
-	
-		player.transform.position = position; 
+
+        position.y += 0.5f;
+        player.transform.position = position;
+        		
 		var holeController = hole.GetComponent<HoleController> ();
 		var playerCannon = player.GetComponent<CannonFireController> ();
 
@@ -342,6 +420,19 @@ public class GameController : MonoBehaviour {
 		player.transform.LookAt (holeController.hole.position);
 		player.transform.rotation = Quaternion.Euler(new Vector3(0f,player.transform.rotation.eulerAngles.y, 0f));
 		playerCannon.AimCannon (holeController.hole.position);
+
+        var playerState = player.GetComponent<CannonPlayerState>();
+        if (playerState.MoveToParent != null)
+        {
+            player.transform.parent = null;
+            player.transform.localScale = new Vector3(1, 1, 1);
+            player.transform.parent = playerState.MoveToParent;
+            playerState.MoveToParent = null;
+        }
+        else if (player.transform.parent != null) {
+            player.transform.parent = null;
+            player.transform.localScale = new Vector3(1, 1, 1);
+        }
 
     }
 
@@ -369,10 +460,28 @@ public class GameController : MonoBehaviour {
 	}
 
 	private CannonPlayerState GetPlayerState(GameObject item) {
+
+        if (item.GetComponent<AssociatedPlayerState>() != null)
+        {
+            if (item.GetComponent<AssociatedPlayerState>().playerState != null)
+            {
+                return item.GetComponent<AssociatedPlayerState>().playerState;
+            }
+        }
+
 		CannonPlayerState playerController = item.GetComponent<CannonPlayerState> ();
 		var parent = item.transform.parent;
 		while (parent != null && playerController == null) {
-			playerController = parent.GetComponent<CannonPlayerState> ();
+            if (parent.GetComponent<AssociatedPlayerState>() != null)
+            {
+                if (parent.GetComponent<AssociatedPlayerState>().playerState != null)
+                {
+                    playerController = parent.GetComponent<AssociatedPlayerState>().playerState;
+                    break;
+                }
+            }
+
+            playerController = parent.GetComponent<CannonPlayerState> ();
 			if (playerController != null) {
 				break;
 			}
@@ -397,13 +506,20 @@ public class GameController : MonoBehaviour {
 		} 
 
 		lastContactPoint = contactPoint;
-		//isHazardPoint = true;
-		// get the closet respawn point for the current water hazard
-		var respawnPosition = water.transform.FindChild("Respawn");
-		if (respawnPosition != null) {
+        //isHazardPoint = true;
+        // get the closet respawn point for the current water hazard
+        var respawnPoints = GetChildrenByTag(water.transform, "Respawn");
+        var respawnPosition = respawnPoints.Select(x => new
+        {
+            transform = x,
+            distance = Vector3.Distance(x.position, bullet.transform.position)
+        }).OrderBy(x => x.distance).FirstOrDefault();
 
-			// move player into the next position
-			MoveToPosition(respawnPosition.transform.position);
+        if (respawnPosition != null) {
+
+            playerController.MoveToParent = respawnPosition.transform;
+            // move player into the next position
+            MoveToPosition(respawnPosition.transform.position);
 		}
 
 		textController.ShowWaterHazard ();
@@ -411,9 +527,31 @@ public class GameController : MonoBehaviour {
 
 	}
 
+    private List<Transform> GetChildrenByTag(Transform parent, string tag)
+    {
+        var waterData = parent.gameObject.GetComponent<WaterData>();
+        if (waterData != null) {
+            return waterData.respawnPositions;
+        }
+
+        List<Transform> results = new List<Transform>();
+        if (parent != null)
+        {
+            foreach (Transform child in parent)
+            {
+                if (child.tag == tag)
+                {
+                    results.Add(child.gameObject.transform);
+                }
+            }
+        }
+        return results;
+        
+    }
 
 
-	public void OutOfBounds(Vector3 contactPoint, GameObject bullet)
+
+    public void OutOfBounds(Vector3 contactPoint, GameObject bullet)
 	{
 		CannonPlayerState playerController = GetPlayerState (bullet);
 
@@ -531,7 +669,9 @@ public class GameController : MonoBehaviour {
 		public int PlayerNumber;
 		public int CurrentBullet;
         public string playerKey;
-	}
+        public int BarrelMaterial;
+        public int WheelMaterial;
+    }
 	private bool buildingHole= false;
 	private void BeginHole() {
 
@@ -554,6 +694,11 @@ public class GameController : MonoBehaviour {
 				CurrentHole = 1;
 			}
 
+            if (testController != null)
+            {
+                testController.SetCurrentHole(CurrentHole);
+            }
+
 
 			hole = (GameObject)Instantiate (holePrefabs [CurrentHole - 1]);
 			var holeController = hole.GetComponent<HoleController> ();
@@ -561,12 +706,21 @@ public class GameController : MonoBehaviour {
 			var watchActivate = HoleCompleteAlert.GetComponent<ActivateWithGameObject> ();
 			watchActivate.WatchObject = holeController.EndCamera;
 
+            if (GameSettings.playerMode == PlayerMode.ServerMultiplayer && GameSettings.isRace)
+            {
+                watchActivate.WatchObject = null;
+            }
+
 			if(GameSettings.HoleStatus == null) {
 				GameSettings.HoleStatus = new HoleStatus() {
 				};
 			}
 			GameSettings.HoleStatus.currentHoleIndex = CurrentHole;
 			GameSettings.HoleStatus.currentHoleName = holeController.HoleTitle;
+
+            if (GameSettings.playerMode == PlayerMode.ServerMultiplayer && GameSettings.isRace) {
+                holeController.StartCamera.SetActive(false);
+            }
 
 			textController.SetPar (holeController.Par);
 			textController.SetHole (CurrentHole);
@@ -616,9 +770,15 @@ public class GameController : MonoBehaviour {
 
 					GameObject currentPlayerObject;
 					Transform tee = holeController.tee;
-					if(GameSettings.playerMode == PlayerMode.ServerMultiplayer && GameSettings.isRace && holeController.raceTees.Count > i) {
-						tee = holeController.raceTees[i];
-					}
+                    if (GameSettings.playerMode == PlayerMode.ServerMultiplayer && GameSettings.isRace && holeController.raceTees.Count > i)
+                    {
+                        tee = holeController.raceTees[i];
+                    }
+                    else if (GameSettings.playerMode == PlayerMode.LocalMultiplayer && p.PlayerNumber - 1 < holeController.raceTees.Count)
+                    {
+                        tee = holeController.raceTees[p.PlayerNumber - 1];
+                    }
+                    
 
 					i++;
 
@@ -628,7 +788,25 @@ public class GameController : MonoBehaviour {
 					else 
 					{
 						currentPlayerObject = (GameObject)Instantiate (playerPrefab, tee.position, tee.rotation);
-					}
+                        var materialController = currentPlayerObject.GetComponent<CannonMaterialController>();
+                        var mindex = currentCannonBarrelMaterial - 1;
+                        if (mindex < 0 || mindex >= CannonBarrelMaterials.Count)
+                        {
+                            mindex = 0;
+                        }
+
+                        var barrel = CannonBarrelMaterials[mindex];
+
+                        mindex = currentCannonWheelMaterial - 1;
+                        if (mindex < 0 || mindex >= CannonWheelMaterials.Count)
+                        {
+                            mindex = 0;
+                        }
+
+                        var wheel = CannonWheelMaterials[mindex];
+
+                        materialController.SetMaterial(barrel, wheel);
+                    }
 
 
 					var pController = currentPlayerObject.GetComponent<CannonPlayerState> ();
@@ -654,49 +832,88 @@ public class GameController : MonoBehaviour {
 				});
 
 			} else {
-				// create the player and de-activate them within the scene
-				for(int i = 0; i < NumberOfPlayers; i++) {
-					var isRacePlayer = false;
-					var playerKey = GameSettings.NetworkPlayers.Count >= NumberOfPlayers ? GameSettings.NetworkPlayers [i].objectId : string.Empty;
-					isRacePlayer = GameSettings.playerMode == PlayerMode.ServerMultiplayer && GameSettings.isRace && !string.IsNullOrEmpty(playerKey)
-						&& NetworkClientManager.player != null && NetworkClientManager.player.UID != playerKey;
 
-					if(GameSettings.playerMode == PlayerMode.ServerMultiplayer && GameSettings.isRace && !isRacePlayer) {
-						currentPlayer = i;
-					}
+                var activePlayers = GameSettings.Room != null ? GameSettings.isRace ? GameSettings.Room.attendees.OrderBy(x => x.playerNumber).ToList() : GameSettings.Room.attendees.OrderBy(x => x.position).ToList() : new List<RoomAttendee>();
+                var isOnlineRace = GameSettings.Room != null && activePlayers.Count >= NumberOfPlayers && GameSettings.playerMode == PlayerMode.ServerMultiplayer && GameSettings.isRace;
+                // create the player and de-activate them within the scene
+                for (int i = 0; i < NumberOfPlayers; i++) {
+                    
+                    var isRacePlayer = false;
+                    var playerKey = GameSettings.Room != null && activePlayers.Count >= NumberOfPlayers ? activePlayers[i].UID : string.Empty;
+                    isRacePlayer = GameSettings.playerMode == PlayerMode.ServerMultiplayer && GameSettings.isRace && !string.IsNullOrEmpty(playerKey)
+                        && NetworkClientManager.player != null && NetworkClientManager.player.UID != playerKey;
 
-					GameObject currentPlayerObject;
-					Transform tee = holeController.tee;
-					if(GameSettings.playerMode == PlayerMode.ServerMultiplayer && GameSettings.isRace && holeController.raceTees.Count > i) {
-						tee = holeController.raceTees[i];
-					}
+                    
+                    if (GameSettings.playerMode == PlayerMode.ServerMultiplayer && GameSettings.isRace && !isRacePlayer)
+                    {
+                        currentPlayer = i;
+                    }
 
-					if(isRacePlayer) {
-						currentPlayerObject = (GameObject)Instantiate (playerOnlinePrefab, tee.position, tee.rotation);
-					}
-					else 
-					{
-						currentPlayerObject = (GameObject)Instantiate (playerPrefab, tee.position, tee.rotation);
-					}
+                    GameObject currentPlayerObject;
+                    Transform tee = holeController.tee;
+                    if (GameSettings.playerMode == PlayerMode.ServerMultiplayer && GameSettings.isRace && holeController.raceTees.Count > i)
+                    {
+                        tee = holeController.raceTees[i];
+                    }
+                    else if (GameSettings.playerMode == PlayerMode.LocalMultiplayer && i < holeController.raceTees.Count)
+                    {
+                        tee = holeController.raceTees[i];
+                    }
 
-					var pController = currentPlayerObject.GetComponent<CannonPlayerState> ();
 
-					if (GameSettings.playerMode == PlayerMode.ServerMultiplayer && GameSettings.NetworkPlayers.Count >= NumberOfPlayers)
-	                {
-						pController.SetPlayerInfo(playerKey);
-	                }
+                    if (isRacePlayer)
+                    {
+                        currentPlayerObject = (GameObject)Instantiate(playerOnlinePrefab, tee.position, tee.rotation);
+                    }
+                    else
+                    {
+                        currentPlayerObject = (GameObject)Instantiate(playerPrefab, tee.position, tee.rotation);
+                        var materialController = currentPlayerObject.GetComponent<CannonMaterialController>();
 
-					pController.Stroke = 1;
-					pController.TotalScore = 0;
-					pController.playerNumber = i + 1;
-					pController.isHoleComplete = false;
-					pController.isHarzard = false;
-					// set the current object to in-active
-					currentPlayerObject.SetActive(GameSettings.playerMode == PlayerMode.ServerMultiplayer && GameSettings.isRace);
-	                // add the game object to the list
-					currentPlayerObject.name = string.Format("CannonPlayer{0}", i + 1);
-					players.Add(currentPlayerObject);
-				}
+                        var mindex = currentCannonBarrelMaterial - 1;
+                        if (mindex < 0 || mindex >= CannonBarrelMaterials.Count)
+                        {
+                            mindex = 0;
+                        }
+
+                        var barrel = CannonBarrelMaterials[mindex];
+
+                        mindex = currentCannonWheelMaterial - 1;
+                        if (mindex < 0 || mindex >= CannonWheelMaterials.Count)
+                        {
+                            mindex = 0;
+                        }
+
+                        var wheel = CannonWheelMaterials[mindex];
+
+                        materialController.SetMaterial(barrel, wheel);
+
+
+
+                    }
+
+                    var pController = currentPlayerObject.GetComponent<CannonPlayerState>();
+
+                    if (GameSettings.playerMode == PlayerMode.ServerMultiplayer && GameSettings.Room != null && activePlayers.Count >= NumberOfPlayers)
+                    {
+                        pController.SetPlayerInfo(playerKey);
+                    }
+
+                    pController.Stroke = 1;
+                    pController.TotalScore = 0;
+                    pController.playerNumber = i + 1;
+                    pController.isHoleComplete = false;
+                    pController.isHarzard = false;
+                    // set the current object to in-active
+                    var isactive = (GameSettings.playerMode == PlayerMode.ServerMultiplayer && GameSettings.isRace && !isRacePlayer) || (isRacePlayer && !activePlayers[i].Removed);
+                    currentPlayerObject.SetActive(isactive);
+                    // add the game object to the list
+                    currentPlayerObject.name = string.Format("CannonPlayer{0}", i + 1);
+                    players.Add(currentPlayerObject);
+
+
+                }
+				
 			}
 
 			if(!(GameSettings.playerMode == PlayerMode.ServerMultiplayer && GameSettings.isRace)) {
@@ -748,97 +965,3 @@ public class GameController : MonoBehaviour {
 
 }
 
-/*
-public class GameController : MonoBehaviour {
-
-	public Vector2 Wind = new Vector2 (0.0f, 0.0f);
-
-	public GameObject MainCamera;
-	public GameObject Cannon;
-	public GameObject Hole;
-	private CameraController CameraController;
-	private CannonController CannonController;
-
-	public Transform weatherVane;
-
-	public Text WindCaption;
-	public Text HoleCaption;
-	public Text ParCaption;
-	public Text StrokeCaption;
-	public Text ScoreCaption;
-
-	private int currentPar;
-
-	public CameraController GetCameraController()
-	{
-		return CameraController;
-	}
-
-	// Use this for initialization
-	void Start () {
-		CameraController = MainCamera.GetComponent<CameraController> ();
-		CannonController = Cannon.GetComponent<CannonController> ();
-		currentPar = Hole.gameObject.GetComponent<HoleController> ().Par;
-		//Wind = new Vector2 (Random.Range(-1.5f,1.5f), Random.Range(-1.5f,1.5f));
-	}
-	
-	// Update is called once per frame
-	void Update () {
-		
-		var force = new Vector3 (Wind.x, 0.0f, Wind.y);
-		weatherVane.forward = force.normalized;
-		WindCaption.text = string.Format ("Wind: {0} mph", force.magnitude.ToString("0.00"));
-		StrokeCaption.text = string.Format ("Stroke: {0}", CannonController.StrokeCount);
-		ParCaption.text = string.Format ("Par: {0}", currentPar);
-
-	}
-
-	public void Reset ()
-	{
-		ScoreCaption.text = string.Format ("Score: {0}", currentPar > CannonController.StrokeCount ? "-" + (currentPar - CannonController.StrokeCount).ToString() : currentPar < CannonController.StrokeCount ? "+" + (CannonController.StrokeCount - currentPar).ToString() : "E" );
-		var camera = Hole.transform.FindChild ("HoleCamera");
-		if (camera != null) {
-		
-			var cameraActivate = camera.gameObject.GetComponent<ActiveForTime> ();
-			if (cameraActivate != null) {
-				cameraActivate.Show ();			
-			}
-		
-		}
-		currentPar = Hole.gameObject.GetComponent<HoleController> ().Par;
-		CannonController.StrokeCount = 0;
-		CannonController.MoveToPosition (CannonController.StartPosition.position);
-		//Wind = new Vector2 (Random.Range(-1.5f,1.5f), Random.Range(-1.5f,1.5f));
-	}
-
-	/\*public void WaterHazard (GameObject water, Vector3 target)
-	{
-		CannonController.StrokeCount++;
-		CameraController.RunActionCamera = false;
-		// check if the water has a camera
-		var camera = water.transform.FindChild("WaterCamera");
-
-		if (camera != null) {
-			var waterCamera = camera.GetComponent<WaterCamera> ();
-			if (waterCamera != null) {
-			
-				waterCamera.SetFocus (target);
-			}
-
-		}
-
-		//var respawnTarget = water.transform.FindChild("Respawn");
-		Transform respawnPoint = null;
-		foreach(Transform child in water.transform){
-			if (child.tag == "Respawn") {
-				respawnPoint = child.gameObject.transform;
-				break;
-			}
-		}
-		if (respawnPoint != null) {
-			CannonController.SetRespawnPoint (respawnPoint);
-		}
-	}/\*
-
- 
-}*/

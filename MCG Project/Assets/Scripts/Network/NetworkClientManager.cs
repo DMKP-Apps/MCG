@@ -25,7 +25,7 @@ public static class NetworkClientManager
 			return;
 		}
         IsOnline = false;
-		GameSettings.NetworkPlayers = null;
+		GameSettings.Room = null;
 		var data = OnGetRequest<bool>(string.Format("/Message/Request/Logout?id={0}", player.UID));
 		if (data.Status)
 		{
@@ -38,7 +38,7 @@ public static class NetworkClientManager
 
 	public static void Login(bool isRace = false)
     {
-        GameSettings.NetworkPlayers = null;
+        GameSettings.Room = null;
         IsOnline = false;
 
         player = new NetworkPlayerInfo();
@@ -109,22 +109,44 @@ public static class NetworkClientManager
 		public NetworkPlayerData[] Items;
 	}
 
+    public static void GetRoomStatus(MonoBehaviour gameObject, Action onComplete, Action<string> onError = null)
+    {
+
+        if (gameObject != null)
+        {
+            gameObject.StartCoroutine(OnGetRequest(string.Format("/Message/Request/GetRoomStatus?id={0}", GameSettings.SessionId), (data) => {
+
+                try
+                {
+                    var objectData = JsonUtility.FromJson<roomInfo>(data);
+                    GameSettings.Room = objectData;
+                    onComplete();
+                }
+                catch {
+                    if (onError != null) {
+                        onError("Unable to access room");
+                    }
+                }
+            }, onError));
+        }
+
+    }
 
 
-	public static void GetNetworkPlayers(MonoBehaviour gameObject, Action onComplete, Action<string> onError = null)
-	{
+ //   public static void GetNetworkPlayers(MonoBehaviour gameObject, Action onComplete, Action<string> onError = null)
+	//{
 
-		if (gameObject != null)
-		{
-			gameObject.StartCoroutine(OnGetRequest(string.Format("/Message/Request/GetNetworkPlayers?id={0}", player.UID), (data) => {
-				data = string.Format("{{ \"Items\": {0} }}", data);
-				var objectData = JsonUtility.FromJson<GetAvailablePlayersResult>(data);
-				GameSettings.NetworkPlayers = objectData.Items.ToList();
-				onComplete();
-			}, onError));
-		}
+	//	if (gameObject != null)
+	//	{
+	//		gameObject.StartCoroutine(OnGetRequest(string.Format("/Message/Request/GetNetworkPlayers?id={0}", player.UID), (data) => {
+	//			data = string.Format("{{ \"Items\": {0} }}", data);
+	//			var objectData = JsonUtility.FromJson<GetAvailablePlayersResult>(data);
+	//			GameSettings.NetworkPlayers = objectData.Items.ToList();
+	//			onComplete();
+	//		}, onError));
+	//	}
 
-	}
+	//}
 
 	public static void GetGameInfo(MonoBehaviour gameObject, Action onComplete, Action<string> onError = null)
 	{
@@ -133,7 +155,7 @@ public static class NetworkClientManager
 		{
 			gameObject.StartCoroutine(OnGetRequest(string.Format("/Message/Request/GetGameInfo?id={0}", player.UID), (data) => {
 				try { 
-					data = string.Format("{{ \"Items\": {0} }}", data);
+					//data = string.Format("{{ \"Items\": {0} }}", data);
 					var objectData = JsonUtility.FromJson<GameInfoResults>(data);
 					GameSettings.GameInfo = objectData;
 					onComplete();
@@ -168,7 +190,7 @@ public static class NetworkClientManager
 		{
 			gameObject.StartCoroutine(OnGetRequest(string.Format("/Message/Request/NetworkPlayerReady?id={0}", player.UID), (data) => {
 				var objectData = data;
-				GameSettings.SessionId = objectData;
+				GameSettings.SessionId = objectData.TrimEnd('\"').TrimStart('\"');
 				onComplete();
 			}, onError));
 		}

@@ -1,6 +1,6 @@
 fileFormatVersion: 2
 guid: cbb30e6e7927e44b987aa9ad4a893727
-timeCreated: 1484867520
+timeCreated: 1486916385
 licenseType: Free
 TextureImporter:
   fileIDToRecycleName:
@@ -13,6 +13,7 @@ TextureImporter:
     21300012: meats_6
     21300014: meats_7
     21300016: meats_8
+    21300018: meats_9
   serializedVersion: 4
   mipmaps:
     mipMapMode: 0
@@ -203,6 +204,19 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 0
+        y: 0
+        width: 360
+        height: 230
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: meats_9
+      rect:
+        serializedVersion: 2
+        x: 360
         y: 0
         width: 360
         height: 230

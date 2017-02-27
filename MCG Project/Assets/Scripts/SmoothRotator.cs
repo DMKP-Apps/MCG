@@ -49,9 +49,9 @@ public class SmoothRotator
 			m_FollowAngles.z += 360;
 		}
 
-		m_TargetAngles.y += inputH*rotationSpeed;
-		m_TargetAngles.x += inputV*rotationSpeed;
-		m_TargetAngles.z += inputH*rotationSpeed;
+		m_TargetAngles.y += inputH*rotationSpeed * Time.deltaTime;
+		m_TargetAngles.x += inputV* rotationSpeed * Time.deltaTime;
+		m_TargetAngles.z += inputH* rotationSpeed * Time.deltaTime;
 
 		if (rotationRange.y < 360) {
 			m_TargetAngles.y = Mathf.Clamp (m_TargetAngles.y, -rotationRange.y * 0.5f, rotationRange.y * 0.5f);

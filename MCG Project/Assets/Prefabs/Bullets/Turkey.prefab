@@ -46,9 +46,10 @@ GameObject:
   - component: {fileID: 54523872044093770}
   - component: {fileID: 114487946113795994}
   - component: {fileID: 75659451301837198}
+  - component: {fileID: 114605748389562332}
   m_Layer: 0
   m_Name: Turkey
-  m_TagString: Untagged
+  m_TagString: Bullet
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 4294967295
@@ -165,7 +166,7 @@ Animator:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1432726811036452}
-  m_Enabled: 1
+  m_Enabled: 0
   m_Avatar: {fileID: 9000000, guid: b8ddf666061dcc9469aa57a5926459ea, type: 3}
   m_Controller: {fileID: 0}
   m_CullingMode: 0
@@ -187,6 +188,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   splash: {fileID: 1603515697510202, guid: ad787bccff37c4d6db6afb956ae9c8c8, type: 2}
+  velocitySqrMagThreshold: 1
+  maxDrag: 5
+  collidingIds: 
 --- !u!114 &114098001848570756
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -210,11 +214,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dc2cc0f994366448daec5160f1c0942d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Power: 48
+  Power: 37
   BasePower: 5
   MaxAccuracy: 120
   MaxTorque: 10
+  PowerMeterSpeedMultiplier: 1.5
+  AccuracyMeterSpeedMultiplier: 1.5
   Image: {fileID: 21300000, guid: cbb30e6e7927e44b987aa9ad4a893727, type: 3}
+--- !u!114 &114605748389562332
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1432726811036452}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bddf739a344a26c4ea303c0c61d5ac7f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  lookForTag:
+  - Terrain
 --- !u!114 &114853467533569736
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -236,7 +255,7 @@ ParticleSystem:
   m_GameObject: {fileID: 1235795799197852}
   serializedVersion: 5
   lengthInSec: 10
-  speed: 1
+  simulationSpeed: 1
   looping: 0
   prewarm: 0
   playOnAwake: 1

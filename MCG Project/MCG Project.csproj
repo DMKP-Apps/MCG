@@ -13,11 +13,13 @@
     <TargetFrameworkIdentifier>.NETFramework</TargetFrameworkIdentifier>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <TargetFrameworkProfile>Unity Subset v3.5</TargetFrameworkProfile>
-    <CompilerResponseFile></CompilerResponseFile>
+    <CompilerResponseFile>
+    </CompilerResponseFile>
     <UnityProjectType>Game:1</UnityProjectType>
     <UnityBuildTarget>Android:13</UnityBuildTarget>
     <UnityVersion>5.5.0f3</UnityVersion>
-    <RootNamespace></RootNamespace>
+    <RootNamespace>
+    </RootNamespace>
     <LangVersion Condition=" '$(VisualStudioVersion)' != '10.0' ">4</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -116,22 +118,27 @@
     <Compile Include="Assets\Controls\WindMeter\Scripts\WindControl.cs" />
     <Compile Include="Assets\Scripts\ActivateWithGameObject.cs" />
     <Compile Include="Assets\Scripts\ActiveForTime.cs" />
+    <Compile Include="Assets\Scripts\AssociatedPlayerState.cs" />
+    <Compile Include="Assets\Scripts\AttachToObject.cs" />
     <Compile Include="Assets\Scripts\BoundaryController.cs" />
     <Compile Include="Assets\Scripts\BulletController.cs" />
     <Compile Include="Assets\Scripts\BulletData.cs" />
     <Compile Include="Assets\Scripts\BulletHitController.cs" />
-    <Compile Include="Assets\Scripts\CameraController.cs" />
     <Compile Include="Assets\Scripts\CameraFollow.cs" />
     <Compile Include="Assets\Scripts\CameraLookAt.cs" />
     <Compile Include="Assets\Scripts\CannonBodyAnimate.cs" />
     <Compile Include="Assets\Scripts\CannonController.cs" />
     <Compile Include="Assets\Scripts\CannonFireController.cs" />
+    <Compile Include="Assets\Scripts\CannonMaterialController.cs" />
     <Compile Include="Assets\Scripts\CannonPlayerState.cs" />
     <Compile Include="Assets\Scripts\CannonWheelController.cs" />
     <Compile Include="Assets\Scripts\CanvasController.cs" />
+    <Compile Include="Assets\Scripts\FollowEstimatedTarget.cs" />
     <Compile Include="Assets\Scripts\GameController.cs" />
     <Compile Include="Assets\Scripts\HoleController.cs" />
     <Compile Include="Assets\Scripts\InputController.cs" />
+    <Compile Include="Assets\Scripts\MainCameraController.cs" />
+    <Compile Include="Assets\Scripts\Menu Scripts\GameClosedController.cs" />
     <Compile Include="Assets\Scripts\Menu Scripts\GameSettings.cs" />
     <Compile Include="Assets\Scripts\Menu Scripts\StartMenuController.cs" />
     <Compile Include="Assets\Scripts\Network\EndMatchController.cs" />
@@ -140,18 +147,26 @@
     <Compile Include="Assets\Scripts\Network\NetworkMessage.cs" />
     <Compile Include="Assets\Scripts\Network\NetworkObjectData.cs" />
     <Compile Include="Assets\Scripts\Network\NetworkPlayerInfo.cs" />
+    <Compile Include="Assets\Scripts\Network\RoomData.cs" />
+    <Compile Include="Assets\Scripts\Obstacles\CollectItem.cs" />
     <Compile Include="Assets\Scripts\Obstacles\MoveAroundObject.cs" />
     <Compile Include="Assets\Scripts\Obstacles\MoveObject.cs" />
     <Compile Include="Assets\Scripts\Obstacles\RotateObject.cs" />
+    <Compile Include="Assets\Scripts\Obstacles\SpawnItem.cs" />
+    <Compile Include="Assets\Scripts\SmoothLookAt.cs" />
     <Compile Include="Assets\Scripts\SmoothRotator.cs" />
+    <Compile Include="Assets\Scripts\Tests\TestController.cs" />
     <Compile Include="Assets\Scripts\TopographicBulletController.cs" />
     <Compile Include="Assets\Scripts\TopographicCamera.cs" />
     <Compile Include="Assets\Scripts\UIInputController.cs" />
     <Compile Include="Assets\Scripts\UIScripts\PlayerInfo.cs" />
+    <Compile Include="Assets\Scripts\UIScripts\PlayerMarker.cs" />
+    <Compile Include="Assets\Scripts\UIScripts\PlayerTab.cs" />
     <Compile Include="Assets\Scripts\UIScripts\PointToPin.cs" />
     <Compile Include="Assets\Scripts\UIScripts\ScaleControls.cs" />
     <Compile Include="Assets\Scripts\UITextController.cs" />
     <Compile Include="Assets\Scripts\WaterCollision.cs" />
+    <Compile Include="Assets\Scripts\WaterData.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\CameraPath3\3.1x Upgrade readme.txt" />
@@ -163,6 +178,7 @@
     <None Include="Assets\Packages\Animated Flags\Shaders\Mobile-Bump-1DirectionalLight-NoCull.shader" />
     <None Include="Assets\Packages\Animated Flags\Shaders\Mobile-BumpSpec-1DirectionalLight-NoCull.shader" />
     <None Include="Assets\Packages\Baker House\Readme.txt" />
+    <None Include="Assets\Packages\BrokenVector\FreeLowPolyPack\readme.txt" />
     <None Include="Assets\Packages\Lowpoly_forest_ruins\Readme.txt" />
     <None Include="Assets\Standard Assets\CrossPlatformInput\CrossPlatformInputGuidelines.txt" />
     <None Include="Assets\Standard Assets\ParticleSystems\ParticleSystemsGuidelines.txt" />

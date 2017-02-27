@@ -15,8 +15,9 @@ public class PlayerInfo : MonoBehaviour {
 	public Text ParText;
 	public Text YRDSToPINText;
 	public Text ShotDistanceText;
+    public Text CoinsText;
 
-	public Image SelectedBullet;
+    public Image SelectedBullet;
 	public Image NextBullet;
 
 	private GameController gameController;
@@ -30,6 +31,7 @@ public class PlayerInfo : MonoBehaviour {
 		if(BulletIndex != gameController.CurrentBullet) {
 			BulletIndex = gameController.CurrentBullet;
 		}
+        CoinsText.text = GameSettings.preferences.coins.ToString();
 
 	}
 
@@ -152,7 +154,7 @@ public class PlayerInfo : MonoBehaviour {
 	{
 
 		currentYRDSToPIN = index;
-		YRDSToPINText.text = string.Format ("{0}", System.Math.Ceiling(System.Convert.ToDouble(currentYRDSToPIN) / 3));
+		YRDSToPINText.text = string.Format ("{0}", System.Math.Ceiling(System.Convert.ToDouble(currentYRDSToPIN) * 1.0936));// / 3
 
 	}
 
@@ -168,7 +170,7 @@ public class PlayerInfo : MonoBehaviour {
 	{
 
 		currentShotDistance = index;
-		ShotDistanceText.text = string.Format ("Shot: {0} YRDS", System.Math.Ceiling(System.Convert.ToDouble(currentShotDistance) / 3));
+		ShotDistanceText.text = string.Format ("Shot: {0} YRDS", System.Math.Ceiling(System.Convert.ToDouble(currentShotDistance) * 1.0936));// / 3
 
 	}
 

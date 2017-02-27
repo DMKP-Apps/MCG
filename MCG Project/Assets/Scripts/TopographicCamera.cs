@@ -47,7 +47,7 @@ public class TopographicCamera : MonoBehaviour {
             {
                 var newRect = originalRect;
                 newRect.width = 0.15f;
-                newRect.height = 0.3f;
+                newRect.height = 0.35f;
                 tcamera.rect = newRect;
             }
             else
@@ -68,24 +68,36 @@ public class TopographicCamera : MonoBehaviour {
 
         }
 
+        
 
+        //var step = speed * Time.deltaTime;
+		var cameraZoom = originalPosition.y * (GameSettings.ShotPower.HasValue && GameSettings.ShotPower.Value < 0.6f ? 0.6f : GameSettings.ShotPower.HasValue ? GameSettings.ShotPower.Value : 1);
+		var difference = (GameSettings.EstimatedShotLocation + ((GameSettings.EstimatedShotLocation + GameSettings.CurrentCannonLocation) / 2)) / 2; //
+  //      if (!GameSettings.ShotPower.HasValue) {
+		//	var distance1 = Vector3.Distance (GameController.GetHolePinPosition(), GameSettings.CurrentCannonLocation);
+		//	var distance2 = Vector3.Distance (GameSettings.EstimatedShotLocation, GameSettings.CurrentCannonLocation);
 
-        var step = speed * Time.deltaTime;
-		var cameraZoom = originalPosition.y * (GameSettings.ShotPower.HasValue ? GameSettings.ShotPower.Value : 1);
-		var difference = GameSettings.EstimatedShotLocation;
-		if (!GameSettings.ShotPower.HasValue) {
-			var distance1 = Vector3.Distance (GameController.GetHolePinPosition(), GameSettings.CurrentCannonLocation);
-			var distance2 = Vector3.Distance (GameSettings.EstimatedShotLocation, GameSettings.CurrentCannonLocation);
-
-			if (distance1 < distance2) {
-				var percentage = distance1 / distance2;
-				cameraZoom = originalPosition.y * percentage;
-				difference = GameController.GetHolePinPosition();
-			}
-		}
-		//(GameSettings.EstimatedShotLocation + GameSettings.CurrentCannonLocation) / 2;
+		//	if (distance1 < distance2) {
+  //              var percentage = distance1 / distance2;
+  //              if (percentage < 0.6f) {
+  //                  percentage = 0.6f;
+  //              }
+		//		cameraZoom = originalPosition.y * percentage;
+		//		//difference = GameController.GetHolePinPosition();
+		//	}
+		//}
+		//
 		var followPosition = new Vector3(difference.x, cameraZoom, difference.z);
+
+        var minStep = 10f * Time.deltaTime;
+        var step = (Vector3.Distance(followPosition, transform.position) * 0.8f) * Time.deltaTime;
+        if (step < minStep)
+        {
+            step = minStep;
+        }
+
         transform.position = Vector3.MoveTowards(transform.position, followPosition, step);
+        //transform.LookAt(GameSettings.CurrentCannonLocation);
 
     }
 }

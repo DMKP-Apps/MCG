@@ -25,6 +25,7 @@ GameObject:
   - component: {fileID: 64346929908227952}
   - component: {fileID: 114650406188920566}
   - component: {fileID: 114776878534201794}
+  - component: {fileID: 114613392331139434}
   m_Layer: 0
   m_Name: Bullet03
   m_TagString: Bullet
@@ -145,6 +146,19 @@ MeshCollider:
   m_InflateMesh: 0
   m_SkinWidth: 0.01
   m_Mesh: {fileID: 4300000, guid: 5d8d87842098577449127755ec7550f0, type: 3}
+--- !u!114 &114613392331139434
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1135169337650408}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bddf739a344a26c4ea303c0c61d5ac7f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  lookForTag:
+  - Terrain
 --- !u!114 &114650406188920566
 MonoBehaviour:
   m_ObjectHideFlags: 1

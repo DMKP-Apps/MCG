@@ -23,7 +23,7 @@ namespace NetworkServer
 
         protected void Application_End()
         {
-            var repository = DependencyResolver.Current.GetService<Areas.Message.Models.INetworkDataRepository>();
+            var repository = DependencyResolver.Current.GetService<Areas.Message.Models.IGameObjectDataRepository>();
             if (repository != null) {
                 repository.ShutDown = false;
             }
