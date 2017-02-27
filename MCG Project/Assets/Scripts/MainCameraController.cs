@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-public class CameraController : MonoBehaviour {
+public class MainCameraController : MonoBehaviour {
 
 	public Vector3 PositionOffset = new Vector3 (0.0f, 0.0f, 0.0f);
 	public Vector3 Position = new Vector3(0.0f,0.0f,0.0f);
 	public Vector3 Rotation;
-	private float previousXRotation = 0.0f;
-	public GameObject Cannon;
+	
+    public GameObject Cannon;
 	public GameObject LookAtTarget;
 	private GameObject CameraShot1;
 	public GameObject CameraPosition;
@@ -40,8 +40,9 @@ public class CameraController : MonoBehaviour {
 
 	void Start () 
 	{
-		cameraTargetOffset = LookAtTarget.transform.position - transform.position;
-		PositionOffset = transform.localPosition;
+        cameraTargetOffset = CameraPosition.transform.localPosition;
+
+        PositionOffset = transform.localPosition;
 		Mode = CameraMode.FollowCannon;
 
 		GameController = GameObject.Find ("GameController").GetComponent<GameController> ();
@@ -87,8 +88,9 @@ public class CameraController : MonoBehaviour {
 	}
 
 	public float cameraHeightOffset = 4f;
+    public float cameraDistancetOffset = 15f;
 
-	void LateUpdate () 
+    void LateUpdate () 
 	{
 		var bullet = fireController.GetBullet ();
 
@@ -106,19 +108,15 @@ public class CameraController : MonoBehaviour {
 			}
 			rotation *= -1;
 
-
-
 			var offset = rotation / 35;
 			if (offset < 0) {
 				offset *= -1 * 0.5f;
 			}
-
-			Debug.Log(string.Format("Rotaition: {0}", rotation));
-
+            
 			Mode = CameraMode.FollowCannon;
 
 			var localPosition = CameraPosition.transform.localPosition;
-			localPosition.z = -12 - (cameraHeightOffset * offset);
+			localPosition.z = cameraTargetOffset.z - (cameraDistancetOffset * offset);
 			CameraPosition.transform.localPosition = localPosition;
 
 			var followPosition = CameraPosition.transform.position;	
@@ -129,7 +127,7 @@ public class CameraController : MonoBehaviour {
 			//var distance = LookAtTarget.transform
 
 			var minStep = 2f * Time.deltaTime;
-			var step = (Vector3.Distance (followPosition, transform.position) * 0.8f) * Time.deltaTime;
+			var step = (Vector3.Distance (followPosition, transform.position) * 0.75f) * Time.deltaTime;
 			if (step < minStep) {
 				step = minStep;
 			}
@@ -139,7 +137,7 @@ public class CameraController : MonoBehaviour {
 			//followPosition.z -= (cameraHeightOffset * offset);
 			//transform.localPosition = followPosition;
 
-			transform.LookAt (LookAtTarget.transform);
+			//transform.LookAt (GameSettings.EstimatedShotLocation);
 
 
 

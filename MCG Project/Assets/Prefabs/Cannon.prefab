@@ -90,9 +90,10 @@ GameObject:
   - component: {fileID: 92791246415800222}
   - component: {fileID: 124684195281987822}
   - component: {fileID: 81817554710507940}
-  - component: {fileID: 114807353308183462}
   - component: {fileID: 65324661812436470}
   - component: {fileID: 45742851808553618}
+  - component: {fileID: 114443223173625550}
+  - component: {fileID: 114690118646446920}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -1315,6 +1316,19 @@ MonoBehaviour:
   CannonBulletParent: {fileID: 1007981043969588}
   cannonBodyAnimate: {fileID: 114552904889075940}
   waitForFire: 1000
+--- !u!114 &114443223173625550
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1095731554387276}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 889608d1b523843fbae4986501d699fa, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Target: {fileID: 4441276609303288}
+  RotationSpeed: 5
 --- !u!114 &114552904889075940
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1328,24 +1342,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   currentState: 0
   animate: 0
---- !u!114 &114778045852222724
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1586460052312130}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6cde6acf9cefe4d44a463f55ad98c890, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  playerColours:
-  - {fileID: 2100000, guid: 85e9922d321fb4f3eb8ca5c973f0b485, type: 2}
-  - {fileID: 2100000, guid: d308808b31111493e855f796b32e3cb2, type: 2}
-  - {fileID: 2100000, guid: aada3ec2e33034af7ae01d9d7c9927b4, type: 2}
-  - {fileID: 2100000, guid: 7697eff6c04764c28a3bb75312218837, type: 2}
-  arrow: {fileID: 1048658983691592}
---- !u!114 &114807353308183462
+--- !u!114 &114690118646446920
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
@@ -1373,7 +1370,25 @@ MonoBehaviour:
   canInputMovement: 0
   RunActionCamera: 1
   followSpeed: 1
-  cameraHeightOffset: 12
+  cameraHeightOffset: 15
+  cameraDistancetOffset: 20
+--- !u!114 &114778045852222724
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1586460052312130}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6cde6acf9cefe4d44a463f55ad98c890, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playerColours:
+  - {fileID: 2100000, guid: 85e9922d321fb4f3eb8ca5c973f0b485, type: 2}
+  - {fileID: 2100000, guid: d308808b31111493e855f796b32e3cb2, type: 2}
+  - {fileID: 2100000, guid: aada3ec2e33034af7ae01d9d7c9927b4, type: 2}
+  - {fileID: 2100000, guid: 7697eff6c04764c28a3bb75312218837, type: 2}
+  arrow: {fileID: 1048658983691592}
 --- !u!114 &114852362302077158
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1399,9 +1414,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fd9f4c9f6346c49f786501022ea5c6fa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  camera: {fileID: 20781413833749496}
+  sceneCamera: {fileID: 20781413833749496}
   rotationRange: {x: 70, y: 360, z: 0}
-  rotationSpeed: 0.35
+  rotationSpeed: 20
   dampingTime: 0.1
   InputPosition: {x: 0, y: 0}
   AllowInput: 1

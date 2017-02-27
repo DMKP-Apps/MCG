@@ -20,11 +20,11 @@ public class BoundaryController : MonoBehaviour {
 			Destroy (other.gameObject);
 		}
 		else if (other.gameObject.tag == tagCamera) {
-			var cc = other.gameObject.GetComponent<CameraController> ();
+			var cc = other.gameObject.GetComponent<MainCameraController> ();
 			if (cc != null) {
 				cc.explorePosition = new Vector3 (0, 0, 0);
 				Debug.Log ("Camera out of Bounds");
-				cc.Mode = CameraController.CameraMode.FollowCannon;
+				cc.Mode = MainCameraController.CameraMode.FollowCannon;
 			}
 			//
 		}
