@@ -28,14 +28,17 @@ public class SkinInputController : MonoBehaviour {
     
     // Update is called once per frame
     bool isMoving = false;
+    bool canMove = false;
     void Update()
     {
 
         
         bool hasTouch = false;
-
+        //direction = 0;
         var touches = Input.touches.ToList();
-        
+
+        canMove = Vector3.Distance(previewItems[index].CameraPosition.position, mainCamera.transform.position) < 0.05f;
+
         
         touches.Where(x => x.phase == TouchPhase.Moved).Take(1).ToList().ForEach(touch =>
         {
@@ -74,19 +77,19 @@ public class SkinInputController : MonoBehaviour {
             }
         }
 
-        if (!hasTouch)
-        {
-            if (direction > 0 && index < previewItems.Length - 1)
+       if (canMove && (direction > 5 || direction < -5))
+       {
+            if (direction < 0 && index < previewItems.Length - 1)
             {
                 index++;
             }
-            else if (direction < 0 && index > 0)
+            else if (direction > 0 && index > 0)
             {
                 index--;
             }
 
             direction = 0;
-        }
+       }
 
 
         var followPosition = previewItems[index].CameraPosition.position;
