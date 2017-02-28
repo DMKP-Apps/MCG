@@ -789,27 +789,35 @@ public class GameController : MonoBehaviour {
 					{
 						currentPlayerObject = (GameObject)Instantiate (playerPrefab, tee.position, tee.rotation);
                         var materialController = currentPlayerObject.GetComponent<CannonMaterialController>();
-                        var mindex = currentCannonBarrelMaterial - 1;
-                        if (mindex < 0 || mindex >= CannonBarrelMaterials.Count)
+                        var barrel = GameSettings.CannonBarrelMaterial;
+                        if (barrel == null)
                         {
-                            mindex = 0;
+                            var mindex = currentCannonBarrelMaterial - 1;
+                            if (mindex < 0 || mindex >= CannonBarrelMaterials.Count)
+                            {
+                                mindex = 0;
+                            }
+                            barrel = CannonBarrelMaterials[mindex];
                         }
 
-                        var barrel = CannonBarrelMaterials[mindex];
-
-                        mindex = currentCannonWheelMaterial - 1;
-                        if (mindex < 0 || mindex >= CannonWheelMaterials.Count)
+                        var wheel = GameSettings.CannonWheelMaterial;
+                        if (wheel == null)
                         {
-                            mindex = 0;
-                        }
+                            var mindex = currentCannonWheelMaterial - 1;
+                            if (mindex < 0 || mindex >= CannonWheelMaterials.Count)
+                            {
+                                mindex = 0;
+                            }
 
-                        var wheel = CannonWheelMaterials[mindex];
+                            wheel = CannonWheelMaterials[mindex];
+                        }
 
                         materialController.SetMaterial(barrel, wheel);
+
                     }
 
 
-					var pController = currentPlayerObject.GetComponent<CannonPlayerState> ();
+                    var pController = currentPlayerObject.GetComponent<CannonPlayerState> ();
 
 	                if (GameSettings.playerMode == PlayerMode.ServerMultiplayer && !string.IsNullOrEmpty(p.playerKey))
 	                {
@@ -869,23 +877,29 @@ public class GameController : MonoBehaviour {
                     {
                         currentPlayerObject = (GameObject)Instantiate(playerPrefab, tee.position, tee.rotation);
                         var materialController = currentPlayerObject.GetComponent<CannonMaterialController>();
-
-                        var mindex = currentCannonBarrelMaterial - 1;
-                        if (mindex < 0 || mindex >= CannonBarrelMaterials.Count)
+                        var barrel = GameSettings.CannonBarrelMaterial;
+                        if (barrel == null)
                         {
-                            mindex = 0;
+                            var mindex = currentCannonBarrelMaterial - 1;
+                            if (mindex < 0 || mindex >= CannonBarrelMaterials.Count)
+                            {
+                                mindex = 0;
+                            }
+                            barrel = CannonBarrelMaterials[mindex];
                         }
 
-                        var barrel = CannonBarrelMaterials[mindex];
-
-                        mindex = currentCannonWheelMaterial - 1;
-                        if (mindex < 0 || mindex >= CannonWheelMaterials.Count)
+                        var wheel = GameSettings.CannonWheelMaterial;
+                        if (wheel == null)
                         {
-                            mindex = 0;
+                            var mindex = currentCannonWheelMaterial - 1;
+                            if (mindex < 0 || mindex >= CannonWheelMaterials.Count)
+                            {
+                                mindex = 0;
+                            }
+
+                            wheel = CannonWheelMaterials[mindex];
                         }
-
-                        var wheel = CannonWheelMaterials[mindex];
-
+                        
                         materialController.SetMaterial(barrel, wheel);
 
 

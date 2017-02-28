@@ -5927,6 +5927,11 @@ Prefab:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 23180797759136364, guid: 5142d55c688b04c469ce8e254f98b68e,
+        type: 2}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: d0b9376d0bcb3b24d8241b2462672753, type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 5142d55c688b04c469ce8e254f98b68e, type: 2}
   m_IsPrefabParent: 0
@@ -6543,7 +6548,7 @@ Prefab:
     - target: {fileID: 114169261653605384, guid: 6c3139a6158094c04a4ec1fe33bc78f6,
         type: 2}
       propertyPath: CannonBarrelMaterials.Array.size
-      value: 3
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 4530490379039050, guid: 6c3139a6158094c04a4ec1fe33bc78f6, type: 2}
       propertyPath: m_LocalPosition.x
@@ -6705,7 +6710,7 @@ Prefab:
         type: 2}
       propertyPath: CannonBarrelMaterials.Array.data[2]
       value: 
-      objectReference: {fileID: 2100000, guid: 649b58ae1bf233f4faae840693e147e3, type: 2}
+      objectReference: {fileID: 2100000, guid: 44d59ecb9d10393418c45bae4e70fb36, type: 2}
     - target: {fileID: 114169261653605384, guid: 6c3139a6158094c04a4ec1fe33bc78f6,
         type: 2}
       propertyPath: CannonWheelMaterials.Array.data[0]
@@ -6719,13 +6724,28 @@ Prefab:
     - target: {fileID: 114169261653605384, guid: 6c3139a6158094c04a4ec1fe33bc78f6,
         type: 2}
       propertyPath: currentCannonBarrelMaterial
-      value: 3
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 114169261653605384, guid: 6c3139a6158094c04a4ec1fe33bc78f6,
         type: 2}
       propertyPath: currentCannonWheelMaterial
       value: 2
       objectReference: {fileID: 0}
+    - target: {fileID: 114169261653605384, guid: 6c3139a6158094c04a4ec1fe33bc78f6,
+        type: 2}
+      propertyPath: CannonBarrelMaterials.Array.data[3]
+      value: 
+      objectReference: {fileID: 2100000, guid: 09fefe77ddf6853429d2d74e8a97f2de, type: 2}
+    - target: {fileID: 114169261653605384, guid: 6c3139a6158094c04a4ec1fe33bc78f6,
+        type: 2}
+      propertyPath: CannonBarrelMaterials.Array.data[4]
+      value: 
+      objectReference: {fileID: 2100000, guid: d0b9376d0bcb3b24d8241b2462672753, type: 2}
+    - target: {fileID: 114169261653605384, guid: 6c3139a6158094c04a4ec1fe33bc78f6,
+        type: 2}
+      propertyPath: CannonBarrelMaterials.Array.data[5]
+      value: 
+      objectReference: {fileID: 2100000, guid: 0baec8cf341e78d46973c2be66598d09, type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 6c3139a6158094c04a4ec1fe33bc78f6, type: 2}
   m_IsPrefabParent: 0
