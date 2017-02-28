@@ -26,6 +26,9 @@ public static class GameSettings {
 
 	public static string SessionId = string.Empty;
 
+    public static Material CannonBarrelMaterial;
+    public static Material CannonWheelMaterial;
+
 	//public static List<NetworkPlayerData> NetworkPlayers{
 	//	get { 
 	//		if (playerMode == PlayerMode.ServerMultiplayer && Room != null) {// _networkPlayers != null) {

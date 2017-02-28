@@ -24,6 +24,12 @@ public class GameController : MonoBehaviour {
     //playerController.isHoleComplete = false;
     //playerController.isHarzard = false;
 
+    public List<Material> CannonBarrelMaterials = new List<Material>();
+    public List<Material> CannonWheelMaterials = new List<Material>();
+
+    public int currentCannonBarrelMaterial = 1;
+    public int currentCannonWheelMaterial = 1;
+
     public PowerControl speedControl;
     public PowerControl accuracyControl;
 
@@ -663,7 +669,9 @@ public class GameController : MonoBehaviour {
 		public int PlayerNumber;
 		public int CurrentBullet;
         public string playerKey;
-	}
+        public int BarrelMaterial;
+        public int WheelMaterial;
+    }
 	private bool buildingHole= false;
 	private void BeginHole() {
 
@@ -780,10 +788,36 @@ public class GameController : MonoBehaviour {
 					else 
 					{
 						currentPlayerObject = (GameObject)Instantiate (playerPrefab, tee.position, tee.rotation);
-					}
+                        var materialController = currentPlayerObject.GetComponent<CannonMaterialController>();
+                        var barrel = GameSettings.CannonBarrelMaterial;
+                        if (barrel == null)
+                        {
+                            var mindex = currentCannonBarrelMaterial - 1;
+                            if (mindex < 0 || mindex >= CannonBarrelMaterials.Count)
+                            {
+                                mindex = 0;
+                            }
+                            barrel = CannonBarrelMaterials[mindex];
+                        }
+
+                        var wheel = GameSettings.CannonWheelMaterial;
+                        if (wheel == null)
+                        {
+                            var mindex = currentCannonWheelMaterial - 1;
+                            if (mindex < 0 || mindex >= CannonWheelMaterials.Count)
+                            {
+                                mindex = 0;
+                            }
+
+                            wheel = CannonWheelMaterials[mindex];
+                        }
+
+                        materialController.SetMaterial(barrel, wheel);
+
+                    }
 
 
-					var pController = currentPlayerObject.GetComponent<CannonPlayerState> ();
+                    var pController = currentPlayerObject.GetComponent<CannonPlayerState> ();
 
 	                if (GameSettings.playerMode == PlayerMode.ServerMultiplayer && !string.IsNullOrEmpty(p.playerKey))
 	                {
@@ -842,6 +876,34 @@ public class GameController : MonoBehaviour {
                     else
                     {
                         currentPlayerObject = (GameObject)Instantiate(playerPrefab, tee.position, tee.rotation);
+                        var materialController = currentPlayerObject.GetComponent<CannonMaterialController>();
+                        var barrel = GameSettings.CannonBarrelMaterial;
+                        if (barrel == null)
+                        {
+                            var mindex = currentCannonBarrelMaterial - 1;
+                            if (mindex < 0 || mindex >= CannonBarrelMaterials.Count)
+                            {
+                                mindex = 0;
+                            }
+                            barrel = CannonBarrelMaterials[mindex];
+                        }
+
+                        var wheel = GameSettings.CannonWheelMaterial;
+                        if (wheel == null)
+                        {
+                            var mindex = currentCannonWheelMaterial - 1;
+                            if (mindex < 0 || mindex >= CannonWheelMaterials.Count)
+                            {
+                                mindex = 0;
+                            }
+
+                            wheel = CannonWheelMaterials[mindex];
+                        }
+                        
+                        materialController.SetMaterial(barrel, wheel);
+
+
+
                     }
 
                     var pController = currentPlayerObject.GetComponent<CannonPlayerState>();
@@ -862,6 +924,8 @@ public class GameController : MonoBehaviour {
                     // add the game object to the list
                     currentPlayerObject.name = string.Format("CannonPlayer{0}", i + 1);
                     players.Add(currentPlayerObject);
+
+
                 }
 				
 			}

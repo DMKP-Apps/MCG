@@ -127,6 +127,7 @@
     <Compile Include="Assets\Scripts\CannonBodyAnimate.cs" />
     <Compile Include="Assets\Scripts\CannonController.cs" />
     <Compile Include="Assets\Scripts\CannonFireController.cs" />
+    <Compile Include="Assets\Scripts\CannonMaterialController.cs" />
     <Compile Include="Assets\Scripts\CannonPlayerState.cs" />
     <Compile Include="Assets\Scripts\CannonWheelController.cs" />
     <Compile Include="Assets\Scripts\CanvasController.cs" />
@@ -150,6 +151,8 @@
     <Compile Include="Assets\Scripts\Obstacles\MoveObject.cs" />
     <Compile Include="Assets\Scripts\Obstacles\RotateObject.cs" />
     <Compile Include="Assets\Scripts\Obstacles\SpawnItem.cs" />
+    <Compile Include="Assets\Scripts\SkinScene\CannonSkinPreview.cs" />
+    <Compile Include="Assets\Scripts\SkinScene\SkinInputController.cs" />
     <Compile Include="Assets\Scripts\SmoothLookAt.cs" />
     <Compile Include="Assets\Scripts\SmoothRotator.cs" />
     <Compile Include="Assets\Scripts\Tests\TestController.cs" />
