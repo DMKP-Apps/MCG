@@ -26,6 +26,7 @@ public static class GameSettings {
 
 	public static string SessionId = string.Empty;
 
+    public static int SkinIndex = 0;
     public static Material CannonBarrelMaterial;
     public static Material CannonWheelMaterial;
 
