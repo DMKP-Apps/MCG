@@ -26,7 +26,8 @@ public class StartMenuController : MonoBehaviour {
 				}	
 			}
             NetworkClientManager.Logoff();
-			SceneManager.LoadScene(gameScene, LoadSceneMode.Single);
+            //SceneManager.LoadScene(gameScene, LoadSceneMode.Single);
+            SceneManager.LoadScene("SelectSkin", LoadSceneMode.Single);
         }
 
 

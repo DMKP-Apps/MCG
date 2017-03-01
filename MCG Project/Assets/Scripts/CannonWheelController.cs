@@ -11,8 +11,8 @@ public class CannonWheelController : MonoBehaviour {
 
 	void Update () {
 		if (inputController.InputPosition.x != 0) {
-			CannonWheelR.transform.Rotate(new Vector3(0, 0,inputController.InputPosition.x * -1));
-			CannonWheelL.transform.Rotate(new Vector3(0, 0,inputController.InputPosition.x));
+			CannonWheelR.transform.Rotate(new Vector3(inputController.InputPosition.x * -1,0,0));
+			CannonWheelL.transform.Rotate(new Vector3(inputController.InputPosition.x,0,0));
 		}
 	}
 }
