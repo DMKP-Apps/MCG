@@ -1,0 +1,209 @@
+fileFormatVersion: 2
+guid: 34de91cd63091475688fb96eb3f06d37
+timeCreated: 1488249103
+licenseType: Free
+ModelImporter:
+  serializedVersion: 19
+  fileIDToRecycleName:
+    100000: group
+    100002: group1
+    100004: group2
+    100006: group3
+    100008: group4
+    100010: group5
+    100012: group7
+    100014: //RootNode
+    100016: nurbsToPoly1
+    100018: nurbsToPoly9
+    100020: pCone1
+    100022: pCone2
+    100024: pCone3
+    100026: pCone4
+    100028: pCone5
+    100030: pCone6
+    100032: pCylinder1
+    100034: polyProjectionCurve1
+    100036: polyProjectionCurve2
+    100038: polyProjectionCurve3
+    100040: pPlane1
+    100042: pPlane6
+    100044: pPlane7
+    100046: pPlane8
+    100048: pTorus1
+    100050: pTorus2
+    100052: pTorus3
+    100054: pTorus4
+    100056: pTorus5
+    100058: pTorus6
+    100060: pTorus7
+    100062: pTorus8
+    100064: transform2
+    100066: transform3
+    100068: transform4
+    400000: group
+    400002: group1
+    400004: group2
+    400006: group3
+    400008: group4
+    400010: group5
+    400012: group7
+    400014: //RootNode
+    400016: nurbsToPoly1
+    400018: nurbsToPoly9
+    400020: pCone1
+    400022: pCone2
+    400024: pCone3
+    400026: pCone4
+    400028: pCone5
+    400030: pCone6
+    400032: pCylinder1
+    400034: polyProjectionCurve1
+    400036: polyProjectionCurve2
+    400038: polyProjectionCurve3
+    400040: pPlane1
+    400042: pPlane6
+    400044: pPlane7
+    400046: pPlane8
+    400048: pTorus1
+    400050: pTorus2
+    400052: pTorus3
+    400054: pTorus4
+    400056: pTorus5
+    400058: pTorus6
+    400060: pTorus7
+    400062: pTorus8
+    400064: transform2
+    400066: transform3
+    400068: transform4
+    2300000: pCone1
+    2300002: pCone2
+    2300004: pCone3
+    2300006: pCone4
+    2300008: pCone5
+    2300010: pCone6
+    2300012: pPlane7
+    2300014: pPlane8
+    2300016: pTorus1
+    2300018: pTorus2
+    2300020: pTorus3
+    2300022: pTorus4
+    2300024: pTorus5
+    2300026: pTorus6
+    2300028: pTorus7
+    2300030: pTorus8
+    3300000: pCone1
+    3300002: pCone2
+    3300004: pCone3
+    3300006: pCone4
+    3300008: pCone5
+    3300010: pCone6
+    3300012: pPlane7
+    3300014: pPlane8
+    3300016: pTorus1
+    3300018: pTorus2
+    3300020: pTorus3
+    3300022: pTorus4
+    3300024: pTorus5
+    3300026: pTorus6
+    3300028: pTorus7
+    3300030: pTorus8
+    4300000: pCone1
+    4300002: pCone2
+    4300004: pCone3
+    4300006: pCone4
+    4300008: pCone5
+    4300010: pCone6
+    4300012: pTorus6
+    4300014: pTorus2
+    4300016: pTorus7
+    4300018: pTorus4
+    4300020: pTorus8
+    4300022: pTorus1
+    4300024: pTorus5
+    4300026: pTorus3
+    4300028: pPlane7
+    4300030: pPlane8
+    6400000: pCone1
+    6400002: pCone2
+    6400004: pCone3
+    6400006: pCone4
+    6400008: pCone5
+    6400010: pCone6
+    6400012: pPlane7
+    6400014: pPlane8
+    6400016: pTorus1
+    6400018: pTorus2
+    6400020: pTorus3
+    6400022: pTorus4
+    6400024: pTorus5
+    6400026: pTorus6
+    6400028: pTorus7
+    6400030: pTorus8
+  materials:
+    importMaterials: 1
+    materialName: 0
+    materialSearch: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleCurves: 1
+    optimizeGameObjects: 0
+    motionNodeName: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    clipAnimations: []
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 100
+    meshCompression: 0
+    addColliders: 1
+    importBlendShapes: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 3
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    serializedVersion: 2
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    rootMotionBoneName: 
+    rootMotionBoneRotation: {x: 0, y: 0, z: 0, w: 1}
+    hasTranslationDoF: 0
+    hasExtraRoot: 0
+    skeletonHasParents: 1
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 0
+  humanoidOversampling: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
