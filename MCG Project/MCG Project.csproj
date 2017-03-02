@@ -153,6 +153,7 @@
     <Compile Include="Assets\Scripts\Obstacles\MoveObject.cs" />
     <Compile Include="Assets\Scripts\Obstacles\MoveSpike.cs" />
     <Compile Include="Assets\Scripts\Obstacles\RotateObject.cs" />
+    <Compile Include="Assets\Scripts\Obstacles\SmartTransform.cs" />
     <Compile Include="Assets\Scripts\Obstacles\SpawnItem.cs" />
     <Compile Include="Assets\Scripts\SkinScene\CannonSkinPreview.cs" />
     <Compile Include="Assets\Scripts\SkinScene\SkinInputController.cs" />
