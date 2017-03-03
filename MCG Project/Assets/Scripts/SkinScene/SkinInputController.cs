@@ -9,6 +9,8 @@ public class SkinInputController : MonoBehaviour {
 
     public string gameScene = "Course";
 
+    private const string disableTouchTag = "DisableTouch";
+
     public GameObject previewCannonPrefab;
 
     public List<Material> barrelMaterials;
@@ -35,6 +37,13 @@ public class SkinInputController : MonoBehaviour {
         }
 
         mainCamera.transform.position = previewItems[index].CameraPosition.position;
+
+        var touchUtility = GameObject.FindObjectOfType<TouchUtility>();
+        if (touchUtility != null)
+        {
+            touchUtility.Subscribe(OnTouchEnded, TouchEventType.Ended);
+        }
+
 
     }
 
@@ -64,75 +73,35 @@ public class SkinInputController : MonoBehaviour {
 
     
     // Update is called once per frame
-    bool isMoving = false;
     bool onSelection = false;
-    float touchBegin;
+   
+
+    void OnTouchEnded(IEnumerable<TouchDetail> touches)
+    {
+        direction = 0;
+        touches.ToList()
+            .ForEach(touch => {
+
+                Debug.Log(string.Format("Touched: {0}", string.Join(",", touch.AllCollidingObject.Select(x => x.name).ToArray())));
+
+                if (!(touch.endCollidingObjects.Any(x => x.tag == disableTouchTag) && touch.beginCollidingObject.Any(x => x.tag == disableTouchTag)))
+                {
+                    direction = (touch.startPosition.Value.x - touch.endPosition.Value.x) * -1;
+                }
+                
+            });
+    }
+
     void Update()
     {
-
-        bool hasTouch = false;
-        var touches = Input.touches.ToList();
-
-
-        touches.Where(x => x.phase == TouchPhase.Began).Take(1).ToList().ForEach(touch => {
-            touchBegin = touch.position.x;
-            direction = 0;
-            hasTouch = true;
-        });
-
-        touches.Where(x => x.phase == TouchPhase.Ended).Take(1).ToList().ForEach(touch => {
-            direction = (touchBegin - touch.position.x) * -1;
-            hasTouch = true;
-            OnMoveCamera();
-        });
-
-        //touches.Where(x => x.phase == TouchPhase.Moved).Take(1).ToList().ForEach(touch =>
-        //{
-        //    if (touch.phase == TouchPhase.Moved)
-        //    {
-        //        var x = touch.deltaPosition.x;
-
-        //        hasTouch = true;
-
-        //        direction += x;
-                
-        //    }
-        //});
-        
-        if (!hasTouch)
-        {
-            if (Input.GetMouseButtonDown(0))
-            {
-                isMoving = !isMoving;
-            };
-
-            
-            if (isMoving)
-            {
-                hasTouch = true;
-
-                var y = Input.GetAxis("Mouse Y") * 10;
-                var x = Input.GetAxis("Mouse X") * 10;
-
-                direction += x;
-               
-
-            }
-        }
-
-        if (!hasTouch)
-        {
-            OnMoveCamera();
-        }
-
-
-
+        OnMoveCamera();
     }
+
+       
 
     private void OnMoveCamera()
     {
         onSelection = Vector3.Distance(previewItems[index].CameraPosition.position, mainCamera.transform.position) == 0f;
-        Debug.Log(string.Format("IsMoving: {0}, Direction: {1}, Distance: {2}", onSelection, direction, Vector3.Distance(previewItems[index].CameraPosition.position, mainCamera.transform.position)));
 
         var moveDistance = direction;
         if (direction < 0)

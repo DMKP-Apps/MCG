@@ -67,7 +67,7 @@ public class GameController : MonoBehaviour {
                 CurrentHole = GameSettings.HoleStatus.currentHoleIndex;
                 break;
         }
-
+        
         BeginHole();
         CurrentBullet = 1;
     }
