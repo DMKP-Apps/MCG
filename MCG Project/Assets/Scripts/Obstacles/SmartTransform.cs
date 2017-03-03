@@ -70,26 +70,73 @@ public class SmartTransform : MonoBehaviour {
     private bool isTransformComplete()
     {
         var tolerance = 0.1;
+        var r1 = _rotation_dest.eulerAngles;
+        var r2 = transform.localRotation.eulerAngles;
+        if (r1 == r2 && _position_dest == transform.localPosition && _scale_dest == transform.localScale)
+        {
+            return true;
+        }
+
+        float r = 0f;
+        if (r1 != r2)
+        {
+            r1 = normalizeRotationVector(r1);
+            r2 = normalizeRotationVector(r2);
+            r = Vector3.Distance(r1, r2);
+            Debug.Log(r);
+        }
+
         var p = Vector3.Distance(_position_dest, transform.localPosition);
-        var r = Vector3.Distance(_rotation_dest.eulerAngles, transform.localRotation.eulerAngles);
         var s = Vector3.Distance(_scale_dest, transform.localScale);
 
-        if (p < tolerance)
+        return p < tolerance && r < tolerance && s < tolerance;
+
+        //if (p < tolerance)
+        //{
+        //    transform.localPosition = _position_dest;
+        //}
+
+        //if (r < tolerance)
+        //{
+        //    transform.localRotation = _rotation_dest;
+        //}
+
+        //if (s < tolerance)
+        //{
+        //    transform.localScale = _scale_dest;
+        //}
+
+        //return _rotation_dest.eulerAngles == transform.localRotation.eulerAngles && _position_dest == transform.localPosition && _scale_dest == transform.localScale;
+    }
+
+    private Vector3 normalizeRotationVector(Vector3 r)
+    {
+        if (r.x > 180)
         {
-            transform.localPosition = _position_dest;
+            r.x -= 360;
+        }
+        else if (r.x < -180)
+        {
+            r.x += 360;
+        }
+        if (r.y > 180)
+        {
+            r.y -= 360;
+        }
+        else if (r.y < -180)
+        {
+            r.y += 360;
+        }
+        if (r.z > 180)
+        {
+            r.z -= 360;
+        }
+        else if (r.z < -180)
+        {
+            r.z += 360;
         }
 
-        if (r < tolerance)
-        {
-            transform.localRotation = _rotation_dest;
-        }
-
-        if (s < tolerance)
-        {
-            transform.localScale = _scale_dest;
-        }
-
-        return _rotation_dest.eulerAngles == transform.localRotation.eulerAngles && _position_dest == transform.localPosition && _scale_dest == transform.localScale;
+        return r;
     }
 
     // Update is called once per frame
