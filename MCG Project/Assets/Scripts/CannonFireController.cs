@@ -29,6 +29,7 @@ public class CannonFireController : MonoBehaviour {
         {
             lines.ToList().ForEach(line => line.gameObject.SetActive(false));
         }
+        yrdsText.SetActive(false);
     }
 
 	private Vector3 previousBulletFirePosition;
@@ -57,6 +58,9 @@ public class CannonFireController : MonoBehaviour {
         
 
         if (cannonPlayerState != null && !cannonPlayerState.isOnlinePlayer && !IsFiring() && lines != null && (previousHasShotPower != GameSettings.ShotPower.HasValue || previousShotPower != shotPower || previousBulletFirePosition != BulletPosition.transform.position || previousBulletIndex != GameController.CurrentBullet)) {
+
+            yrdsText.SetActive(true);
+
             previousBulletIndex = GameController.CurrentBullet;
             previousBulletFirePosition = BulletPosition.transform.position;
             previousShotPower = shotPower;
@@ -93,7 +97,10 @@ public class CannonFireController : MonoBehaviour {
 		return start + startVelocity*time + Physics.gravity*time*time*0.5f;
 	}
 
-	public void PlotTrajectory (Vector3 start, Vector3 startVelocity, float timestep, float maxTime) {
+    public GameObject yrdsText;
+    public TextMesh yrdsDistanceText;
+
+    public void PlotTrajectory (Vector3 start, Vector3 startVelocity, float timestep, float maxTime) {
 		Vector3 prev = start;
 		List<Vector3> positions = new List<Vector3> () { start };
 		for (int i=1;;i++) {
@@ -128,10 +135,16 @@ public class CannonFireController : MonoBehaviour {
 
         if (positions.Count > 0)
         {
+            GameSettings.CurrentCannonRotation = transform.rotation.eulerAngles;
             GameSettings.CurrentCannonLocation = positions[0];
             GameSettings.EstimatedShotLocation = positions[positions.Count - 1];
-
             GameSettings.EstimatedShotHighPoint = positions.OrderByDescending(x => x.y).FirstOrDefault();
+
+            yrdsText.transform.position = GameSettings.EstimatedShotLocation;
+
+            var distance = Vector3.Distance(GameSettings.CurrentCannonLocation, GameSettings.EstimatedShotLocation);
+            yrdsDistanceText.text = System.Math.Ceiling(System.Convert.ToDouble(distance) * 1.0936).ToString();
+
             //EstimatedShotHighPoint
         }
         //line.SetVertexCount (positions.Count);

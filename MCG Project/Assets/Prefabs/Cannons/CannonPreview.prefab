@@ -177,6 +177,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4742116170311590}
   - component: {fileID: 114850416105005842}
+  - component: {fileID: 65758797823434244}
   m_Layer: 0
   m_Name: CannonPreview
   m_TagString: Untagged
@@ -520,6 +521,18 @@ MeshFilter:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1902892013216494}
   m_Mesh: {fileID: 4300000, guid: 8ea68d73e022d4f009f250816344ec50, type: 3}
+--- !u!65 &65758797823434244
+BoxCollider:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1857457315449622}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 3.83, y: 2.94, z: 3.08}
+  m_Center: {x: 0, y: 1.6, z: 0}
 --- !u!114 &114850416105005842
 MonoBehaviour:
   m_ObjectHideFlags: 1
