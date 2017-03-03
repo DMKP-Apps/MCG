@@ -29,14 +29,16 @@ public struct MoveVector
 
 public class SmartTransform : MonoBehaviour {
 
+    public float Tolerance = 0.1f;
     public List<MoveVector> movement = new List<MoveVector>() {
         new MoveVector(new Vector3(), new Vector3(), new Vector3(1,1,1), 0, 1, 1, 1),
         new MoveVector(new Vector3(), new Vector3(), new Vector3(1,1,1), 0, 1, 1, 1),
     };
 
 
+
     private Vector3 _position_dest;
-    private Vector3 _rotation_dest;
+    private Quaternion _rotation_dest;
     private Vector3 _scale_dest;
     private DateTime _timeStamp = DateTime.Now;
     private double _waitTime = 0;
@@ -54,7 +56,7 @@ public class SmartTransform : MonoBehaviour {
         }
         transform.localRotation = Quaternion.Euler(movement[_index].rotation);
         _index++;
-        _rotation_dest = movement[_index].rotation;
+        _rotation_dest = Quaternion.Euler(movement[_index].rotation);
         _position_dest = movement[_index].position;
         _scale_dest = movement[_index].scale;
         _timeStamp = DateTime.Now;
@@ -65,6 +67,78 @@ public class SmartTransform : MonoBehaviour {
 
     }
 
+    private bool isTransformComplete()
+    {
+        var tolerance = 0.1;
+        var r1 = _rotation_dest.eulerAngles;
+        var r2 = transform.localRotation.eulerAngles;
+        if (r1 == r2 && _position_dest == transform.localPosition && _scale_dest == transform.localScale)
+        {
+            return true;
+        }
+
+        float r = 0f;
+        if (r1 != r2)
+        {
+            r1 = normalizeRotationVector(r1);
+            r2 = normalizeRotationVector(r2);
+            r = Vector3.Distance(r1, r2);
+            Debug.Log(r);
+        }
+
+        var p = Vector3.Distance(_position_dest, transform.localPosition);
+        var s = Vector3.Distance(_scale_dest, transform.localScale);
+
+        return p < tolerance && r < tolerance && s < tolerance;
+
+        //if (p < tolerance)
+        //{
+        //    transform.localPosition = _position_dest;
+        //}
+
+        //if (r < tolerance)
+        //{
+        //    transform.localRotation = _rotation_dest;
+        //}
+
+        //if (s < tolerance)
+        //{
+        //    transform.localScale = _scale_dest;
+        //}
+
+        //return _rotation_dest.eulerAngles == transform.localRotation.eulerAngles && _position_dest == transform.localPosition && _scale_dest == transform.localScale;
+    }
+
+    private Vector3 normalizeRotationVector(Vector3 r)
+    {
+        if (r.x > 180)
+        {
+            r.x -= 360;
+        }
+        else if (r.x < -180)
+        {
+            r.x += 360;
+        }
+        if (r.y > 180)
+        {
+            r.y -= 360;
+        }
+        else if (r.y < -180)
+        {
+            r.y += 360;
+        }
+        if (r.z > 180)
+        {
+            r.z -= 360;
+        }
+        else if (r.z < -180)
+        {
+            r.z += 360;
+        }
+
+        return r;
+    }
+
     // Update is called once per frame
     void Update () {
 
@@ -73,16 +147,14 @@ public class SmartTransform : MonoBehaviour {
             return;
         }
 
-        var quat = Quaternion.Euler(_rotation_dest);
-
-        if (quat.eulerAngles == transform.localRotation.eulerAngles && _position_dest == transform.localPosition && _scale_dest == transform.localScale)
+        if (isTransformComplete())
         {
             _index++;
             if (_index >= movement.Count)
             {
                 _index = 0;
             }
-            _rotation_dest = movement[_index].rotation;
+            _rotation_dest = Quaternion.Euler(movement[_index].rotation);
             _position_dest = movement[_index].position;
             _scale_dest = movement[_index].scale;
             _timeStamp = DateTime.Now;
@@ -107,11 +179,11 @@ public class SmartTransform : MonoBehaviour {
 
             if (_rotationSpeed > 0)
             {
-                transform.localRotation = Quaternion.Slerp(transform.localRotation, quat, Time.deltaTime * _rotationSpeed);
+                transform.localRotation = Quaternion.Slerp(transform.localRotation, _rotation_dest, Time.deltaTime * _rotationSpeed);
             }
             else
             {
-                transform.localRotation = quat;
+                transform.localRotation = _rotation_dest;
             }
 
             if (_scaleSpeed > 0)

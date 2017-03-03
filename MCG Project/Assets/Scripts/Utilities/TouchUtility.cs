@@ -9,10 +9,59 @@ public class TouchDetail
     public int touchId;
     public Vector2? startPosition;
     public Vector2? endPosition;
-    public List<Vector2> deltaPositions = new List<Vector2>();
+    public Vector2 deltaPosition = new Vector2();
+    //public List<Vector2> deltaPositions = new List<Vector2>();
     public List<GameObject> beginCollidingObject = new List<GameObject>();
     public List<GameObject> moveCollidingObjects = new List<GameObject>();
     public List<GameObject> endCollidingObjects = new List<GameObject>();
+
+    private List<Vector2> _deltaPositions = new List<Vector2>();
+    private List<Vector2> _positions = new List<Vector2>();
+
+    public List<Vector2> AllDeltaPositions()
+    {
+        return _deltaPositions != null ? _deltaPositions : new List<Vector2>();
+    }
+
+    public int NumberOfPosition { get { return _positions != null ? _positions.Count : 0; } }
+
+    public void AddPosition(Vector2 point)
+    {
+        if (_positions == null)
+        {
+            _positions = new List<Vector2>();
+        }
+
+        if (_positions.Count == 0 && startPosition.HasValue)
+        {
+            _positions.Add(startPosition.Value);
+        }
+
+        _positions.Add(point);
+
+        if (_deltaPositions == null)
+        {
+            _deltaPositions = new List<Vector2>();
+        }
+
+        if (_positions.Count > 1)
+        {
+            var previousPositions = _positions[_positions.Count - 2];
+            var currentPositions = _positions[_positions.Count - 1];
+
+            var maxScreenSize = Screen.width;
+            if (Screen.height > maxScreenSize) {
+                maxScreenSize = Screen.height;
+            }
+
+            var delta = currentPositions - previousPositions;
+            delta.x = delta.x / maxScreenSize * 100;
+            delta.y = delta.y / maxScreenSize * 100;
+            deltaPosition = delta;
+            _deltaPositions.Add(delta);
+        }
+        
+    }
 
     public List<GameObject> AllCollidingObject
     {
@@ -24,6 +73,34 @@ public class TouchDetail
                 .Where(x => x != null)
                 .ToList();
         }
+    }
+
+    public Vector2 GetInputDistance()
+    {
+        if (!startPosition.HasValue)
+        {
+            return new Vector2();
+        }
+
+        var start = startPosition.Value;
+        var end = _positions.LastOrDefault();
+
+        if (endPosition.HasValue)
+        {
+            end = endPosition.Value;
+        }
+
+        var maxScreenSize = Screen.width;
+        if (Screen.height > maxScreenSize)
+        {
+            maxScreenSize = Screen.height;
+        }
+
+        var difference = end - start;
+        difference.x = difference.x / maxScreenSize * 100;
+        difference.y = difference.y / maxScreenSize * 100;
+
+        return difference;
     }
 
     public List<TouchEventType> CollisionDetectedEvent(GameObject gameObject)
@@ -48,11 +125,48 @@ public class TouchDetail
     {
         get
         {
-            return startPosition != null && endPosition == null && deltaPositions.Count == 0 ? TouchEventType.Began :
-                startPosition != null && endPosition == null && deltaPositions.Count > 0 ? TouchEventType.Moved :
+            return startPosition != null && endPosition == null && _deltaPositions.Count == 0 ? TouchEventType.Began :
+                startPosition != null && endPosition == null && _deltaPositions.Count > 0 ? TouchEventType.Moved :
                 startPosition != null && endPosition != null ? TouchEventType.Ended : TouchEventType.Unknown;
         }
     }
+
+    // KAP - Save code for later
+    /*
+     * 
+     * // Store both touches.
+			Touch touchZero = touches [0];
+			Touch touchOne = touches [1];
+
+			// Find the position in the previous frame of each touch.
+			Vector2 touchZeroPrevPos = touchZero.position - touchZero.deltaPosition;
+			Vector2 touchOnePrevPos = touchOne.position - touchOne.deltaPosition;
+
+			// Find the magnitude of the vector (the distance) between the touches in each frame.
+			float prevTouchDeltaMag = (touchZeroPrevPos - touchOnePrevPos).magnitude;
+			float touchDeltaMag = (touchZero.position - touchOne.position).magnitude;
+
+			// Find the difference in the distances between each frame.
+			float deltaMagnitudeDiff = prevTouchDeltaMag - touchDeltaMag;
+
+            // disable this function for now
+            if (1 == 2)
+            {
+                if (deltaMagnitudeDiff > 0 && cameraController.Mode != MainCameraController.CameraMode.Explore)
+                {
+                    // zoom out.
+                    cameraController.Mode = MainCameraController.CameraMode.Explore;
+                    cameraController.canInputMovement = false;
+                }
+                else if (deltaMagnitudeDiff < 0 && cameraController.Mode == MainCameraController.CameraMode.Explore && cameraController.canInputMovement)
+                {
+                    // zoom in.
+                    cameraController.Mode = MainCameraController.CameraMode.FollowCannon;
+
+
+                }
+            }
+     * */
 }
 
 public enum TouchEventType
@@ -173,7 +287,7 @@ public class TouchUtility : MonoBehaviour
                 var index = touchDetails.FindIndex(x => x.touchId == touch.fingerId);
                 if (index > -1)
                 {
-                    touchDetails[index].deltaPositions.Add(touch.deltaPosition);
+                    touchDetails[index].AddPosition(touch.position);
                     touchDetails[index].moveCollidingObjects = checkForCollision(touch);
                 }
             });
@@ -215,6 +329,7 @@ public class TouchUtility : MonoBehaviour
         {
             return;
         }
+        
 
         int touchIndex = touchDetails.FindIndex(x => x.touchId == keyboardId);
         List<int> completedTouchIndexes = new List<int>();
@@ -231,7 +346,7 @@ public class TouchUtility : MonoBehaviour
         }
         else if (trackMouseInput && touchIndex > -1)
         { // Move
-            touchDetails[touchIndex].deltaPositions.Add(movement);
+            touchDetails[touchIndex].AddPosition(point);
             touchDetails[touchIndex].moveCollidingObjects = checkForCollision(point);
         }
         else if (!trackMouseInput && touchIndex > -1)
@@ -251,19 +366,35 @@ public class TouchUtility : MonoBehaviour
         // ensure that this list is unique;
         completedTouchIndexes = completedTouchIndexes.Distinct().ToList();
 
-        // update the subscribing objects.
-        subscribers[TouchEventType.Began].ForEach(action =>
+        var tbegan = touchDetails.Where(x => x.EventType == TouchEventType.Began).ToList();
+        if (tbegan.Count > 0)
         {
-            action(touchDetails.Where(x => x.EventType == TouchEventType.Began));
-        });
-        subscribers[TouchEventType.Moved].ForEach(action =>
+            // update the subscribing objects.
+            subscribers[TouchEventType.Began].ForEach(action =>
+            {
+                action(tbegan);
+            });
+        }
+
+        var mbegan = touchDetails.Where(x => x.EventType == TouchEventType.Moved).ToList();
+        if (mbegan.Count > 0)
         {
-            action(touchDetails.Where(x => x.EventType == TouchEventType.Moved));
-        });
-        subscribers[TouchEventType.Ended].ForEach(action =>
+            // update the subscribing objects.
+            subscribers[TouchEventType.Moved].ForEach(action =>
+            {
+                action(mbegan);
+            });
+        }
+
+        var ebegan = touchDetails.Where(x => x.EventType == TouchEventType.Ended).ToList();
+        if (ebegan.Count > 0)
         {
-            action(touchDetails.Where(x => x.EventType == TouchEventType.Ended));
-        });
+            // update the subscribing objects.
+            subscribers[TouchEventType.Ended].ForEach(action =>
+            {
+                action(ebegan);
+            });
+        }
 
         // remove the completed items
         completedTouchIndexes.ForEach(x => touchDetails.RemoveAt(x));

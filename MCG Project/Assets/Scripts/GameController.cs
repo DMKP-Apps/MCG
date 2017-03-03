@@ -36,6 +36,12 @@ public class GameController : MonoBehaviour {
     void Start()
     {
 
+        var touchUtility = GameObject.FindObjectOfType<TouchUtility>();
+        if (touchUtility != null)
+        {
+            touchUtility.Subscribe((touches) => TouchDetected(), TouchEventType.Ended);
+        }
+
         testController = GameObject.FindObjectOfType<TestController>();
         BulletCamera = GameObject.Find("BulletCamera");
         BulletCamera.SetActive(false);
