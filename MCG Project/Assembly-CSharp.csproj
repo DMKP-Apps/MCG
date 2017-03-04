@@ -110,6 +110,7 @@
      <Compile Include="Assets\Scripts\Obstacles\MoveObject.cs" />
      <Compile Include="Assets\Scripts\Obstacles\MoveSpike.cs" />
      <Compile Include="Assets\Scripts\Obstacles\RotateObject.cs" />
+     <Compile Include="Assets\Scripts\Obstacles\SmartTransform.cs" />
      <Compile Include="Assets\Scripts\Obstacles\SpawnItem.cs" />
      <Compile Include="Assets\Scripts\SkinScene\CannonSkinPreview.cs" />
      <Compile Include="Assets\Scripts\SkinScene\SkinInputController.cs" />
@@ -125,6 +126,7 @@
      <Compile Include="Assets\Scripts\UIScripts\PointToPin.cs" />
      <Compile Include="Assets\Scripts\UIScripts\ScaleControls.cs" />
      <Compile Include="Assets\Scripts\UITextController.cs" />
+     <Compile Include="Assets\Scripts\Utilities\TouchUtility.cs" />
      <Compile Include="Assets\Scripts\WaterCollision.cs" />
      <Compile Include="Assets\Scripts\WaterData.cs" />
      <None Include="Assets\CameraPath3\3.1x Upgrade readme.txt" />

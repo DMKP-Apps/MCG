@@ -37,7 +37,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
+  m_IndirectSpecularColor: {r: 0.4465934, g: 0.49642956, b: 0.57482487, a: 1}
 --- !u!157 &3
 LightmapSettings:
   m_ObjectHideFlags: 0
@@ -6010,16 +6010,6 @@ Prefab:
       propertyPath: m_RootOrder
       value: 10
       objectReference: {fileID: 0}
-    - target: {fileID: 111251573627436108, guid: 13c7f3cd9ef704ca4ab37314da0c70d0,
-        type: 2}
-      propertyPath: m_Animation
-      value: 
-      objectReference: {fileID: 7400000, guid: 95080f212f7a31741b711a34ebefbdc5, type: 2}
-    - target: {fileID: 111251573627436108, guid: 13c7f3cd9ef704ca4ab37314da0c70d0,
-        type: 2}
-      propertyPath: m_Animations.Array.data[0]
-      value: 
-      objectReference: {fileID: 7400000, guid: 95080f212f7a31741b711a34ebefbdc5, type: 2}
     - target: {fileID: 111779414008078776, guid: 13c7f3cd9ef704ca4ab37314da0c70d0,
         type: 2}
       propertyPath: m_Animation
@@ -6030,6 +6020,16 @@ Prefab:
       propertyPath: m_Animations.Array.data[0]
       value: 
       objectReference: {fileID: 7400000, guid: f12cc459d7772d848b1ba4a139b379ef, type: 2}
+    - target: {fileID: 111251573627436108, guid: 13c7f3cd9ef704ca4ab37314da0c70d0,
+        type: 2}
+      propertyPath: m_Animation
+      value: 
+      objectReference: {fileID: 7400000, guid: 95080f212f7a31741b711a34ebefbdc5, type: 2}
+    - target: {fileID: 111251573627436108, guid: 13c7f3cd9ef704ca4ab37314da0c70d0,
+        type: 2}
+      propertyPath: m_Animations.Array.data[0]
+      value: 
+      objectReference: {fileID: 7400000, guid: 95080f212f7a31741b711a34ebefbdc5, type: 2}
     - target: {fileID: 1042327772381158, guid: 13c7f3cd9ef704ca4ab37314da0c70d0, type: 2}
       propertyPath: m_IsActive
       value: 0
