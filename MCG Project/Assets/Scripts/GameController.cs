@@ -39,7 +39,7 @@ public class GameController : MonoBehaviour {
         var touchUtility = GameObject.FindObjectOfType<TouchUtility>();
         if (touchUtility != null)
         {
-            touchUtility.Subscribe((touches) => TouchDetected(), TouchEventType.Ended);
+            touchUtility.Subscribe(this, (touches) => TouchDetected(), TouchEventType.Ended);
         }
 
         testController = GameObject.FindObjectOfType<TestController>();
@@ -185,7 +185,12 @@ public class GameController : MonoBehaviour {
 		cameraController = camera;
 	}
 
-	public void Log(string output) {
+    public MainCameraController getMainCamera()
+    {
+        return cameraController;
+    }
+
+    public void Log(string output) {
 
 		textController.Log (output);
 

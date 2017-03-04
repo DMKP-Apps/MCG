@@ -36,13 +36,22 @@ public class InputController : MonoBehaviour {
         var touchUtility = GameObject.FindObjectOfType<TouchUtility>();
         if (touchUtility != null)
         {
-            touchUtility.Subscribe(OnTouchMoved, TouchEventType.Moved);
-            touchUtility.Subscribe(OnTouchEnd, TouchEventType.Ended);
+            touchUtility.Subscribe(this, OnTouchMoved, TouchEventType.Moved);
+            touchUtility.Subscribe(this, OnTouchEnd, TouchEventType.Ended);
         }
 
     }
 
-	public Vector3 rotationRange = new Vector3(0, 0, 70);
+    void OnDestroy()
+    {
+        var touchUtility = GameObject.FindObjectOfType<TouchUtility>();
+        if (touchUtility != null)
+        {
+            touchUtility.Unsubscribe(this);
+        }
+    }
+
+    public Vector3 rotationRange = new Vector3(0, 0, 70);
 	public float rotationSpeed = 10;
 	public float dampingTime = 0.2f;
 
@@ -70,7 +79,7 @@ public class InputController : MonoBehaviour {
 
     void OnTouchMoved(IEnumerable<TouchDetail> touches)
     {
-        var cameraController = sceneCamera.gameObject.GetComponent<MainCameraController>();
+        var cameraController = GameController.getMainCamera();
         if (!AllowInput || playerState.isFiring() || cameraController.Mode != MainCameraController.CameraMode.FollowCannon)
         {
             return;
@@ -90,26 +99,29 @@ public class InputController : MonoBehaviour {
             ref m_FollowVelocity, rotationRange, rotationSpeed,
             dampingTime, deltaPosition.x, deltaPosition.y);
 
-        var currentRotation = string.Format("{0},{1},{2}",
-                                                transform.localRotation.x.ToString("0000.0000"),
-                                                transform.localRotation.y.ToString("0000.0000"),
-                                                transform.localRotation.z.ToString("0000.0000"));
+        //var currentRotation = string.Format("{0},{1},{2}",
+        //                                        transform.localRotation.x.ToString("0000.0000"),
+        //                                        transform.localRotation.y.ToString("0000.0000"),
+        //                                        transform.localRotation.z.ToString("0000.0000"));
 
 
-        if (previousPosition != currentRotation)
-        {
-            previousPosition = currentRotation;
-            InputPosition.x = deltaPosition.x;
-            InputPosition.y = deltaPosition.y;
+        //if (previousPosition != currentRotation)
+        //{
+        //    previousPosition = currentRotation;
+        InputPosition.x = deltaPosition.x;
+        InputPosition.y = deltaPosition.y;
 
-        }
+        //}
 
-        
+
     }
 
     void OnTouchEnd(IEnumerable<TouchDetail> touches)
     {
-        var cameraController = sceneCamera.gameObject.GetComponent<MainCameraController>();
+        InputPosition.x = 0;
+        InputPosition.y = 0;
+
+        var cameraController = GameController.getMainCamera();
         if (!AllowInput || cameraController.Mode != MainCameraController.CameraMode.FollowBullet)
         {
             return;
@@ -130,6 +142,7 @@ public class InputController : MonoBehaviour {
         {
             bulletController.AddSpin(deltaPosition);
         }
+
 
 
     }

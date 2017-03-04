@@ -69,7 +69,7 @@ public class SmartTransform : MonoBehaviour {
 
     private bool isTransformComplete()
     {
-        var tolerance = 0.1;
+        var tolerance = Tolerance;
         var r1 = _rotation_dest.eulerAngles;
         var r2 = transform.localRotation.eulerAngles;
         if (r1 == r2 && _position_dest == transform.localPosition && _scale_dest == transform.localScale)
@@ -83,11 +83,13 @@ public class SmartTransform : MonoBehaviour {
             r1 = normalizeRotationVector(r1);
             r2 = normalizeRotationVector(r2);
             r = Vector3.Distance(r1, r2);
-            Debug.Log(r);
         }
 
         var p = Vector3.Distance(_position_dest, transform.localPosition);
         var s = Vector3.Distance(_scale_dest, transform.localScale);
+
+        Debug.Log(string.Format("{0},{1},{2}", p < tolerance, r < tolerance, s < tolerance));
+
 
         return p < tolerance && r < tolerance && s < tolerance;
 
@@ -147,7 +149,9 @@ public class SmartTransform : MonoBehaviour {
             return;
         }
 
-        if (isTransformComplete())
+        var complete = isTransformComplete();
+        Debug.Log(complete);
+        if (complete)
         {
             _index++;
             if (_index >= movement.Count)

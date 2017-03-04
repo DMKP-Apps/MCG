@@ -41,7 +41,7 @@ public class SkinInputController : MonoBehaviour {
         var touchUtility = GameObject.FindObjectOfType<TouchUtility>();
         if (touchUtility != null)
         {
-            touchUtility.Subscribe(OnTouchEnded, TouchEventType.Ended);
+            touchUtility.Subscribe(this, OnTouchEnded, TouchEventType.Ended);
         }
 
 

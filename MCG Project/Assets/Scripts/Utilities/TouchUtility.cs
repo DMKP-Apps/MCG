@@ -179,9 +179,14 @@ public enum TouchEventType
 
 public class TouchUtility : MonoBehaviour
 {
+    public class TouchEventInfo
+    {
+        public Action<IEnumerable<TouchDetail>> onAction;
+        public MonoBehaviour parent;
+    }
 
     private List<TouchDetail> touchDetails = new List<TouchDetail>();
-    private Dictionary<TouchEventType, List<Action<IEnumerable<TouchDetail>>>> subscribers = new Dictionary<TouchEventType, List<Action<IEnumerable<TouchDetail>>>>();
+    private Dictionary<TouchEventType, List<TouchEventInfo>> subscribers = new Dictionary<TouchEventType, List<TouchEventInfo>>();
 
     public bool detectMouseInput = false;
     private bool trackMouseInput = false;
@@ -205,7 +210,7 @@ public class TouchUtility : MonoBehaviour
     {
         if (subscribers == null)
         {
-            subscribers = new Dictionary<TouchEventType, List<Action<IEnumerable<TouchDetail>>>>();
+            subscribers = new Dictionary<TouchEventType, List<TouchUtility.TouchEventInfo>>();
         }
 
         if (eventTypes == null)
@@ -216,17 +221,17 @@ public class TouchUtility : MonoBehaviour
         eventTypes.ToList().ForEach(type => {
             if (!subscribers.ContainsKey(type))
             {
-                subscribers.Add(type, new List<Action<IEnumerable<TouchDetail>>>());
+                subscribers.Add(type, new List<TouchUtility.TouchEventInfo>());
             }
             else if (subscribers[type] == null)
             {
-                subscribers[type] = new List<Action<IEnumerable<TouchDetail>>>();
+                subscribers[type] = new List<TouchUtility.TouchEventInfo>();
             }
         });
         
     }
 
-    public void Subscribe(Action<IEnumerable<TouchDetail>> onUpdate, params TouchEventType[] eventTypes)
+    public void Subscribe(MonoBehaviour parent, Action<IEnumerable<TouchDetail>> onUpdate, params TouchEventType[] eventTypes)
     {
         if (eventTypes == null || onUpdate == null)
         {   // nothing to do... just exit.
@@ -237,7 +242,22 @@ public class TouchUtility : MonoBehaviour
         init(eventTypes);
 
         eventTypes.ToList().ForEach(type => {
-            subscribers[type].Add(onUpdate);
+            subscribers[type].Add(new TouchEventInfo() {
+                parent = parent,
+                onAction = onUpdate
+            });
+        });
+    }
+
+    public void Unsubscribe(MonoBehaviour parent)
+    {
+        if (parent == null )
+        {   // nothing to do... just exit.
+            return;
+        }
+
+        subscribers.Select(x => x.Key).ToList().ForEach(type => {
+            subscribers[type] = subscribers[type].Where(x => x.parent != parent).ToList();
         });
     }
 
@@ -372,7 +392,7 @@ public class TouchUtility : MonoBehaviour
             // update the subscribing objects.
             subscribers[TouchEventType.Began].ForEach(action =>
             {
-                action(tbegan);
+                action.onAction(tbegan);
             });
         }
 
@@ -382,7 +402,7 @@ public class TouchUtility : MonoBehaviour
             // update the subscribing objects.
             subscribers[TouchEventType.Moved].ForEach(action =>
             {
-                action(mbegan);
+                action.onAction(mbegan);
             });
         }
 
@@ -392,7 +412,7 @@ public class TouchUtility : MonoBehaviour
             // update the subscribing objects.
             subscribers[TouchEventType.Ended].ForEach(action =>
             {
-                action(ebegan);
+                action.onAction(ebegan);
             });
         }
 
