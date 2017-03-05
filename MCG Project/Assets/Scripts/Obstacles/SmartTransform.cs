@@ -88,7 +88,7 @@ public class SmartTransform : MonoBehaviour {
         var p = Vector3.Distance(_position_dest, transform.localPosition);
         var s = Vector3.Distance(_scale_dest, transform.localScale);
 
-        Debug.Log(string.Format("{0},{1},{2}", p < tolerance, r < tolerance, s < tolerance));
+        //Debug.Log(string.Format("{0},{1},{2}", p < tolerance, r < tolerance, s < tolerance));
 
 
         return p < tolerance && r < tolerance && s < tolerance;
@@ -150,7 +150,7 @@ public class SmartTransform : MonoBehaviour {
         }
 
         var complete = isTransformComplete();
-        Debug.Log(complete);
+        //Debug.Log(complete);
         if (complete)
         {
             _index++;

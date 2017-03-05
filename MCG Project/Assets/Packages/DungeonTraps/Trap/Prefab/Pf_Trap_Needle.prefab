@@ -27,6 +27,7 @@ GameObject:
   - component: {fileID: 3315018}
   - component: {fileID: 2315018}
   - component: {fileID: 6515020}
+  - component: {fileID: 114364164574417402}
   m_Layer: 0
   m_Name: Needle
   m_TagString: Untagged
@@ -72,7 +73,7 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 115018}
-  m_LocalRotation: {x: 1.7112914e-15, y: 1, z: -0.000000021855694, w: 0.0000000754979}
+  m_LocalRotation: {x: 0, y: -1, z: 0, w: -0.00000004371139}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
@@ -188,12 +189,12 @@ Animation:
   m_GameObject: {fileID: 115016}
   m_Enabled: 1
   serializedVersion: 3
-  m_Animation: {fileID: 7400000, guid: 5b338c3066ff22540915b5969709eb8a, type: 2}
+  m_Animation: {fileID: 0}
   m_Animations:
-  - {fileID: 7400000, guid: 9cb97650810bcdb478157897cc0725ed, type: 2}
-  - {fileID: 7400000, guid: 82276ad1fa0134f4d916ecaa765f6322, type: 2}
-  - {fileID: 7400000, guid: 2badb873ba409044db8e5b1246871dd2, type: 2}
-  - {fileID: 7400000, guid: 5b338c3066ff22540915b5969709eb8a, type: 2}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
   m_WrapMode: 0
   m_PlayAutomatically: 1
   m_AnimatePhysics: 0
@@ -209,3 +210,30 @@ Prefab:
   m_ParentPrefab: {fileID: 0}
   m_RootGameObject: {fileID: 115016}
   m_IsPrefabParent: 1
+--- !u!114 &114364164574417402
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 115018}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f7c86103589a0e54ea989a5c21488315, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Tolerance: 2
+  movement:
+  - position: {x: 0, y: 0, z: 0}
+    rotation: {x: 0, y: -180, z: 0}
+    scale: {x: 1, y: 1, z: 1}
+    waitMillisec: 500
+    positionSpeed: 150
+    rotationSpeed: 1
+    scaleSpeed: 1
+  - position: {x: 0, y: -46.5, z: 0}
+    rotation: {x: 0, y: -180, z: 0}
+    scale: {x: 1, y: 1, z: 1}
+    waitMillisec: 1000
+    positionSpeed: 10
+    rotationSpeed: 1
+    scaleSpeed: 1

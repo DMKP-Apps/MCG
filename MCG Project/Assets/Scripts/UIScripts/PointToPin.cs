@@ -85,8 +85,8 @@ public class PointToPin : MonoBehaviour {
 
 			}
 
-			//Debug.Log (string.Format ("{0},{1} = {2}", gameController.GetHolePinPosition (), transform.position, Vector3.Distance (gameController.GetHolePinPosition (), transform.position)));
-			var toPin = System.Convert.ToInt32(System.Math.Ceiling(Vector3.Distance (gameController.GetHolePinPosition (), player.transform.position)));
+            //Debug.Log (string.Format ("{0},{1} = {2}", gameController.GetHolePinPosition (), transform.position, Vector3.Distance (gameController.GetHolePinPosition (), transform.position)));
+            var toPin = System.Convert.ToInt32(System.Math.Ceiling(gameController.GetDistanceToPin()));// System.Convert.ToInt32(System.Math.Ceiling(Vector3.Distance (gameController.GetHolePinPosition (), player.transform.position)));
 			playerInfo.YRDSToPIN = toPin;
 		}
 	}
