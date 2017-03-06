@@ -255,12 +255,12 @@ GameObject:
   - component: {fileID: 114934744088929352}
   - component: {fileID: 114283541173289352}
   - component: {fileID: 65476531973754554}
-  - component: {fileID: 136031775770618482}
   - component: {fileID: 54675475560360762}
   - component: {fileID: 114137831142887168}
+  - component: {fileID: 114980203288134146}
   m_Layer: 0
   m_Name: Cannon
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -486,6 +486,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4466682079063916}
   - component: {fileID: 114452725298026290}
+  - component: {fileID: 136875638924025994}
   m_Layer: 9
   m_Name: CannonBarrel
   m_TagString: Untagged
@@ -729,7 +730,7 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1405972832220396}
-  m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
+  m_LocalRotation: {x: 0, y: -1, z: 0, w: 0.00000028088027}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
@@ -743,7 +744,7 @@ Transform:
   - {fileID: 4277044034358900}
   m_Father: {fileID: 0}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: -179.99998, z: 0}
 --- !u!4 &4489559410280576
 Transform:
   m_ObjectHideFlags: 1
@@ -1393,8 +1394,8 @@ BoxCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 3, y: 1, z: 2.3}
-  m_Center: {x: -0.03, y: 0.18, z: 0.02}
+  m_Size: {x: 3, y: 2.24, z: 2.3}
+  m_Center: {x: -0.03, y: 0.8, z: 0.02}
 --- !u!81 &81817554710507940
 AudioListener:
   m_ObjectHideFlags: 1
@@ -1628,6 +1629,17 @@ MonoBehaviour:
   isOnlinePlayer: 0
   playerKey: 
   MoveToParent: {fileID: 0}
+--- !u!114 &114980203288134146
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1405972832220396}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d7f13a7da399e284e9debc737495eeb3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!120 &120647702538311088
 LineRenderer:
   m_ObjectHideFlags: 1
@@ -2005,19 +2017,19 @@ Behaviour:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1095731554387276}
   m_Enabled: 1
---- !u!136 &136031775770618482
+--- !u!136 &136875638924025994
 CapsuleCollider:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1405972832220396}
+  m_GameObject: {fileID: 1870313067491542}
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
-  m_Radius: 1.8228372
-  m_Height: 4.27
+  m_Radius: 0.89
+  m_Height: 4.51
   m_Direction: 2
-  m_Center: {x: 0, y: 1.74, z: 0.91}
+  m_Center: {x: 0, y: 0.06, z: 1.13}
 --- !u!198 &198017712701450448
 ParticleSystem:
   m_ObjectHideFlags: 1

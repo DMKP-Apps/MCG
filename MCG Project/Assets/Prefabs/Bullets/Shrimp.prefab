@@ -46,7 +46,6 @@ GameObject:
   - component: {fileID: 114576070222282044}
   - component: {fileID: 114733368726452996}
   - component: {fileID: 75011810756905308}
-  - component: {fileID: 114362267786192292}
   m_Layer: 0
   m_Name: Shrimp
   m_TagString: Untagged
@@ -176,19 +175,6 @@ Animator:
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
---- !u!114 &114362267786192292
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1804432344787474}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bddf739a344a26c4ea303c0c61d5ac7f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  lookForTag:
-  - Terrain
 --- !u!114 &114576070222282044
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -204,6 +190,8 @@ MonoBehaviour:
   BasePower: 5
   MaxAccuracy: 50
   MaxTorque: 10
+  PowerMeterSpeedMultiplier: 1
+  AccuracyMeterSpeedMultiplier: 1
   Image: {fileID: 21300008, guid: cbb30e6e7927e44b987aa9ad4a893727, type: 3}
 --- !u!114 &114733368726452996
 MonoBehaviour:
@@ -217,6 +205,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   splash: {fileID: 1603515697510202, guid: ad787bccff37c4d6db6afb956ae9c8c8, type: 2}
+  velocitySqrMagThreshold: 1
+  maxDrag: 10
+  collidingIds: 
 --- !u!114 &114765387317451394
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -250,7 +241,7 @@ ParticleSystem:
   m_GameObject: {fileID: 1690265009495688}
   serializedVersion: 5
   lengthInSec: 10
-  speed: 1
+  simulationSpeed: 1
   looping: 0
   prewarm: 0
   playOnAwake: 1
