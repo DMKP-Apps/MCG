@@ -125,6 +125,7 @@
     <Compile Include="Assets\Scripts\CameraFollow.cs" />
     <Compile Include="Assets\Scripts\CameraLookAt.cs" />
     <Compile Include="Assets\Scripts\CannonBodyAnimate.cs" />
+    <Compile Include="Assets\Scripts\CannonCollisonController.cs" />
     <Compile Include="Assets\Scripts\CannonController.cs" />
     <Compile Include="Assets\Scripts\CannonFireController.cs" />
     <Compile Include="Assets\Scripts\CannonMaterialController.cs" />
@@ -150,6 +151,7 @@
     <Compile Include="Assets\Scripts\Obstacles\MoveAroundObject.cs" />
     <Compile Include="Assets\Scripts\Obstacles\MoveObject.cs" />
     <Compile Include="Assets\Scripts\Obstacles\MoveSpike.cs" />
+    <Compile Include="Assets\Scripts\Obstacles\ObstacleCollision.cs" />
     <Compile Include="Assets\Scripts\Obstacles\RotateObject.cs" />
     <Compile Include="Assets\Scripts\Obstacles\SmartTransform.cs" />
     <Compile Include="Assets\Scripts\Obstacles\SpawnItem.cs" />
