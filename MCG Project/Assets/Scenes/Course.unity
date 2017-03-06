@@ -6477,7 +6477,7 @@ Prefab:
     - target: {fileID: 114169261653605384, guid: 6c3139a6158094c04a4ec1fe33bc78f6,
         type: 2}
       propertyPath: holePrefabs.Array.size
-      value: 1
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 114169261653605384, guid: 6c3139a6158094c04a4ec1fe33bc78f6,
         type: 2}
@@ -6594,7 +6594,7 @@ Prefab:
         type: 2}
       propertyPath: holePrefabs.Array.data[0]
       value: 
-      objectReference: {fileID: 1042327772381158, guid: d3a710a77424142888415f3fd77d3272,
+      objectReference: {fileID: 1945203357895160, guid: affed36a783f6b74ab6fb8a5cc25c9f1,
         type: 2}
     - target: {fileID: 114169261653605384, guid: 6c3139a6158094c04a4ec1fe33bc78f6,
         type: 2}

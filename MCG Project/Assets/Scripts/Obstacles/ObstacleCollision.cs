@@ -30,12 +30,6 @@ public class ObstacleCollision : MonoBehaviour {
 
     }
 
-    void OnCollisionExit(Collision collision)
-    {
-
-        //collidingIds = collision.contacts.Select(x => x.otherCollider.gameObject.name).Distinct().ToList();
-    }
-
     private GameObject GetParentObjectByTag(GameObject parent, string tag)
     {
         GameObject result = parent;
