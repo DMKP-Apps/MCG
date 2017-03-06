@@ -183,6 +183,7 @@
     <None Include="Assets\Packages\Baker House\Readme.txt" />
     <None Include="Assets\Packages\BrokenVector\FreeLowPolyPack\readme.txt" />
     <None Include="Assets\Packages\Lowpoly_forest_ruins\Readme.txt" />
+    <None Include="Assets\Packages\SimpleCastle\Shader\AlphaTest-Diffuse2side.shader" />
     <None Include="Assets\Standard Assets\CrossPlatformInput\CrossPlatformInputGuidelines.txt" />
     <None Include="Assets\Standard Assets\ParticleSystems\ParticleSystemsGuidelines.txt" />
     <None Include="Assets\Standard Assets\ParticleSystems\Shaders\PriorityParticleAdd.shader" />

@@ -424,7 +424,7 @@ public class GameController : MonoBehaviour {
             player.transform.localScale = new Vector3(1, 1, 1);
         }
 
-        var distance = holeController.GetNextCheckPointLocation(player.transform);
+        //var distance = holeController.GetNextCheckPointLocation(player.transform);
 
     }
 

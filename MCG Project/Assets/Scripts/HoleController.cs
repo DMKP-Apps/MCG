@@ -83,7 +83,7 @@ public class HoleController : MonoBehaviour {
         .Select(x => x.Transform)
         .FirstOrDefault();//.ForEach(x => Debug.Log(string.Format("Mag: {0}, Distance: {1} - {2}", x.Magnitude, x.Distance, x.Name)));
 
-        return checkPoint;
+        return checkPoint != null ? checkPoint : hole;
     }
 
     public float GetDistanceToPin(Transform currentLocation)
