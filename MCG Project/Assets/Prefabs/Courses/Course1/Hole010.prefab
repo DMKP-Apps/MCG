@@ -56,6 +56,7 @@ GameObject:
   - component: {fileID: 33495220861182584}
   - component: {fileID: 23833212892753594}
   - component: {fileID: 64361880040908778}
+  - component: {fileID: 114943735768780730}
   m_Layer: 0
   m_Name: Shuriken02
   m_TagString: Untagged
@@ -378,6 +379,7 @@ GameObject:
   - component: {fileID: 33248947043969470}
   - component: {fileID: 23861521597642376}
   - component: {fileID: 64664314119811548}
+  - component: {fileID: 114090558611491568}
   m_Layer: 0
   m_Name: Shuriken02
   m_TagString: Untagged
@@ -1054,6 +1056,7 @@ GameObject:
   - component: {fileID: 23888095063246288}
   - component: {fileID: 114291151706511418}
   - component: {fileID: 64506257163043276}
+  - component: {fileID: 114656198359692494}
   m_Layer: 0
   m_Name: SawBlade
   m_TagString: Untagged
@@ -1105,6 +1108,7 @@ GameObject:
   - component: {fileID: 33927530387057742}
   - component: {fileID: 23997044958923158}
   - component: {fileID: 64782815215390098}
+  - component: {fileID: 114635809160041926}
   m_Layer: 0
   m_Name: Shuriken02
   m_TagString: Untagged
@@ -1724,6 +1728,7 @@ GameObject:
   - component: {fileID: 33920586547774126}
   - component: {fileID: 23509069983327738}
   - component: {fileID: 64721889785392918}
+  - component: {fileID: 114700809527566568}
   m_Layer: 0
   m_Name: Shuriken02
   m_TagString: Untagged
@@ -1884,6 +1889,7 @@ GameObject:
   - component: {fileID: 23427556124970300}
   - component: {fileID: 114058570580941806}
   - component: {fileID: 64499772092670536}
+  - component: {fileID: 114160964092132392}
   m_Layer: 0
   m_Name: SawBlade
   m_TagString: Untagged
@@ -2140,6 +2146,7 @@ GameObject:
   - component: {fileID: 33091155036208298}
   - component: {fileID: 23780072856856922}
   - component: {fileID: 64611215433412092}
+  - component: {fileID: 114377967380657206}
   m_Layer: 0
   m_Name: SpearLauncher (1)
   m_TagString: Untagged
@@ -2349,6 +2356,7 @@ GameObject:
   - component: {fileID: 33870467901084744}
   - component: {fileID: 23955062760097574}
   - component: {fileID: 64526904947213202}
+  - component: {fileID: 114994562837328400}
   m_Layer: 0
   m_Name: SpearLauncher (1)
   m_TagString: Untagged
@@ -8617,6 +8625,17 @@ MonoBehaviour:
   worldPosition: {x: -14.638492, y: -12.596808, z: -84.40062}
   lockPoint: 0
   tilt: 0
+--- !u!114 &114090558611491568
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1206350620000416}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3649164b5c7167447a2f1f9ddc942281, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &114099789456319290
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -8891,6 +8910,17 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: abafe019eca59455983d3508c20e1772, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &114160964092132392
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1732705912719372}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3649164b5c7167447a2f1f9ddc942281, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!114 &114175221475647182
@@ -9629,6 +9659,17 @@ MonoBehaviour:
   worldPosition: {x: 125.12901, y: 13.5, z: -161.92154}
   lockPoint: 0
   tilt: 0
+--- !u!114 &114377967380657206
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1819863539526664}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3649164b5c7167447a2f1f9ddc942281, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &114391230436406678
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -15896,6 +15937,17 @@ MonoBehaviour:
   index: 4
   percentage: 1
   normalisedPercentage: 1
+--- !u!114 &114635809160041926
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1474870239008778}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3649164b5c7167447a2f1f9ddc942281, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &114639619731126624
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -15922,6 +15974,17 @@ MonoBehaviour:
   lockPoint: 0
   FOV: 60
   Size: 5
+--- !u!114 &114656198359692494
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1441376416320580}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3649164b5c7167447a2f1f9ddc942281, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &114656246343869460
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -21355,6 +21418,17 @@ MonoBehaviour:
   lockPoint: 0
   rotation: {x: 0, y: 0.8106993, z: 0, w: 0.58546275}
   lookAt: {fileID: 0}
+--- !u!114 &114700809527566568
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1683217447070768}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3649164b5c7167447a2f1f9ddc942281, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &114703854306937488
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -22312,6 +22386,17 @@ MonoBehaviour:
   lockPoint: 0
   rotation: {x: -0.013884684, y: 0.026078748, z: 0.0003622533, w: 0.9995634}
   lookAt: {fileID: 0}
+--- !u!114 &114943735768780730
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1024434697076238}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3649164b5c7167447a2f1f9ddc942281, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &114944445977045790
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -22580,6 +22665,17 @@ MonoBehaviour:
   lockPoint: 0
   rotation: {x: 0.12424108, y: -0.6102156, z: 0.06713547, w: 0.7795472}
   lookAt: {fileID: 0}
+--- !u!114 &114994562837328400
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1942018242990424}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3649164b5c7167447a2f1f9ddc942281, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!124 &124365420556335468
 Behaviour:
   m_ObjectHideFlags: 1
