@@ -8,17 +8,9 @@ public class ObstacleCollision : MonoBehaviour {
 
     private List<string> collidingIds = new List<string>();
 
-    public Transform moveToPosition;
-
     void OnCollisionEnter(Collision collision)
     {
-        //collision.contacts.Select(x => x.otherCollider.gameObject)
-        //    .ToList()
-        //    .ForEach(x => {
-
-        //        var cannon = GetParentObjectByTag(x, "Player");
-
-        //    });
+        
         foreach (ContactPoint contact in collision.contacts)
         {
             var cannon = GetParentObjectByTag(contact.otherCollider.gameObject, "Player");
