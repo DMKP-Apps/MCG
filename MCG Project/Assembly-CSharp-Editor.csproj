@@ -64,6 +64,7 @@
      <None Include="Assets\Standard Assets\CrossPlatformInput\CrossPlatformInputGuidelines.txt" />
      <None Include="Assets\Standard Assets\ParticleSystems\Shaders\PriorityParticleAddSoft.shader" />
      <None Include="Assets\Packages\BrokenVector\FreeLowPolyPack\readme.txt" />
+     <None Include="Assets\Packages\SimpleCastle\Shader\AlphaTest-Diffuse2side.shader" />
      <None Include="Assets\Packages\Animated Flags\Shaders\Mobile-Alpha-BumpSpec-1DirectionalLight-NoCull.shader" />
      <None Include="Assets\Standard Assets\ParticleSystems\Shaders\PriorityParticleAdd.shader" />
      <None Include="Assets\Packages\Animated Flags\Shaders\Mobile-BumpSpec-1DirectionalLight-NoCull.shader" />

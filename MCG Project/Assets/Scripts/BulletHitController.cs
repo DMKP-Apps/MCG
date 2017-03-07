@@ -25,41 +25,16 @@ public class BulletHitController : MonoBehaviour {
         }
         bulletRigidbody.maxAngularVelocity = 13;
         bulletRigidbody.AddRelativeTorque(new Vector3(input.y * 2f, input.x * 2f, 0f), ForceMode.VelocityChange);
-        //input.y = 0;
-        //_addSpin = input;
+
         if (input.y > 0) {
             input.y = 1;
         }
         var y = input.y / 8.5f;
         var x = input.x / 50;
 
-        //if (y < 0)
-        //{
-        //    y *= -1;
-        //}
-        //if (x < 0)
-        //{
-        //    x *= -1;
-        //}
-        //if (y > x)
-        //{
-        //    y = input.y / 8.5f;
-        //    x = input.x / 50;
-        //}
-        //else {
-        //    y = input.y / 8;
-        //    x = input.x / 50;
-        //}
+        
         _addSpin = _forward * (y) + _right * (x);// new Vector3(input.x, 0f, input.y);
-        //bulletRigidbody.AddRelativeForce(force, ForceMode.Acceleration);
-        //bulletRigidbody.AddRelativeTorque(Vector3.forward * input.y * 10);
-        //bulletRigidbody..Rotate(new Vector3(input.y * 1000, input.x * 1000 * -1));
-        //bulletRigidbody.AddRelativeTorque(new Vector3(input.y * 1000, input.x * 1000 * -1), ForceMode.VelocityChange);
-        //bulletRigidbody.AddRelativeTorque(transform.right * (input.y * 100), ForceMode.VelocityChange);
-        // bulletRigidbody.AddRelativeForce(new Vector3(input.x / 10 * Time.deltaTime, 0f, -0.5f), ForceMode.VelocityChange);//* Time.deltaTime
-
-        //new Vector3(accuracy * bulletData.MaxAccuracy, 0f, accuracy > 0 ? (accuracy * bulletData.MaxAccuracy) * 0.5f * -1 : (accuracy * bulletData.MaxAccuracy) * 0.5f)
-        Debug.Log(string.Format("touch: {0}, {1}, {2}", input.x, input.y, bulletRigidbody.velocity.sqrMagnitude));
+       
     }
 
     private System.DateTime time = System.DateTime.Now;
@@ -100,10 +75,6 @@ public class BulletHitController : MonoBehaviour {
     {
         float rBVelocitySqrMag = bulletRigidbody.velocity.sqrMagnitude;
         bool canActivateDragDamping = false;
-
-        //Vector3.
-
-        //Debug.Log(string.Join(",", collidingIds.Select(x => x.ToString()).ToArray()));
 
         if (rBVelocitySqrMag < velocitySqrMagThreshold)
         {

@@ -36,6 +36,12 @@ public class GameController : MonoBehaviour {
     void Start()
     {
 
+        var touchUtility = GameObject.FindObjectOfType<TouchUtility>();
+        if (touchUtility != null)
+        {
+            touchUtility.Subscribe(this, (touches) => TouchDetected(), TouchEventType.Began);
+        }
+
         testController = GameObject.FindObjectOfType<TestController>();
         BulletCamera = GameObject.Find("BulletCamera");
         BulletCamera.SetActive(false);
@@ -179,7 +185,12 @@ public class GameController : MonoBehaviour {
 		cameraController = camera;
 	}
 
-	public void Log(string output) {
+    public MainCameraController getMainCamera()
+    {
+        return cameraController;
+    }
+
+    public void Log(string output) {
 
 		textController.Log (output);
 
@@ -215,6 +226,11 @@ public class GameController : MonoBehaviour {
 	{
 		return hole == null ? new Vector3() : hole.GetComponent<HoleController>().hole.transform.position;
 	}
+
+    public float GetDistanceToPin()
+    {
+        return hole.GetComponent<HoleController>().GetDistanceToPin(player.transform);
+    }
 
 	public bool IsHoleCameraActive()
 	{
@@ -322,37 +338,7 @@ public class GameController : MonoBehaviour {
                                     SceneManager.LoadScene(endMatchGameScene, LoadSceneMode.Single);
                                 }
                             }
-
-
-       ////                     var info = GameSettings.GameInfo.Items.ToList();
-							////info = info.OrderByDescending(x => x.holeComplete).ThenBy(x => x.timeStamp).ToList();
-							////if(info.Count < 2 && info.Any(x => !x.holeComplete)) {
-							////	return;
-							////}
-							////var index = info.FindIndex(x => x.objectId == NetworkClientManager.player.UID);
-							////if(index > -1) {
-								
-							////	textController.SetHoleCompleteScore(0, (index+1).ToString());
-							////	GameSettings.HoleStatus.playerRanking = index+1;
-							
-							////	if(info.Count(x => !x.holeComplete) < 2) {
-							////		//var holeController = hole.GetComponent<HoleController> ();
-							////		//if(!holeController.EndCamera.activeInHierarchy) {
-							////		//	holeController.EndCamera.SetActive(true);
-							////		//}
-
-							////		CurrentHole++;
-							////		if (CurrentHole > holePrefabs.Count) {
-							////			CurrentHole = 1;
-							////		}
-
-							////		GameSettings.HoleStatus.currentHoleIndex = CurrentHole;
-							////		SceneManager.LoadScene(endMatchGameScene, LoadSceneMode.Single);
-
-
-
-							////	}
-							////}
+                            
 						}
 					}
 					finally
@@ -370,6 +356,7 @@ public class GameController : MonoBehaviour {
 
 
 	private void MoveToNextPlayer() {
+		var holeController = hole.GetComponent<HoleController> ();
 		if (GameSettings.playerMode != PlayerMode.ServerMultiplayer || (GameSettings.playerMode == PlayerMode.ServerMultiplayer && !GameSettings.isRace)) {
 			if (currentPlayer > -1) {
                 player.GetComponent<CannonPlayerState>().SetPlayerActive(false);
@@ -379,7 +366,6 @@ public class GameController : MonoBehaviour {
 			if (currentPlayer >= players.Count) {
 				currentPlayer = 0;
 			}
-			var holeController = hole.GetComponent<HoleController> ();
 			var playerList = players.Select (p => new { 
 				PlayerState = p.GetComponent<CannonPlayerState> (),
 				Position = p.transform.position,
@@ -406,7 +392,9 @@ public class GameController : MonoBehaviour {
 		textController.SetStroke (playerController.Stroke);
 		textController.SetPlayer (playerController.playerNumber, playerController.TotalScore);
 
-	}
+        
+
+    }
 
 	private void MoveToPosition(Vector3 position) {
 
@@ -416,10 +404,12 @@ public class GameController : MonoBehaviour {
 		var holeController = hole.GetComponent<HoleController> ();
 		var playerCannon = player.GetComponent<CannonFireController> ();
 
-		player.transform.forward = holeController.hole.position;
-		player.transform.LookAt (holeController.hole.position);
+        var nextCheckPoint = holeController.GetNextCheckPointLocation(player.transform);
+
+        player.transform.forward = nextCheckPoint.position;
+		player.transform.LookAt (nextCheckPoint.position);
 		player.transform.rotation = Quaternion.Euler(new Vector3(0f,player.transform.rotation.eulerAngles.y, 0f));
-		playerCannon.AimCannon (holeController.hole.position);
+		playerCannon.AimCannon (nextCheckPoint.position);
 
         var playerState = player.GetComponent<CannonPlayerState>();
         if (playerState.MoveToParent != null)
@@ -433,6 +423,8 @@ public class GameController : MonoBehaviour {
             player.transform.parent = null;
             player.transform.localScale = new Vector3(1, 1, 1);
         }
+
+        //var distance = holeController.GetNextCheckPointLocation(player.transform);
 
     }
 
