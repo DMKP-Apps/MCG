@@ -82,7 +82,7 @@ public class SkinInputController : MonoBehaviour {
         touches.ToList()
             .ForEach(touch => {
 
-                Debug.Log(string.Format("Touched: {0}", string.Join(",", touch.AllCollidingObject.Select(x => x.name).ToArray())));
+                //Debug.Log(string.Format("Touched: {0}", string.Join(",", touch.AllCollidingObject.Select(x => x.name).ToArray())));
 
                 if (!(touch.endCollidingObjects.Any(x => x.tag == disableTouchTag) && touch.beginCollidingObject.Any(x => x.tag == disableTouchTag)))
                 {
@@ -92,9 +92,24 @@ public class SkinInputController : MonoBehaviour {
             });
     }
 
+    private bool isContinueKey = false;
+
     void Update()
     {
         OnMoveCamera();
+
+
+        if ((Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.LeftAlt) || Input.GetKeyDown(KeyCode.LeftControl) || Input.GetKeyDown(KeyCode.LeftShift)) && !isContinueKey)
+        {
+            isContinueKey = true;
+            OnContinueClick();
+        }
+        else if ((Input.GetKeyUp(KeyCode.Space) || Input.GetKeyUp(KeyCode.LeftAlt) || Input.GetKeyUp(KeyCode.LeftControl) || Input.GetKeyUp(KeyCode.LeftShift)))
+        {
+            isContinueKey = false;
+        }
+
+
     }
 
        
@@ -109,7 +124,7 @@ public class SkinInputController : MonoBehaviour {
             moveDistance *= -1;
         }
 
-        if (onSelection && moveDistance > 5)
+        if (onSelection && moveDistance > 0)
         {
             if (direction < 0 && index < previewItems.Length - 1)
             {

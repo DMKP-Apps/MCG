@@ -137,14 +137,14 @@ public class InputController : MonoBehaviour {
         deltaPosition.x *= 7.5f;
         deltaPosition.y *= 7.5f;
         var currentBullet = GameController.GetCurrentShotBullet();
-        var bulletController = currentBullet.GetComponent<BulletHitController>();
-        if (bulletController != null)
+        if (currentBullet != null)
         {
-            bulletController.AddSpin(deltaPosition);
+            var bulletController = currentBullet.GetComponent<BulletHitController>();
+            if (bulletController != null)
+            {
+                bulletController.AddSpin(deltaPosition);
+            }
         }
-
-
-
     }
     /*
     // Update is called once per frame

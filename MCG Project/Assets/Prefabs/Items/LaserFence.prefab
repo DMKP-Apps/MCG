@@ -434,6 +434,10 @@ MonoBehaviour:
   laserWidth: 1
   noise: 1
   maxLength: 50
+  explosion: {fileID: 1475099358905874, guid: 7817d00f108d8f94c9e9212e7420d016, type: 2}
+  Enabled: 1
+  toggleEnabledMillisecs: []
+  initialWaitMillisecs: 0
 --- !u!114 &114175137506763130
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -448,6 +452,10 @@ MonoBehaviour:
   laserWidth: 1
   noise: 1
   maxLength: 50
+  explosion: {fileID: 1475099358905874, guid: 7817d00f108d8f94c9e9212e7420d016, type: 2}
+  Enabled: 1
+  toggleEnabledMillisecs: []
+  initialWaitMillisecs: 0
 --- !u!114 &114205599495882302
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -462,6 +470,10 @@ MonoBehaviour:
   laserWidth: 1
   noise: 1
   maxLength: 50
+  explosion: {fileID: 1475099358905874, guid: 7817d00f108d8f94c9e9212e7420d016, type: 2}
+  Enabled: 1
+  toggleEnabledMillisecs: []
+  initialWaitMillisecs: 0
 --- !u!114 &114439390244065682
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -476,6 +488,10 @@ MonoBehaviour:
   laserWidth: 1
   noise: 1
   maxLength: 50
+  explosion: {fileID: 1475099358905874, guid: 7817d00f108d8f94c9e9212e7420d016, type: 2}
+  Enabled: 1
+  toggleEnabledMillisecs: []
+  initialWaitMillisecs: 0
 --- !u!114 &114604938024302618
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -490,6 +506,10 @@ MonoBehaviour:
   laserWidth: 1
   noise: 1
   maxLength: 50
+  explosion: {fileID: 1475099358905874, guid: 7817d00f108d8f94c9e9212e7420d016, type: 2}
+  Enabled: 1
+  toggleEnabledMillisecs: []
+  initialWaitMillisecs: 0
 --- !u!114 &114960243323434056
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -504,6 +524,10 @@ MonoBehaviour:
   laserWidth: 1
   noise: 1
   maxLength: 50
+  explosion: {fileID: 1475099358905874, guid: 7817d00f108d8f94c9e9212e7420d016, type: 2}
+  Enabled: 1
+  toggleEnabledMillisecs: []
+  initialWaitMillisecs: 0
 --- !u!114 &114981163500771656
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -518,6 +542,10 @@ MonoBehaviour:
   laserWidth: 1
   noise: 1
   maxLength: 50
+  explosion: {fileID: 1475099358905874, guid: 7817d00f108d8f94c9e9212e7420d016, type: 2}
+  Enabled: 1
+  toggleEnabledMillisecs: []
+  initialWaitMillisecs: 0
 --- !u!120 &120036427880719732
 LineRenderer:
   m_ObjectHideFlags: 1

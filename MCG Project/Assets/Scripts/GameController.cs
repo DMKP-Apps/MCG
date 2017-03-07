@@ -570,8 +570,30 @@ public class GameController : MonoBehaviour {
 
 	}
 
+    public void UnplayableHazard(GameObject bullet, Vector3 contactPoint)
+    {
+        CannonPlayerState playerController = GetPlayerState(bullet);
 
-	public void HoleOver(GameObject bullet)
+        if (playerController == null)
+        {
+            return;
+        }
+
+        playerController.Stroke += 2;
+        playerController.isHarzard = true;
+
+        if (playerController.isOnlinePlayer && GameSettings.playerMode == PlayerMode.ServerMultiplayer && GameSettings.isRace)
+        {
+            return;
+        }
+
+
+        lastContactPoint = contactPoint;
+        textController.UnplayableHazard();
+
+    }
+
+    public void HoleOver(GameObject bullet)
 	{
 		CannonPlayerState playerController = GetPlayerState (bullet);
 
