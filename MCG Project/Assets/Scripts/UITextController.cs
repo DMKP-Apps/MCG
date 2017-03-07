@@ -11,8 +11,9 @@ public class UITextController : MonoBehaviour {
 
 	public GameObject alertWaterHazard;
 	public GameObject alertOutOfBounds;
-	
-	public void SetHole(int value) {
+    public GameObject alertUnplayable;
+
+    public void SetHole(int value) {
 
 		playerInfo.HoleNumber = value;
 
@@ -69,4 +70,18 @@ public class UITextController : MonoBehaviour {
 		activateForTime.Show ();
 
 	}
+
+    public void UnplayableHazard()
+    {
+        if (alertUnplayable == null)
+        {
+            return;
+        }
+        var activateForTime = alertUnplayable.GetComponent<ActiveForTime>();
+        if (activateForTime != null)
+        {
+            activateForTime.Show();
+        }
+
+    }
 }

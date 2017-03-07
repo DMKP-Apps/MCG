@@ -179,15 +179,22 @@ public enum TouchEventType
 
 public class TouchUtility : MonoBehaviour
 {
+    public class TouchEventInfo
+    {
+        public Action<IEnumerable<TouchDetail>> onAction;
+        public MonoBehaviour parent;
+    }
 
     private List<TouchDetail> touchDetails = new List<TouchDetail>();
-    private Dictionary<TouchEventType, List<Action<IEnumerable<TouchDetail>>>> subscribers = new Dictionary<TouchEventType, List<Action<IEnumerable<TouchDetail>>>>();
+    private Dictionary<TouchEventType, List<TouchEventInfo>> subscribers = new Dictionary<TouchEventType, List<TouchEventInfo>>();
 
     public bool detectMouseInput = false;
     private bool trackMouseInput = false;
 
     private const int keyboardId = 99;
     private RectTransform rectTranform = null;
+
+    public float keyboardSpeed = 5;
 
     void Start()
     {
@@ -205,7 +212,7 @@ public class TouchUtility : MonoBehaviour
     {
         if (subscribers == null)
         {
-            subscribers = new Dictionary<TouchEventType, List<Action<IEnumerable<TouchDetail>>>>();
+            subscribers = new Dictionary<TouchEventType, List<TouchUtility.TouchEventInfo>>();
         }
 
         if (eventTypes == null)
@@ -216,17 +223,17 @@ public class TouchUtility : MonoBehaviour
         eventTypes.ToList().ForEach(type => {
             if (!subscribers.ContainsKey(type))
             {
-                subscribers.Add(type, new List<Action<IEnumerable<TouchDetail>>>());
+                subscribers.Add(type, new List<TouchUtility.TouchEventInfo>());
             }
             else if (subscribers[type] == null)
             {
-                subscribers[type] = new List<Action<IEnumerable<TouchDetail>>>();
+                subscribers[type] = new List<TouchUtility.TouchEventInfo>();
             }
         });
         
     }
 
-    public void Subscribe(Action<IEnumerable<TouchDetail>> onUpdate, params TouchEventType[] eventTypes)
+    public void Subscribe(MonoBehaviour parent, Action<IEnumerable<TouchDetail>> onUpdate, params TouchEventType[] eventTypes)
     {
         if (eventTypes == null || onUpdate == null)
         {   // nothing to do... just exit.
@@ -237,9 +244,26 @@ public class TouchUtility : MonoBehaviour
         init(eventTypes);
 
         eventTypes.ToList().ForEach(type => {
-            subscribers[type].Add(onUpdate);
+            subscribers[type].Add(new TouchEventInfo() {
+                parent = parent,
+                onAction = onUpdate
+            });
         });
     }
+
+    public void Unsubscribe(MonoBehaviour parent)
+    {
+        if (parent == null )
+        {   // nothing to do... just exit.
+            return;
+        }
+
+        subscribers.Select(x => x.Key).ToList().ForEach(type => {
+            subscribers[type] = subscribers[type].Where(x => x.parent != parent).ToList();
+        });
+    }
+
+    private Vector2 keyBoardMove;
 
     // Update is called once per frame
     void Update()
@@ -254,14 +278,64 @@ public class TouchUtility : MonoBehaviour
             var x = Input.GetAxis("Mouse X");
             var y = Input.GetAxis("Mouse Y");
 
-            if (Input.GetMouseButtonDown(0))
+            var point = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
+
+            //if (Input.GetMouseButtonDown(0))
+            //{
+            //    trackMouseInput = !trackMouseInput;
+            //};
+
+            //var move = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
+            if (Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.RightArrow) || Input.GetKey(KeyCode.UpArrow) || Input.GetKey(KeyCode.DownArrow))
             {
-                trackMouseInput = !trackMouseInput;
-            };
+                var speed = keyboardSpeed;
+                if (Input.GetKey(KeyCode.LeftArrow))
+                {
+                    keyBoardMove.x += speed * -1;
+                    x = speed * -1;
+                }
+
+                if (Input.GetKey(KeyCode.RightArrow))
+                {
+                    keyBoardMove.x += speed;
+                    x = speed;
+                }
+
+                if (Input.GetKey(KeyCode.UpArrow))
+                {
+                    keyBoardMove.y += speed;
+                    y = speed;
+                }
+
+                if (Input.GetKey(KeyCode.DownArrow))
+                {
+                    keyBoardMove.y += speed * -1;
+                    y = speed * -1;
+                }
+
+                point = keyBoardMove;
+
+            }
+            else
+            {
+                keyBoardMove = new Vector2(0, 0);
+            }
 
             if (!(x == 0 && y == 0))
             {
-                OnMouseMove(new Vector2(Input.mousePosition.x, Input.mousePosition.y), new Vector2(x, y));
+                trackMouseInput = true;
+                OnMouseMove(point, new Vector2(x, y));
+            }
+            else
+            {
+                trackMouseInput = false;
+                int touchIndex = touchDetails.FindIndex(k => k.touchId == keyboardId);
+                if (touchIndex > -1)
+                {
+                    var endpoint = touchDetails[touchIndex].startPosition.GetValueOrDefault() + touchDetails[touchIndex].deltaPosition;
+                    OnMouseMove(endpoint, touchDetails[touchIndex].deltaPosition);
+                }
+                
             }
         }
     }
@@ -372,7 +446,7 @@ public class TouchUtility : MonoBehaviour
             // update the subscribing objects.
             subscribers[TouchEventType.Began].ForEach(action =>
             {
-                action(tbegan);
+                action.onAction(tbegan);
             });
         }
 
@@ -382,7 +456,7 @@ public class TouchUtility : MonoBehaviour
             // update the subscribing objects.
             subscribers[TouchEventType.Moved].ForEach(action =>
             {
-                action(mbegan);
+                action.onAction(mbegan);
             });
         }
 
@@ -392,7 +466,7 @@ public class TouchUtility : MonoBehaviour
             // update the subscribing objects.
             subscribers[TouchEventType.Ended].ForEach(action =>
             {
-                action(ebegan);
+                action.onAction(ebegan);
             });
         }
 

@@ -41,7 +41,7 @@ public class SkinInputController : MonoBehaviour {
         var touchUtility = GameObject.FindObjectOfType<TouchUtility>();
         if (touchUtility != null)
         {
-            touchUtility.Subscribe(OnTouchEnded, TouchEventType.Ended);
+            touchUtility.Subscribe(this, OnTouchEnded, TouchEventType.Ended);
         }
 
 
@@ -92,9 +92,24 @@ public class SkinInputController : MonoBehaviour {
             });
     }
 
+    private bool isContinueKey = false;
+
     void Update()
     {
         OnMoveCamera();
+
+
+        if ((Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.LeftAlt) || Input.GetKeyDown(KeyCode.LeftControl) || Input.GetKeyDown(KeyCode.LeftShift)) && !isContinueKey)
+        {
+            isContinueKey = true;
+            OnContinueClick();
+        }
+        else if ((Input.GetKeyUp(KeyCode.Space) || Input.GetKeyUp(KeyCode.LeftAlt) || Input.GetKeyUp(KeyCode.LeftControl) || Input.GetKeyUp(KeyCode.LeftShift)))
+        {
+            isContinueKey = false;
+        }
+
+
     }
 
        
