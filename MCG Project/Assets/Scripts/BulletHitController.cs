@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
+using System;
 
 public class BulletHitController : MonoBehaviour {
 
@@ -125,14 +126,15 @@ public class BulletHitController : MonoBehaviour {
 			else if (contact.otherCollider.gameObject.tag == tagWater && HitDetected != tagWater )
 			{
 				HitDetected = tagWater;
-				GameController.WaterHazard (contact.otherCollider.gameObject, contact.point, this.gameObject);
-				this.gameObject.SetActive (false);
-				if (splash != null) {
-					var ps = (GameObject)Instantiate (splash, new Vector3 (contact.point.x, contact.point.y, contact.point.z), Quaternion.Euler (-90, 0, 0));
-					Destroy (ps, 3f);
-				}
-				Destroy(this.gameObject, 3f);
-			}
+                HitHazard(tagWater, contact.otherCollider.gameObject, contact.point, splash);
+                //GameController.WaterHazard (contact.otherCollider.gameObject, contact.point, this.gameObject);
+                //this.gameObject.SetActive (false);
+                //if (splash != null) {
+                //	var ps = (GameObject)Instantiate (splash, new Vector3 (contact.point.x, contact.point.y, contact.point.z), Quaternion.Euler (-90, 0, 0));
+                //	Destroy (ps, 3f);
+                //}
+                //Destroy(this.gameObject, 3f);
+            }
         }
 
         if (collidingIds.Count > 0 && bulletRigidbody.maxAngularVelocity > 7)
@@ -145,12 +147,61 @@ public class BulletHitController : MonoBehaviour {
                 Debug.Log(string.Format("ADD FORCE: {0}, {1}, {2}", _addSpin.Value.x, _addSpin.Value.y, _addSpin.Value.z));
             }
         }
-
-        
-        
-        
-
     }
+
+    private Dictionary<string, Action<GameObject, Vector3, GameObject>> _hazardActions = null;
+
+    protected Dictionary<string, Action<GameObject, Vector3, GameObject>> hazardActions
+    {
+        get
+        {
+            if (_hazardActions == null)
+            {
+                _hazardActions = new Dictionary<string, Action<GameObject, Vector3, GameObject>>();
+
+                _hazardActions.Add("Untagged", (hitObject, point, animation) => {
+                    GameController.UnplayableHazard(this.gameObject, point);
+                    this.gameObject.SetActive(false);
+                    if (animation != null)
+                    {
+                        var ps = (GameObject)Instantiate(animation, new Vector3(point.x, point.y, point.z), Quaternion.Euler(0, 0, 0));
+                        Destroy(ps, 3f);
+                    }
+                    Destroy(this.gameObject, 3f);
+                });
+
+                _hazardActions.Add("Water", (hitObject, point, animation) => {
+                    GameController.WaterHazard(hitObject, point, this.gameObject);
+                    this.gameObject.SetActive(false);
+                    if (animation != null)
+                    {
+                        var ps = (GameObject)Instantiate(animation, new Vector3(point.x, point.y, point.z), Quaternion.Euler(-90, 0, 0));
+                        Destroy(ps, 3f);
+                    }
+                    Destroy(this.gameObject, 3f);
+                });
+            }
+            return _hazardActions;
+        }
+    }
+
+    public void HitHazard(string tag, GameObject hitObject, Vector3 point, GameObject animation)
+    {
+        if (hitObject == null)
+        {
+            return;
+        }
+
+        if (hazardActions.ContainsKey(tag))
+        {
+            hazardActions[tag](hitObject, point, animation);
+        }
+        else
+        {
+            hazardActions["Untagged"](hitObject, point, animation);
+        }
+    }
+
     void OnCollisionExit(Collision collision)
     {
         collidingIds = collision.contacts.Select(x => x.otherCollider.gameObject.GetInstanceID()).ToList();

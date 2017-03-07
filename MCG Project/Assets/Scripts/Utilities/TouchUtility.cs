@@ -194,6 +194,8 @@ public class TouchUtility : MonoBehaviour
     private const int keyboardId = 99;
     private RectTransform rectTranform = null;
 
+    public float keyboardSpeed = 5;
+
     void Start()
     {
         init(TouchEventType.Began, TouchEventType.Moved, TouchEventType.Ended);
@@ -261,6 +263,8 @@ public class TouchUtility : MonoBehaviour
         });
     }
 
+    private Vector2 keyBoardMove;
+
     // Update is called once per frame
     void Update()
     {
@@ -274,14 +278,64 @@ public class TouchUtility : MonoBehaviour
             var x = Input.GetAxis("Mouse X");
             var y = Input.GetAxis("Mouse Y");
 
-            if (Input.GetMouseButtonDown(0))
+            var point = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
+
+            //if (Input.GetMouseButtonDown(0))
+            //{
+            //    trackMouseInput = !trackMouseInput;
+            //};
+
+            //var move = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
+            if (Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.RightArrow) || Input.GetKey(KeyCode.UpArrow) || Input.GetKey(KeyCode.DownArrow))
             {
-                trackMouseInput = !trackMouseInput;
-            };
+                var speed = keyboardSpeed;
+                if (Input.GetKey(KeyCode.LeftArrow))
+                {
+                    keyBoardMove.x += speed * -1;
+                    x = speed * -1;
+                }
+
+                if (Input.GetKey(KeyCode.RightArrow))
+                {
+                    keyBoardMove.x += speed;
+                    x = speed;
+                }
+
+                if (Input.GetKey(KeyCode.UpArrow))
+                {
+                    keyBoardMove.y += speed;
+                    y = speed;
+                }
+
+                if (Input.GetKey(KeyCode.DownArrow))
+                {
+                    keyBoardMove.y += speed * -1;
+                    y = speed * -1;
+                }
+
+                point = keyBoardMove;
+
+            }
+            else
+            {
+                keyBoardMove = new Vector2(0, 0);
+            }
 
             if (!(x == 0 && y == 0))
             {
-                OnMouseMove(new Vector2(Input.mousePosition.x, Input.mousePosition.y), new Vector2(x, y));
+                trackMouseInput = true;
+                OnMouseMove(point, new Vector2(x, y));
+            }
+            else
+            {
+                trackMouseInput = false;
+                int touchIndex = touchDetails.FindIndex(k => k.touchId == keyboardId);
+                if (touchIndex > -1)
+                {
+                    var endpoint = touchDetails[touchIndex].startPosition.GetValueOrDefault() + touchDetails[touchIndex].deltaPosition;
+                    OnMouseMove(endpoint, touchDetails[touchIndex].deltaPosition);
+                }
+                
             }
         }
     }

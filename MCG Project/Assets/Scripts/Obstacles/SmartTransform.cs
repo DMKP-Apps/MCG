@@ -88,27 +88,8 @@ public class SmartTransform : MonoBehaviour {
         var p = Vector3.Distance(_position_dest, transform.localPosition);
         var s = Vector3.Distance(_scale_dest, transform.localScale);
 
-        //Debug.Log(string.Format("{0},{1},{2}", p < tolerance, r < tolerance, s < tolerance));
-
-
         return p < tolerance && r < tolerance && s < tolerance;
-
-        //if (p < tolerance)
-        //{
-        //    transform.localPosition = _position_dest;
-        //}
-
-        //if (r < tolerance)
-        //{
-        //    transform.localRotation = _rotation_dest;
-        //}
-
-        //if (s < tolerance)
-        //{
-        //    transform.localScale = _scale_dest;
-        //}
-
-        //return _rotation_dest.eulerAngles == transform.localRotation.eulerAngles && _position_dest == transform.localPosition && _scale_dest == transform.localScale;
+        
     }
 
     private Vector3 normalizeRotationVector(Vector3 r)
