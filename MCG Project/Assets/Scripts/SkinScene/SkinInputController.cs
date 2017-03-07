@@ -9,6 +9,13 @@ public class SkinInputController : MonoBehaviour {
 
     public string gameScene = "Course";
 
+    private const string disableTouchTag = "DisableTouch";
+
+    public GameObject previewCannonPrefab;
+
+    public List<Material> barrelMaterials;
+    public List<Material> wheelMaterials;
+
     public Transform mainCamera;
     public TextMesh text;
 
@@ -19,82 +26,113 @@ public class SkinInputController : MonoBehaviour {
 
     void Start()
     {
+        BuildPreviews();
+
         previewItems = GameObject.FindObjectsOfType<CannonSkinPreview>().OrderBy(x => x.transform.position.x).ToArray();
+
+        index = GameSettings.SkinIndex;
+        if (index < 0 || index >= previewItems.Length)
+        {
+            index = 0;
+        }
 
         mainCamera.transform.position = previewItems[index].CameraPosition.position;
 
+        var touchUtility = GameObject.FindObjectOfType<TouchUtility>();
+        if (touchUtility != null)
+        {
+            touchUtility.Subscribe(this, OnTouchEnded, TouchEventType.Ended);
+        }
+
+
+    }
+
+    void BuildPreviews()
+    {
+        var positionOffset = new Vector3(-24f, 0, 0);
+        float offsetIncrement = 6f;
+        int wheelIndex = 0;
+        barrelMaterials.ForEach(material => {
+
+            var previewItem = (GameObject)Instantiate(previewCannonPrefab, positionOffset, Quaternion.Euler(new Vector3(0, 0, 0)));
+            var skinPreview = previewItem.GetComponent<CannonSkinPreview>();
+            if (skinPreview != null)
+            {
+                var wheelMarterial = wheelMaterials.Count > wheelIndex ? wheelMaterials[wheelIndex] : null;
+                skinPreview.CannonBarrelMaterial = material;
+                skinPreview.CannonWheelMaterial = wheelMarterial;
+                skinPreview.description = material.name;
+            }
+
+            positionOffset.x += offsetIncrement;
+            wheelIndex++;
+        });
+
+        
     }
 
     
     // Update is called once per frame
-    bool isMoving = false;
-    bool canMove = false;
+    bool onSelection = false;
+   
+
+    void OnTouchEnded(IEnumerable<TouchDetail> touches)
+    {
+        direction = 0;
+        touches.ToList()
+            .ForEach(touch => {
+
+                Debug.Log(string.Format("Touched: {0}", string.Join(",", touch.AllCollidingObject.Select(x => x.name).ToArray())));
+
+                if (!(touch.endCollidingObjects.Any(x => x.tag == disableTouchTag) && touch.beginCollidingObject.Any(x => x.tag == disableTouchTag)))
+                {
+                    direction = (touch.startPosition.Value.x - touch.endPosition.Value.x) * -1;
+                }
+                
+            });
+    }
+
     void Update()
     {
+        OnMoveCamera();
+    }
 
-        
-        bool hasTouch = false;
-        //direction = 0;
-        var touches = Input.touches.ToList();
+       
 
-        canMove = Vector3.Distance(previewItems[index].CameraPosition.position, mainCamera.transform.position) < 0.05f;
+    private void OnMoveCamera()
+    {
+        onSelection = Vector3.Distance(previewItems[index].CameraPosition.position, mainCamera.transform.position) == 0f;
 
-        
-        touches.Where(x => x.phase == TouchPhase.Moved).Take(1).ToList().ForEach(touch =>
+        var moveDistance = direction;
+        if (direction < 0)
         {
-
-
-            if (touch.phase == TouchPhase.Moved)
-            {
-                var y = touch.deltaPosition.y;
-                var x = touch.deltaPosition.x;
-
-                hasTouch = true;
-
-                direction += x;
-                
-            }
-        });
-        
-        if (!hasTouch)
-        {
-            if (Input.GetMouseButtonDown(0))
-            {
-                isMoving = !isMoving;
-            };
-
-            
-            if (isMoving)
-            {
-                hasTouch = true;
-
-                var y = Input.GetAxis("Mouse Y") * 10;
-                var x = Input.GetAxis("Mouse X") * 10;
-
-                direction += x;
-               
-
-            }
+            moveDistance *= -1;
         }
 
-       if (canMove && (direction > 5 || direction < -5))
-       {
+        if (onSelection && moveDistance > 5)
+        {
             if (direction < 0 && index < previewItems.Length - 1)
             {
+                previewItems[index].isSelected = false;
                 index++;
             }
             else if (direction > 0 && index > 0)
             {
+                previewItems[index].isSelected = false;
                 index--;
             }
 
             direction = 0;
-       }
+        }
+        else if(!onSelection)
+        {
+            direction = 0;
+        }
 
 
         var followPosition = previewItems[index].CameraPosition.position;
-        
-        var minStep = 10f * Time.deltaTime;
+
+        var minStep = 8f * Time.deltaTime;
         var step = (Vector3.Distance(followPosition, mainCamera.transform.position) * 0.75f) * Time.deltaTime;
         if (step < minStep)
         {
@@ -104,12 +142,13 @@ public class SkinInputController : MonoBehaviour {
         mainCamera.transform.position = Vector3.MoveTowards(mainCamera.transform.position, followPosition, step);
         text.text = previewItems[index].description;
 
-
+        previewItems[index].isSelected = true;
 
     }
 
     public void OnContinueClick()
     {
+        GameSettings.SkinIndex = index;
         GameSettings.CannonBarrelMaterial = previewItems[index].CannonBarrelMaterial;
         GameSettings.CannonWheelMaterial = previewItems[index].CannonWheelMaterial;
 

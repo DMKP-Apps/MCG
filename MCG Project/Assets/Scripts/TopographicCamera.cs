@@ -97,7 +97,11 @@ public class TopographicCamera : MonoBehaviour {
         }
 
         transform.position = Vector3.MoveTowards(transform.position, followPosition, step);
-        //transform.LookAt(GameSettings.CurrentCannonLocation);
+
+
+        var quat = Quaternion.Euler(new Vector3(90,GameSettings.CurrentCannonRotation.y, 0));
+
+        transform.rotation = Quaternion.Slerp(transform.rotation, quat, Time.deltaTime * 5f);
 
     }
 }

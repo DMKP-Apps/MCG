@@ -27,7 +27,6 @@ GameObject:
   - component: {fileID: 54745357685152680}
   - component: {fileID: 64543498421922218}
   - component: {fileID: 75145959305843488}
-  - component: {fileID: 114758520764674640}
   m_Layer: 0
   m_Name: Steak
   m_TagString: Bullet
@@ -216,19 +215,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   minDuration: 8
   maxDuration: 10
---- !u!114 &114758520764674640
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1442597043843450}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bddf739a344a26c4ea303c0c61d5ac7f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  lookForTag:
-  - Terrain
 --- !u!114 &114879252226735822
 MonoBehaviour:
   m_ObjectHideFlags: 1

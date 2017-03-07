@@ -26,21 +26,9 @@ public static class GameSettings {
 
 	public static string SessionId = string.Empty;
 
+    public static int SkinIndex = 0;
     public static Material CannonBarrelMaterial;
     public static Material CannonWheelMaterial;
-
-	//public static List<NetworkPlayerData> NetworkPlayers{
-	//	get { 
-	//		if (playerMode == PlayerMode.ServerMultiplayer && Room != null) {// _networkPlayers != null) {
-	//			return _networkPlayers;
-	//		} else {
-	//			return new List<NetworkPlayerData> ();
-	//		}
-	//	}
-	//	set { 
-	//		_networkPlayers = value;
-	//	}
-	//}
 
 	public static GameInfoResults GameInfo;
 	public static bool isRace;
@@ -52,11 +40,14 @@ public static class GameSettings {
 
     public static Vector3 EstimatedShotLocation;
     public static Vector3 CurrentCannonLocation;
+    public static Vector3 CurrentCannonRotation;
     public static Vector3 EstimatedShotHighPoint;
 
     public static roomInfo Room;
 
     public static UserPreferences preferences = new UserPreferences();
+
+    public static Vector2? DisplaySize;
 
 
 }

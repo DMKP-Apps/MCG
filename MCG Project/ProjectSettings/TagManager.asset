@@ -12,6 +12,8 @@ TagManager:
   - Terrain
   - TeeRace
   - CollectableItem
+  - DisableTouch
+  - CheckPoint
   layers:
   - Default
   - TransparentFX
