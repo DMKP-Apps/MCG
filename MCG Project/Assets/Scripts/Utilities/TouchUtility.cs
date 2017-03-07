@@ -206,6 +206,8 @@ public class TouchUtility : MonoBehaviour
             rectTranform = canvas.GetComponent<RectTransform>();
             GameSettings.DisplaySize = rectTranform.rect.size;
         }
+
+        Cursor.visible = false;
     }
 
     void init(params TouchEventType[] eventTypes)

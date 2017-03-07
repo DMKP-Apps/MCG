@@ -82,7 +82,7 @@ public class SkinInputController : MonoBehaviour {
         touches.ToList()
             .ForEach(touch => {
 
-                Debug.Log(string.Format("Touched: {0}", string.Join(",", touch.AllCollidingObject.Select(x => x.name).ToArray())));
+                //Debug.Log(string.Format("Touched: {0}", string.Join(",", touch.AllCollidingObject.Select(x => x.name).ToArray())));
 
                 if (!(touch.endCollidingObjects.Any(x => x.tag == disableTouchTag) && touch.beginCollidingObject.Any(x => x.tag == disableTouchTag)))
                 {
@@ -124,7 +124,7 @@ public class SkinInputController : MonoBehaviour {
             moveDistance *= -1;
         }
 
-        if (onSelection && moveDistance > 5)
+        if (onSelection && moveDistance > 0)
         {
             if (direction < 0 && index < previewItems.Length - 1)
             {
