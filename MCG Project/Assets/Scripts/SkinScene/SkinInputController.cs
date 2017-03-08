@@ -47,6 +47,28 @@ public class SkinInputController : MonoBehaviour {
 
     }
 
+    void OnApplicationFocus(bool hasFocus)
+    {
+        if (hasFocus)
+        {
+            var touchUtility = GameObject.FindObjectOfType<TouchUtility>();
+            if (!touchUtility.HasSubscription(this))
+            {
+                touchUtility.Subscribe(this, OnTouchEnded, TouchEventType.Ended);
+            }
+        }
+
+    }
+
+    void OnDestroy()
+    {
+        var touchUtility = GameObject.FindObjectOfType<TouchUtility>();
+        if (touchUtility != null)
+        {
+            touchUtility.Unsubscribe(this);
+        }
+    }
+
     void BuildPreviews()
     {
         var positionOffset = new Vector3(-24f, 0, 0);

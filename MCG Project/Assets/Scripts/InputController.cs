@@ -42,6 +42,20 @@ public class InputController : MonoBehaviour {
 
     }
 
+    void OnApplicationFocus(bool hasFocus)
+    {
+        if (hasFocus)
+        {
+            var touchUtility = GameObject.FindObjectOfType<TouchUtility>();
+            if (!touchUtility.HasSubscription(this))
+            {
+                touchUtility.Subscribe(this, OnTouchMoved, TouchEventType.Moved);
+                touchUtility.Subscribe(this, OnTouchEnd, TouchEventType.Ended);
+            }
+        }
+
+    }
+
     void OnDestroy()
     {
         var touchUtility = GameObject.FindObjectOfType<TouchUtility>();
@@ -79,7 +93,7 @@ public class InputController : MonoBehaviour {
 
     void OnTouchMoved(IEnumerable<TouchDetail> touches)
     {
-        var cameraController = GameController.getMainCamera();
+        var cameraController = transform.parent.GetComponentInChildren<MainCameraController>();
         if (!AllowInput || playerState.isFiring() || cameraController.Mode != MainCameraController.CameraMode.FollowCannon)
         {
             return;
@@ -99,20 +113,9 @@ public class InputController : MonoBehaviour {
             ref m_FollowVelocity, rotationRange, rotationSpeed,
             dampingTime, deltaPosition.x, deltaPosition.y);
 
-        //var currentRotation = string.Format("{0},{1},{2}",
-        //                                        transform.localRotation.x.ToString("0000.0000"),
-        //                                        transform.localRotation.y.ToString("0000.0000"),
-        //                                        transform.localRotation.z.ToString("0000.0000"));
-
-
-        //if (previousPosition != currentRotation)
-        //{
-        //    previousPosition = currentRotation;
+        
         InputPosition.x = deltaPosition.x;
         InputPosition.y = deltaPosition.y;
-
-        //}
-
 
     }
 

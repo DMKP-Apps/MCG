@@ -107,8 +107,22 @@ public class CannonFireController : MonoBehaviour {
 			float t = timestep*i;
 			if (t > maxTime) break;
 			Vector3 pos = PlotTrajectoryAtTime (start, startVelocity, t);
-			if (Physics.Linecast (prev,pos)) break;
-			Debug.DrawLine (prev,pos,Color.red);
+            RaycastHit hitInfo;
+            //Physics.Linecast(prev, pos, out hitInfo);
+
+            //RaycastHit[] hit;
+            //hit = Physics.RaycastAll(prev, pos);
+
+            //if (hit != null && hit.Any(h => !h.collider.isTrigger))
+            //{
+            //    break;
+            //}
+
+            if (Physics.Linecast(prev, pos, out hitInfo))
+            {
+                if(!hitInfo.collider.isTrigger) break;
+            }
+            Debug.DrawLine (prev,pos,Color.red);
 
 			//line.SetPosition (i, pos);
 			positions.Add (pos);

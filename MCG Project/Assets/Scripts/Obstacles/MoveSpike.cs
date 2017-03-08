@@ -29,9 +29,25 @@ public class MoveSpike : MonoBehaviour {
         _speed = speedToEnd;
 
     }
-	
-	// Update is called once per frame
-	void Update () {
+
+    private double _focusOffset = 0;
+
+    void OnApplicationFocus(bool hasFocus)
+    {
+        if (!hasFocus)
+        {
+            _focusOffset = _waitTime - DateTime.Now.Subtract(_timeStamp).TotalMilliseconds;
+
+        }
+        else if (hasFocus)
+        {
+            _timeStamp = DateTime.Now.AddMilliseconds(1000 + _focusOffset);
+        }
+
+    }
+
+    // Update is called once per frame
+    void Update () {
 
         var quat = Quaternion.Euler(_destination);
         //v

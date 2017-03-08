@@ -49,7 +49,6 @@ public class MainCameraController : MonoBehaviour {
 		GameController.RegisterCameraController (this);
 
         CameraShot1 = GameController.GetBulletCamera();
-		//lookAtController = this.GetComponent<SmoothLookAt> ();
     }
 
 	public bool RunActionCamera = true;

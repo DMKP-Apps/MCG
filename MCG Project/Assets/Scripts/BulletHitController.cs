@@ -34,7 +34,7 @@ public class BulletHitController : MonoBehaviour {
         var x = input.x / 50;
 
         
-        _addSpin = _forward * (y) + _right * (x);// new Vector3(input.x, 0f, input.y);
+        _addSpin = _forward * (y) + _right * (x);
        
     }
 

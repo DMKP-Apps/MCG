@@ -189,12 +189,15 @@ public class TouchUtility : MonoBehaviour
     private Dictionary<TouchEventType, List<TouchEventInfo>> subscribers = new Dictionary<TouchEventType, List<TouchEventInfo>>();
 
     public bool detectMouseInput = false;
+    public bool detectKeyboardInput = true;
     private bool trackMouseInput = false;
 
     private const int keyboardId = 99;
     private RectTransform rectTranform = null;
 
     public float keyboardSpeed = 5;
+    public float mouseMoveSpeed = 12f;
+
 
     void Start()
     {
@@ -265,30 +268,46 @@ public class TouchUtility : MonoBehaviour
         });
     }
 
-    private Vector2 keyBoardMove;
+    public bool HasSubscription(MonoBehaviour parent)
+    {
+        if (parent == null)
+        {   // nothing to do... just exit.
+            return false;
+        }
 
+        return subscribers.Any(x => subscribers[x.Key].Any(y => y.parent == parent));
+    }
+
+    private Vector2 keyBoardMove;
+    private Vector2 mouseMove;
     // Update is called once per frame
     void Update()
     {
+
+        if (Input.GetKeyUp(KeyCode.M))
+        {
+            detectMouseInput = !detectMouseInput;
+        }
+        if (Input.GetKeyUp(KeyCode.K))
+        {
+            detectKeyboardInput = !detectKeyboardInput;
+        }
+
         if (GameSettings.DisplaySize == null || GameSettings.DisplaySize.Value != rectTranform.rect.size)
         {
             GameSettings.DisplaySize = rectTranform.rect.size;
         }
 
-        if (!OnTouch(Input.touches.ToList()) && detectMouseInput)
+        if (!OnTouch(Input.touches.ToList()) && (detectMouseInput || detectKeyboardInput))
         {
-            var x = Input.GetAxis("Mouse X");
-            var y = Input.GetAxis("Mouse Y");
+            var x = detectMouseInput ? Input.GetAxis("Mouse X") * mouseMoveSpeed : 0;
+            var y = detectMouseInput ? Input.GetAxis("Mouse Y") * mouseMoveSpeed : 0;
 
-            var point = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
+            mouseMove += detectMouseInput ? new Vector2(x, y) : new Vector2(0, 0);
 
-            //if (Input.GetMouseButtonDown(0))
-            //{
-            //    trackMouseInput = !trackMouseInput;
-            //};
-
-            //var move = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
-            if (Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.RightArrow) || Input.GetKey(KeyCode.UpArrow) || Input.GetKey(KeyCode.DownArrow))
+            var point = mouseMove; //detectMouseInput ? new Vector2(Input.mousePosition.x, Input.mousePosition.y) : new Vector2(0,0);
+           
+            if ((Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.RightArrow) || Input.GetKey(KeyCode.UpArrow) || Input.GetKey(KeyCode.DownArrow)) && detectKeyboardInput)
             {
                 var speed = keyboardSpeed;
                 if (Input.GetKey(KeyCode.LeftArrow))
@@ -328,16 +347,21 @@ public class TouchUtility : MonoBehaviour
                 trackMouseInput = true;
                 OnMouseMove(point, new Vector2(x, y));
             }
-            else
+            else if(trackMouseInput)
             {
                 trackMouseInput = false;
                 int touchIndex = touchDetails.FindIndex(k => k.touchId == keyboardId);
                 if (touchIndex > -1)
                 {
-                    var endpoint = touchDetails[touchIndex].startPosition.GetValueOrDefault() + touchDetails[touchIndex].deltaPosition;
-                    OnMouseMove(endpoint, touchDetails[touchIndex].deltaPosition);
+                    //var endpoint = touchDetails[touchIndex].startPosition.GetValueOrDefault() + touchDetails[touchIndex].deltaPosition;
+                    //Debug.Log(string.Format("OnMouseMove([{0}], [{1}])", point, touchDetails[touchIndex].deltaPosition));
+                    OnMouseMove(point, touchDetails[touchIndex].deltaPosition);
                 }
-                
+
+                mouseMove = new Vector2(0, 0);
+                keyBoardMove = new Vector2(0, 0);
+
+
             }
         }
     }
@@ -405,7 +429,7 @@ public class TouchUtility : MonoBehaviour
         {
             return;
         }
-        
+
 
         int touchIndex = touchDetails.FindIndex(x => x.touchId == keyboardId);
         List<int> completedTouchIndexes = new List<int>();

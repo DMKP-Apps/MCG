@@ -31,9 +31,25 @@ public class LaserCollision : MonoBehaviour {
         offset = new Vector3(0, 0, 0);
         _time = DateTime.Now.AddMilliseconds(initialWaitMillisecs);
     }
-	
-	// Update is called once per frame
-	void Update () {
+
+    private double _focusOffset = 0;
+
+    void OnApplicationFocus(bool hasFocus)
+    {
+        if (!hasFocus && toggleEnabledMillisecs.Count > 0)
+        {
+            _focusOffset = toggleEnabledMillisecs[toggleIndex] - DateTime.Now.Subtract(_time).TotalMilliseconds;
+
+        }
+        else if (hasFocus && toggleEnabledMillisecs.Count > 0)
+        {
+            _time = DateTime.Now.AddMilliseconds(1000 + _focusOffset);
+        }
+
+    }
+
+    // Update is called once per frame
+    void Update () {
 
         if (toggleEnabledMillisecs.Count > 0)
         {

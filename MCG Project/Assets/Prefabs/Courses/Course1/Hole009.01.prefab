@@ -893,6 +893,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4872511925086756}
   - component: {fileID: 114855605273578682}
+  - component: {fileID: 114437648883998894}
   m_Layer: 0
   m_Name: Hammer
   m_TagString: Untagged
@@ -10412,6 +10413,10 @@ MonoBehaviour:
   laserWidth: 1
   noise: 1
   maxLength: 50
+  explosion: {fileID: 0}
+  Enabled: 1
+  toggleEnabledMillisecs: []
+  initialWaitMillisecs: 0
 --- !u!114 &114134582181217682
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -10533,6 +10538,10 @@ MonoBehaviour:
   laserWidth: 1
   noise: 1
   maxLength: 50
+  explosion: {fileID: 0}
+  Enabled: 1
+  toggleEnabledMillisecs: []
+  initialWaitMillisecs: 0
 --- !u!114 &114156131043768818
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -11117,6 +11126,10 @@ MonoBehaviour:
   laserWidth: 1
   noise: 1
   maxLength: 50
+  explosion: {fileID: 0}
+  Enabled: 1
+  toggleEnabledMillisecs: []
+  initialWaitMillisecs: 0
 --- !u!114 &114321082272660820
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -11131,6 +11144,10 @@ MonoBehaviour:
   laserWidth: 1
   noise: 1
   maxLength: 50
+  explosion: {fileID: 0}
+  Enabled: 1
+  toggleEnabledMillisecs: []
+  initialWaitMillisecs: 0
 --- !u!114 &114327206563411160
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -11615,6 +11632,21 @@ MonoBehaviour:
   index: 0
   percentage: 0
   normalisedPercentage: 0
+--- !u!114 &114437648883998894
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1331669920664736}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dbf0f24767274124bac8dc1fd38b3d8a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Enabled: 1
+  maxDistance: 150
+  maxForce: 75
+  minForce: 25
 --- !u!114 &114438323409618086
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -12153,6 +12185,10 @@ MonoBehaviour:
   laserWidth: 1
   noise: 1
   maxLength: 50
+  explosion: {fileID: 0}
+  Enabled: 1
+  toggleEnabledMillisecs: []
+  initialWaitMillisecs: 0
 --- !u!114 &114602333254402168
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -18097,6 +18133,10 @@ MonoBehaviour:
   laserWidth: 1
   noise: 1
   maxLength: 50
+  explosion: {fileID: 0}
+  Enabled: 1
+  toggleEnabledMillisecs: []
+  initialWaitMillisecs: 0
 --- !u!114 &114697643750622152
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -18239,6 +18279,10 @@ MonoBehaviour:
   laserWidth: 1
   noise: 1
   maxLength: 50
+  explosion: {fileID: 0}
+  Enabled: 1
+  toggleEnabledMillisecs: []
+  initialWaitMillisecs: 0
 --- !u!114 &114733644840903356
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -23911,6 +23955,7 @@ MonoBehaviour:
     positionSpeed: 1
     rotationSpeed: 2.5
     scaleSpeed: 1
+    action: {fileID: 0}
   - position: {x: 0, y: 0, z: 0}
     rotation: {x: 0, y: 0, z: -90}
     scale: {x: 1, y: 1, z: 1}
@@ -23918,6 +23963,7 @@ MonoBehaviour:
     positionSpeed: 1
     rotationSpeed: 2.5
     scaleSpeed: 1
+    action: {fileID: 0}
 --- !u!114 &114851219541693434
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -23989,6 +24035,7 @@ MonoBehaviour:
     positionSpeed: 0
     rotationSpeed: 1
     scaleSpeed: 0
+    action: {fileID: 0}
   - position: {x: 0, y: 0, z: 0}
     rotation: {x: -90, y: 0, z: 0}
     scale: {x: 1, y: 1, z: 1}
@@ -23996,6 +24043,7 @@ MonoBehaviour:
     positionSpeed: 0
     rotationSpeed: 12
     scaleSpeed: 0
+    action: {fileID: 114437648883998894}
 --- !u!114 &114871342794752954
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -24358,6 +24406,7 @@ MonoBehaviour:
     positionSpeed: 1
     rotationSpeed: 2.5
     scaleSpeed: 1
+    action: {fileID: 0}
   - position: {x: 0, y: 0, z: 0}
     rotation: {x: 0, y: 0, z: 90}
     scale: {x: 1, y: 1, z: 1}
@@ -24365,6 +24414,7 @@ MonoBehaviour:
     positionSpeed: 1
     rotationSpeed: 2.5
     scaleSpeed: 1
+    action: {fileID: 0}
 --- !u!114 &114977840971021516
 MonoBehaviour:
   m_ObjectHideFlags: 1

@@ -10,8 +10,9 @@ public struct MoveVector
 {
     public Vector3 position, rotation, scale;
     public float waitMillisec, positionSpeed, rotationSpeed, scaleSpeed;
+    public TransformAction action;
 
-    public MoveVector(Vector3 position, Vector3 rotation, Vector3 scale, float waitMillisec, float positionSpeed, float rotationSpeed, float scaleSpeed)
+    public MoveVector(Vector3 position, Vector3 rotation, Vector3 scale, float waitMillisec, float positionSpeed, float rotationSpeed, float scaleSpeed, TransformAction action)
     {
         if (scale == new Vector3(0, 0, 0))
         {
@@ -24,6 +25,27 @@ public struct MoveVector
         this.positionSpeed = positionSpeed;
         this.rotationSpeed = rotationSpeed;
         this.scaleSpeed = scaleSpeed;
+        this.action = action;
+    }
+}
+
+public class TransformAction : MonoBehaviour
+{
+    protected GameController GameController;
+
+    void Start()
+    {
+        GameController = GameObject.Find("GameController").GetComponent<GameController>();
+    }
+
+    public void Run()
+    {
+        this.OnRun();
+    }
+
+    protected virtual void OnRun()
+    {
+
     }
 }
 
@@ -31,8 +53,8 @@ public class SmartTransform : MonoBehaviour {
 
     public float Tolerance = 0.1f;
     public List<MoveVector> movement = new List<MoveVector>() {
-        new MoveVector(new Vector3(), new Vector3(), new Vector3(1,1,1), 0, 1, 1, 1),
-        new MoveVector(new Vector3(), new Vector3(), new Vector3(1,1,1), 0, 1, 1, 1),
+        new MoveVector(new Vector3(), new Vector3(), new Vector3(1,1,1), 0, 1, 1, 1,null),
+        new MoveVector(new Vector3(), new Vector3(), new Vector3(1,1,1), 0, 1, 1, 1,null)
     };
 
 
@@ -64,6 +86,22 @@ public class SmartTransform : MonoBehaviour {
         _positionSpeed = movement[_index].positionSpeed;
         _rotationSpeed = movement[_index].rotationSpeed;
         _scaleSpeed = movement[_index].scaleSpeed;
+
+    }
+
+    private double _focusOffset = 0;
+
+    void OnApplicationFocus(bool hasFocus)
+    {
+        if (!hasFocus)
+        {
+            _focusOffset = _waitTime - DateTime.Now.Subtract(_timeStamp).TotalMilliseconds;
+
+        }
+        else if (hasFocus)
+        {
+            _timeStamp = DateTime.Now.AddMilliseconds(1000 + _focusOffset);
+        }
 
     }
 
@@ -134,6 +172,11 @@ public class SmartTransform : MonoBehaviour {
         //Debug.Log(complete);
         if (complete)
         {
+            if (movement[_index].action != null)
+            {
+                movement[_index].action.Run();
+            }
+
             _index++;
             if (_index >= movement.Count)
             {

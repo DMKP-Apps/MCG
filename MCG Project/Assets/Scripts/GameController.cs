@@ -83,11 +83,30 @@ public class GameController : MonoBehaviour {
 		if (!hasFocus && NetworkClientManager.IsOnline) {
 			//this.EndGame ();
 		}
+
+        if (hasFocus)
+        {
+            var touchUtility = GameObject.FindObjectOfType<TouchUtility>();
+            if (!touchUtility.HasSubscription(this))
+            {
+                touchUtility.Subscribe(this, (touches) => TouchDetected(), TouchEventType.Began);
+            }
+        }
+
 	}
 
+    void OnDestroy()
+    {
+        var touchUtility = GameObject.FindObjectOfType<TouchUtility>();
+        if (touchUtility != null)
+        {
+            touchUtility.Unsubscribe(this);
+        }
+    }
 
 
-	public void EndGame() {
+
+    public void EndGame() {
 		NetworkClientManager.Logoff ();
 		SceneManager.LoadScene("StartMenu", LoadSceneMode.Single);
 
@@ -268,7 +287,12 @@ public class GameController : MonoBehaviour {
 	private bool checkEndingHole = false;
 	void Update() 
 	{
-		var setActive = true;
+        if ((Input.GetKeyUp(KeyCode.Space) || Input.GetKeyUp(KeyCode.LeftAlt) || Input.GetKeyUp(KeyCode.LeftControl) || Input.GetKeyUp(KeyCode.LeftShift)))
+        {
+            TouchDetected();
+        }
+
+        var setActive = true;
 
 		if(hole != null) {
 			var holeController = hole.GetComponent<HoleController> ();
