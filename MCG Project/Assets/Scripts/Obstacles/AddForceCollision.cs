@@ -4,17 +4,18 @@ using UnityEngine;
 
 public class AddForceCollision : MonoBehaviour {
 
+    public float forcePercentage = 0.8f;
 
 	void OnTriggerEnter(Collider other) {
 
         if (other.tag == "Bullet")
         {
-            Debug.Log("Add force to bullet");
-            var force = 10f;
             var rbody = other.GetComponent<Rigidbody>();
             if (rbody != null)
             {
-                rbody.AddForce(transform.up * (rbody.velocity.magnitude * 0.8f), ForceMode.Impulse);
+                var force = rbody.velocity.magnitude * forcePercentage;
+                Debug.Log(string.Format("Add force to bullet: {0}", force));
+                rbody.AddForce(transform.up * force, ForceMode.Impulse);
             }
         }
 	}
