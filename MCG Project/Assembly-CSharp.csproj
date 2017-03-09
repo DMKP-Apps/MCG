@@ -107,6 +107,7 @@
      <Compile Include="Assets\Scripts\Network\NetworkPlayerInfo.cs" />
      <Compile Include="Assets\Scripts\Network\RoomData.cs" />
      <Compile Include="Assets\Scripts\Obstacles\CollectItem.cs" />
+     <Compile Include="Assets\Scripts\Obstacles\LaserCollision.cs" />
      <Compile Include="Assets\Scripts\Obstacles\MoveAroundObject.cs" />
      <Compile Include="Assets\Scripts\Obstacles\MoveObject.cs" />
      <Compile Include="Assets\Scripts\Obstacles\MoveSpike.cs" />
