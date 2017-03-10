@@ -1,0 +1,184 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>10.0.20506</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <RootNamespace></RootNamespace>
+    <ProjectGuid>{C3CEFCCB-63F3-B4A7-0B5D-4F98B1ED5108}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <AssemblyName>Assembly-CSharp</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <BaseDirectory>Assets</BaseDirectory>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>Temp\bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE;UNITY_5_3_OR_NEWER;UNITY_5_4_OR_NEWER;UNITY_5_5_OR_NEWER;UNITY_5_5_1;UNITY_5_5;UNITY_5;ENABLE_AUDIO;ENABLE_CACHING;ENABLE_CLOTH;ENABLE_GENERICS;ENABLE_MICROPHONE;ENABLE_MULTIPLE_DISPLAYS;ENABLE_PHYSICS;ENABLE_SPRITERENDERER_FLIPPING;ENABLE_SPRITES;ENABLE_TERRAIN;ENABLE_RAKNET;ENABLE_UNET;ENABLE_LZMA;ENABLE_UNITYEVENTS;ENABLE_WEBCAM;ENABLE_WWW;ENABLE_CLOUD_SERVICES_COLLAB;ENABLE_CLOUD_HUB;ENABLE_CLOUD_PROJECT_ID;ENABLE_CLOUD_SERVICES_UNET;ENABLE_CLOUD_SERVICES_BUILD;ENABLE_CLOUD_LICENSE;ENABLE_EDITOR_METRICS;ENABLE_EDITOR_METRICS_CACHING;INCLUDE_DYNAMIC_GI;INCLUDE_GI;PLATFORM_SUPPORTS_MONO;INCLUDE_PUBNUB;ENABLE_PLAYMODE_TESTS_RUNNER;ENABLE_SCRIPTING_NEW_CSHARP_COMPILER;ENABLE_RUNTIME_GI;ENABLE_SUBSTANCE;ENABLE_GAMECENTER;ENABLE_NETWORK;ENABLE_UNITYWEBREQUEST;ENABLE_VIDEO;ENABLE_CLOUD_SERVICES;ENABLE_CLOUD_SERVICES_ADS;ENABLE_CLOUD_SERVICES_ANALYTICS;ENABLE_CLOUD_SERVICES_PURCHASING;ENABLE_CLOUD_SERVICES_CRASH_REPORTING;PLAYERCONNECTION_LISTENS_FIXED_PORT;DEBUGGER_LISTENS_FIXED_PORT;PLATFORM_SUPPORTS_ADS_ID;SUPPORT_ENVIRONMENT_VARIABLES;PLATFORM_SUPPORTS_PROFILER;PLATFORM_HAS_NO_SUPPORT_FOR_BUCKET_ALLOCATOR;STRICTCPP_NEW_DELETE_SIGNATURES;HAS_NEON_SKINNIG;UNITY_GFX_USE_PLATFORM_VSYNC;UNITY_INPUT_SIMULATE_EVENTS;PLATFORM_ALWAYS_USES_STDOUT_FOR_LOG;ENABLE_VR;ENABLE_UNITYADS_RUNTIME;UNITY_UNITYADS_API;UNITY_IOS;UNITY_IPHONE;UNITY_IPHONE_API;SUPPORT_MULTIPLE_DISPLAYS;ENABLE_IL2CPP;ENABLE_PROFILER;UNITY_ASSERTIONS;UNITY_EDITOR;UNITY_EDITOR_64;UNITY_EDITOR_OSX;UNITY_TEAM_LICENSE;CROSS_PLATFORM_INPUT;MOBILE_INPUT;ENABLE_IOS_ON_DEMAND_RESOURCES;ENABLE_IOS_APP_SLICING</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <NoWarn>0169</NoWarn>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>Temp\bin\Release\</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <NoWarn>0169</NoWarn>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.XML" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="UnityEngine">
+      <HintPath>/Applications/Unity/Unity.app/Contents/Managed/UnityEngine.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEditor">
+      <HintPath>/Applications/Unity/Unity.app/Contents/Managed/UnityEditor.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+     <Compile Include="Assets\CameraPath3\Scripts\CameraPath.cs" />
+     <Compile Include="Assets\CameraPath3\Scripts\CameraPathAnimator.cs" />
+     <Compile Include="Assets\CameraPath3\Scripts\CameraPathControlPoint.cs" />
+     <Compile Include="Assets\CameraPath3\Scripts\CameraPathDelay.cs" />
+     <Compile Include="Assets\CameraPath3\Scripts\CameraPathDelayList.cs" />
+     <Compile Include="Assets\CameraPath3\Scripts\CameraPathEvent.cs" />
+     <Compile Include="Assets\CameraPath3\Scripts\CameraPathEventList.cs" />
+     <Compile Include="Assets\CameraPath3\Scripts\CameraPathFOV.cs" />
+     <Compile Include="Assets\CameraPath3\Scripts\CameraPathFOVList.cs" />
+     <Compile Include="Assets\CameraPath3\Scripts\CameraPathOrientation.cs" />
+     <Compile Include="Assets\CameraPath3\Scripts\CameraPathOrientationList.cs" />
+     <Compile Include="Assets\CameraPath3\Scripts\CameraPathPoint.cs" />
+     <Compile Include="Assets\CameraPath3\Scripts\CameraPathPointList.cs" />
+     <Compile Include="Assets\CameraPath3\Scripts\CameraPathSpeed.cs" />
+     <Compile Include="Assets\CameraPath3\Scripts\CameraPathSpeedList.cs" />
+     <Compile Include="Assets\CameraPath3\Scripts\CameraPathTilt.cs" />
+     <Compile Include="Assets\CameraPath3\Scripts\CameraPathTiltList.cs" />
+     <Compile Include="Assets\CameraPath3\Scripts\Enum\CameraPathColours.cs" />
+     <Compile Include="Assets\CameraPath3\Scripts\Util\CPMath.cs" />
+     <Compile Include="Assets\CameraPath3\Scripts\Util\CameraPathPreviewSupport.cs" />
+     <Compile Include="Assets\CameraPath3\Scripts\Util\XMLVariableConverter.cs" />
+     <Compile Include="Assets\Controls\Bullets\Scripts\MeatSelector.cs" />
+     <Compile Include="Assets\Controls\PowerMeter\Scripts\AccuracyControl.cs" />
+     <Compile Include="Assets\Controls\PowerMeter\Scripts\ControlEvents.cs" />
+     <Compile Include="Assets\Controls\PowerMeter\Scripts\GuageController.cs" />
+     <Compile Include="Assets\Controls\PowerMeter\Scripts\PowerControl.cs" />
+     <Compile Include="Assets\Controls\WindMeter\Scripts\WindControl.cs" />
+     <Compile Include="Assets\Scripts\ActivateWithGameObject.cs" />
+     <Compile Include="Assets\Scripts\ActiveForTime.cs" />
+     <Compile Include="Assets\Scripts\AssociatedPlayerState.cs" />
+     <Compile Include="Assets\Scripts\AttachToObject.cs" />
+     <Compile Include="Assets\Scripts\BoundaryController.cs" />
+     <Compile Include="Assets\Scripts\BulletController.cs" />
+     <Compile Include="Assets\Scripts\BulletData.cs" />
+     <Compile Include="Assets\Scripts\BulletHitController.cs" />
+     <Compile Include="Assets\Scripts\CameraFollow.cs" />
+     <Compile Include="Assets\Scripts\CameraLookAt.cs" />
+     <Compile Include="Assets\Scripts\CannonBodyAnimate.cs" />
+     <Compile Include="Assets\Scripts\CannonCollisonController.cs" />
+     <Compile Include="Assets\Scripts\CannonController.cs" />
+     <Compile Include="Assets\Scripts\CannonFireController.cs" />
+     <Compile Include="Assets\Scripts\CannonMaterialController.cs" />
+     <Compile Include="Assets\Scripts\CannonPlayerState.cs" />
+     <Compile Include="Assets\Scripts\CannonWheelController.cs" />
+     <Compile Include="Assets\Scripts\CanvasController.cs" />
+     <Compile Include="Assets\Scripts\FollowEstimatedTarget.cs" />
+     <Compile Include="Assets\Scripts\GameController.cs" />
+     <Compile Include="Assets\Scripts\HoleController.cs" />
+     <Compile Include="Assets\Scripts\InputController.cs" />
+     <Compile Include="Assets\Scripts\MainCameraController.cs" />
+     <Compile Include="Assets\Scripts\Menu Scripts\GameClosedController.cs" />
+     <Compile Include="Assets\Scripts\Menu Scripts\GameSettings.cs" />
+     <Compile Include="Assets\Scripts\Menu Scripts\StartMenuController.cs" />
+     <Compile Include="Assets\Scripts\Network\EndMatchController.cs" />
+     <Compile Include="Assets\Scripts\Network\MultiplayerController.cs" />
+     <Compile Include="Assets\Scripts\Network\NetworkClientManager.cs" />
+     <Compile Include="Assets\Scripts\Network\NetworkMessage.cs" />
+     <Compile Include="Assets\Scripts\Network\NetworkObjectData.cs" />
+     <Compile Include="Assets\Scripts\Network\NetworkPlayerInfo.cs" />
+     <Compile Include="Assets\Scripts\Network\RoomData.cs" />
+     <Compile Include="Assets\Scripts\Obstacles\CollectItem.cs" />
+     <Compile Include="Assets\Scripts\Obstacles\LaserCollision.cs" />
+     <Compile Include="Assets\Scripts\Obstacles\MoveAroundObject.cs" />
+     <Compile Include="Assets\Scripts\Obstacles\MoveObject.cs" />
+     <Compile Include="Assets\Scripts\Obstacles\MoveSpike.cs" />
+     <Compile Include="Assets\Scripts\Obstacles\ObstacleCollision.cs" />
+     <Compile Include="Assets\Scripts\Obstacles\RotateObject.cs" />
+     <Compile Include="Assets\Scripts\Obstacles\SmartTransform.cs" />
+     <Compile Include="Assets\Scripts\Obstacles\SpawnItem.cs" />
+     <Compile Include="Assets\Scripts\SkinScene\CannonSkinPreview.cs" />
+     <Compile Include="Assets\Scripts\SkinScene\SkinInputController.cs" />
+     <Compile Include="Assets\Scripts\SmoothLookAt.cs" />
+     <Compile Include="Assets\Scripts\SmoothRotator.cs" />
+     <Compile Include="Assets\Scripts\Tests\TestController.cs" />
+     <Compile Include="Assets\Scripts\TopographicBulletController.cs" />
+     <Compile Include="Assets\Scripts\TopographicCamera.cs" />
+     <Compile Include="Assets\Scripts\UIInputController.cs" />
+     <Compile Include="Assets\Scripts\UIScripts\PlayerInfo.cs" />
+     <Compile Include="Assets\Scripts\UIScripts\PlayerMarker.cs" />
+     <Compile Include="Assets\Scripts\UIScripts\PlayerTab.cs" />
+     <Compile Include="Assets\Scripts\UIScripts\PointToPin.cs" />
+     <Compile Include="Assets\Scripts\UIScripts\ScaleControls.cs" />
+     <Compile Include="Assets\Scripts\UITextController.cs" />
+     <Compile Include="Assets\Scripts\Utilities\TouchUtility.cs" />
+     <Compile Include="Assets\Scripts\WaterCollision.cs" />
+     <Compile Include="Assets\Scripts\WaterData.cs" />
+     <None Include="Assets\CameraPath3\3.1x Upgrade readme.txt" />
+     <None Include="Assets\CameraPath3\readme.txt" />
+     <None Include="Assets\CameraPath3\versionHistory.txt" />
+     <None Include="Assets\Packages\Animated Flags\Shaders\Mobile-Bump-1DirectionalLight-NoCull.shader" />
+     <None Include="Assets\Packages\Lowpoly_forest_ruins\Readme.txt" />
+     <None Include="Assets\Packages\Baker House\Readme.txt" />
+     <None Include="Assets\Packages\Animated Flags\Animated Flags.txt" />
+     <None Include="Assets\Standard Assets\ParticleSystems\Shaders\PriorityParticleAlpha.shader" />
+     <None Include="Assets\Standard Assets\ParticleSystems\ParticleSystemsGuidelines.txt" />
+     <None Include="Assets\Notes\AnimationCamera Show Case Hole TIPS.txt" />
+     <None Include="Assets\Standard Assets\CrossPlatformInput\CrossPlatformInputGuidelines.txt" />
+     <None Include="Assets\Standard Assets\ParticleSystems\Shaders\PriorityParticleAddSoft.shader" />
+     <None Include="Assets\Packages\BrokenVector\FreeLowPolyPack\readme.txt" />
+     <None Include="Assets\Packages\SimpleCastle\Shader\AlphaTest-Diffuse2side.shader" />
+     <None Include="Assets\Packages\Animated Flags\Shaders\Mobile-Alpha-BumpSpec-1DirectionalLight-NoCull.shader" />
+     <None Include="Assets\Standard Assets\ParticleSystems\Shaders\PriorityParticleAdd.shader" />
+     <None Include="Assets\Packages\Animated Flags\Shaders\Mobile-BumpSpec-1DirectionalLight-NoCull.shader" />
+ <Reference Include="UnityEngine.UI">
+ <HintPath>/Applications/Unity/Unity.app/Contents/UnityExtensions/Unity/GUISystem/UnityEngine.UI.dll</HintPath>
+ </Reference>
+ <Reference Include="UnityEngine.Networking">
+ <HintPath>/Applications/Unity/Unity.app/Contents/UnityExtensions/Unity/Networking/UnityEngine.Networking.dll</HintPath>
+ </Reference>
+ <Reference Include="UnityEngine.PlaymodeTestsRunner">
+ <HintPath>/Applications/Unity/Unity.app/Contents/UnityExtensions/Unity/PlaymodeTestsRunner/UnityEngine.PlaymodeTestsRunner.dll</HintPath>
+ </Reference>
+ <Reference Include="UnityEngine.Analytics">
+ <HintPath>/Applications/Unity/Unity.app/Contents/UnityExtensions/Unity/UnityAnalytics/UnityEngine.Analytics.dll</HintPath>
+ </Reference>
+ <Reference Include="UnityEngine.HoloLens">
+ <HintPath>/Applications/Unity/Unity.app/Contents/UnityExtensions/Unity/UnityHoloLens/RuntimeEditor/UnityEngine.HoloLens.dll</HintPath>
+ </Reference>
+ <Reference Include="UnityEngine.VR">
+ <HintPath>/Applications/Unity/Unity.app/Contents/UnityExtensions/Unity/UnityVR/RuntimeEditor/UnityEngine.VR.dll</HintPath>
+ </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="Assembly-CSharp-firstpass.csproj">
+      <Project>{D2FCB735-5DA1-E2BD-F44B-08F7413BEFDE}</Project>      <Name>Assembly-CSharp-firstpass</Name>    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+  
+</Project>
